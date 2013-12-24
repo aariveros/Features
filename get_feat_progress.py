@@ -3,14 +3,14 @@ import lightcurves.lc_utils as lu
 import lightcurves.features as ft
 
 
-path = "/Users/npcastro/Dropbox/Tesis/Codigo python/lightcurves_paths/Be_lc.txt"
-# path = "/Users/npcastro/Dropbox/Tesis/Codigo python/lightcurves_paths/CEPH.txt"
-# path = "/Users/npcastro/Dropbox/Tesis/Codigo python/lightcurves_paths/EB.txt"
-# path = "/Users/npcastro/Dropbox/Tesis/Codigo python/lightcurves_paths/longperiod_lc.txt"
-# path = "/Users/npcastro/Dropbox/Tesis/Codigo python/lightcurves_paths/microlensing_lc.txt"
-# path = "/Users/npcastro/Dropbox/Tesis/Codigo python/lightcurves_paths/non_variables.txt"
-# path = "/Users/npcastro/Dropbox/Tesis/Codigo python/lightcurves_paths/quasar_lc.txt"
-# path = "/Users/npcastro/Dropbox/Tesis/Codigo python/lightcurves_paths/RRL.txt"
+path = "/Users/npcastro/workspace/Features/lightcurves_paths/Be_lc.txt"
+# path = "/Users/npcastro/workspace/Features/lightcurves_paths/CEPH.txt"
+# path = "/Users/npcastro/workspace/Features/lightcurves_paths/EB.txt"
+# path = "/Users/npcastro/workspace/Features/lightcurves_paths/longperiod_lc.txt"
+# path = "/Users/npcastro/workspace/Features/lightcurves_paths/microlensing_lc.txt"
+# path = "/Users/npcastro/workspace/Features/lightcurves_paths/non_variables.txt"
+# path = "/Users/npcastro/workspace/Features/lightcurves_paths/quasar_lc.txt"
+# path = "/Users/npcastro/workspace/Features/lightcurves_paths/RRL.txt"
 
 paths_azules, paths_rojas = lu.get_lightcurve_paths(path, separate_bands=True)
 

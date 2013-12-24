@@ -35,7 +35,7 @@ def writePathsFile(dir, label=None):
 
 
 if __name__ == '__main__':
-    dir = "/Users/npcastro/Dropbox/Tesis/lightcurves"
+    dir = "/Users/npcastro/Dropbox/lightcurves"
     # Para todas los paths en un solo archivo
     # writePathsFile(dir)
 
