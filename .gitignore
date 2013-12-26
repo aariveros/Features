@@ -2,3 +2,5 @@
 
 .lightcurves_paths/
 lightcurves_paths/
+
+*.pyc

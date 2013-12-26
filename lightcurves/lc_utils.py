@@ -4,8 +4,7 @@ import numpy as np
 import pandas as pd
 import re
 
-# LC_FILE_PATH = "/Users/npcastro/Dropbox/Tesis/Codigo python/lc_files.txt"
-LC_FILE_PATH = "/Users/npcastro/Dropbox/Tesis/Codigo python/lightcurves_paths/longperiod_lc.txt"
+LC_FILE_PATH = '/Users/npcastro/workspace/Features/lightcurves_paths/Todas.txt'
 
 
 RESULTS_DIR_PATH = '/Users/npcastro/Dropbox/Tesis/Codigo python/Resultados/'
@@ -121,7 +120,7 @@ def feature_progress( lc, feature, percentage=1 ):
     x_values = []
     y_values = []
 
-    steps = len(lc.index) / percentage - 2
+    steps = int(len(lc.index) / percentage - 2)
 
     for i in range(3, steps):
         y_values.append(feature( lc.iloc[0:i*percentage]) )
@@ -150,7 +149,7 @@ def get_feat_and_comp(lc, feature, comp, percentage=1):
     x_values = []
     y_values = []
 
-    steps = len(lc.index) / percentage - 2
+    steps = int(len(lc.index) / percentage) - 2
 
     for i in range(3, steps):
         y_values.append( feature( lc.iloc[0:i*percentage]) )
@@ -159,7 +158,7 @@ def get_feat_and_comp(lc, feature, comp, percentage=1):
         # x_values.append( aux )
         print('Progress: ' + '{0:.2f}'.format(aux*100) + '%')    
 
-        x_values.append(i)
+        x_values.append(i*percentage)
         
     x_values.append(len(lc.index))
     y_values.append(feature(lc))
@@ -285,14 +284,16 @@ def graf_feature( x_values, y_values, title, comp_x_values, comp_y_values, num_g
     plt.title( title)
     plt.ylabel( 'Feature Value' )
     plt.xlabel( "% of points")
-    plt.xlim(0.0, 1.0)
+    # plt.xlim(0.0, 1.0)
+    plt.xlim(x_values[0], x_values[len(x_values)-1])
     ax = plt.gca()
     ax.xaxis.grid(True)
 
     plt.subplot(212)
     plt.plot( comp_x_values, comp_y_values, '.')
     plt.xlabel( 'Porcentaje de curva')
-    plt.xlim(0.0, 1.0)
+    # plt.xlim(0.0, 1.0)
+    plt.xlim(x_values[0], x_values[len(x_values)-1])
     plt.ylabel( 'Completitud' )
     plt.ylim(0.0, 1.0)
     # plt.savefig(title+'.png')
@@ -302,8 +303,10 @@ def graf_feature( x_values, y_values, title, comp_x_values, comp_y_values, num_g
 
 
 def normalize( d, minimo, maximo, new_min=0, new_max=1 ):
-
-    return (float(d - minimo) / (maximo - minimo)) * (new_max - new_min) + new_min
+    if(maximo == minimo):
+        return d * (new_max - new_min) + new_min
+    else:
+        return (float(d - minimo) / (maximo - minimo)) * (new_max - new_min) + new_min
 
 
 def save_line(linea, p):

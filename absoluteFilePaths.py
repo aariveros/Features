@@ -37,15 +37,15 @@ def writePathsFile(dir, label=None):
 if __name__ == '__main__':
     dir = "/Users/npcastro/Dropbox/lightcurves"
     # Para todas los paths en un solo archivo
-    # writePathsFile(dir)
+    writePathsFile(dir)
 
     # Para elegir un clase particular por archivo
 
-    writePathsFile(dir, 'Be_lc')
-    writePathsFile(dir, 'CEPH')
-    writePathsFile(dir, 'EB')
-    writePathsFile(dir, 'longperiod_lc')
-    writePathsFile(dir, 'microlensing_lc')
-    writePathsFile(dir, 'non_variables')
-    writePathsFile(dir, 'quasar_lc')
-    writePathsFile(dir, 'RRL')
+    # writePathsFile(dir, 'Be_lc')
+    # writePathsFile(dir, 'CEPH')
+    # writePathsFile(dir, 'EB')
+    # writePathsFile(dir, 'longperiod_lc')
+    # writePathsFile(dir, 'microlensing_lc')
+    # writePathsFile(dir, 'non_variables')
+    # writePathsFile(dir, 'quasar_lc')
+    # writePathsFile(dir, 'RRL')

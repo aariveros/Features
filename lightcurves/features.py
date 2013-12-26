@@ -37,15 +37,18 @@ def con( curva ):
 
 	mag = curva['mag']
 
-	minLimit = mag.mean() - 2*mag.std()
-	maxLimit = mag.mean() + 2*mag.std()
+	mean = mag.mean()
+	std = mag.std()
+
+	minLimit = mean - 2*std
+	maxLimit = mean + 2*std
 
 	count = 0;
 
 	for i in range( n - 2 ):
-		if( (mag.iloc[i] > maxLimit) | (mag.iloc[i] < minLimit) ):
-			if( (mag.iloc[i + 1] > maxLimit) | (mag.iloc[i + 1] < minLimit) ):
-				if( (mag.iloc[i + 2] > maxLimit) | (mag.iloc[i + 2] < minLimit) ):
+		if( (mag.iloc[i] > maxLimit) or (mag.iloc[i] < minLimit) ):
+			if( (mag.iloc[i + 1] > maxLimit) or (mag.iloc[i + 1] < minLimit) ):
+				if( (mag.iloc[i + 2] > maxLimit) or (mag.iloc[i + 2] < minLimit) ):
 					count += 1
 
 	return float(count) / (n - 2)
@@ -86,7 +89,7 @@ def B_R( curva ):
 
 	return curva['azul']['mag'].mean() - curva['roja']['mag'].mean()
 
-# Recibe ambas bandas
+# Ambas bandas
 def stetsonL( curva ):
 
 	# return stetsonJ(curva) * stetsonK(curva['azul']) / 0.798
@@ -94,8 +97,12 @@ def stetsonL( curva ):
 	return stetsonJ(curva, media_a, media_r) * stetsonK(curva['azul'], media_a) / 0.798
 
 
-#  Recibe ambas bandas
-def stetsonJ( curva, media_a, media_r ):
+# Ambas bandas
+def stetsonJ( curva, media_a = None, media_r = None ):
+
+	if media_a == None:
+		media_a, media_r = curva['azul']['mag'].mean(), curva['roja']['mag'].mean()
+
 	n = len(curva.index)
 	suma = 0
 	for i in range(n):
@@ -105,8 +112,12 @@ def stetsonJ( curva, media_a, media_r ):
 	return (1.0/n)*suma
 
 
-# Recibe una sola banda
-def stetsonK( curva, media ):
+# Una sola banda
+def stetsonK( curva, media = None ):
+
+	if media == None:
+		media = curva['mag'].mean()
+
 	n = len(curva.index)
 
 	num = 0
@@ -130,6 +141,7 @@ def delta( curva, pos, media ):
 def skew (curva):
 	return stats.skew(curva['mag'])
 
+# Una sola banda
 def small_kurtosis(curva):
 	n = len(curva.index)
 	media = curva['mag'].mean()
@@ -144,36 +156,36 @@ def small_kurtosis(curva):
 
 	return c1 * suma - c2
 
-# #####################
+
 def std(curva):
-	return curva['mag.mean'].var()
+	return curva['mag'].std()
 
 def beyond1_std(curva):
 	n = len(curva.index)
 	
-	media = np.average(curva['mag'], curva['err'])
-
+	media = np.average(curva['mag'], weights=curva['err'])
 
 	var = 0
 	for i in range(n):
 		var += ((curva['mag'].iloc[i]) - media)**2
 
-	std = np.sqrt( (1/(n-1)) * var )
+	std = np.sqrt( (1.0/(n-1)) * var )
 
 	frac = 0
 
 	for i in range(n):
 		punto = curva['mag'].iloc[i]
+
 		if punto > media + std or punto < media - std:
 			frac += 1
 
-	return frac / n
+	return float(frac) / n
 
 def max_slope(curva):
 	max_slope = 0
 
 	for i in range(len(curva.index) - 1):
-		slope = curva['mag'].iloc[i+1] - curva['mag'].iloc[i] / curva.index.values[i+1] - curva.index.values[i]
+		slope = float(curva['mag'].iloc[i+1] - curva['mag'].iloc[i]) / (curva.index.values[i+1] - curva.index.values[i])
 
 		if slope > max_slope:
 			max_slope = slope
@@ -192,7 +204,7 @@ def median_abs_dev(curva):
 	for i in range(len(curva.index)):
 		devs.append(abs(curva['mag'].iloc[i] - median))
 
-	return np.median(devsss)
+	return np.median(devs)
 
 
 def period( curva ):
