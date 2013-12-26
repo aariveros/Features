@@ -23,49 +23,86 @@ for path_azul, path_roja in zip(paths_azules, paths_rojas):
 	# Obtengo el id de la curva
 	macho_id = lu.get_lightcurve_id(path_azul)
 
+	# try:
+	# Abro ambas bandas, filtro datos extremos y combino en un frame
+	azul = lu.open_lightcurve(path_azul)
+	azul = lu.filter_data(azul)
+
+	roja = lu.open_lightcurve(path_roja)
+	roja = lu.filter_data(roja)
+
+	curva = pd.concat([azul, roja], axis=1, keys=['azul', 'roja'], join='inner')
+
+	# Si no hay suficientes puntos para calcular las features con ambas bandas me salto la curva de luz
+	if len(curva.index) < 100:
+		print 'curva ' + macho_id + ' descartada por falta de puntos sincronizados'
+		# continue	
+
+	# Para cada feature calculo el valor y la confianza y los agrego a una lista
+	header = '#Punto Sigma_B Eta_B stetson_L_B CuSum_B B-R stetson_J stetson_K skew kurt std beyond1_std max_slope amplitude med_abs_dev \n'
+	
+	feat_values = []
+
 	try:
-		# Abro ambas bandas, filtro datos extremos y combino en un frame
-		azul = lu.open_lightcurve(path_azul)
-		azul = lu.filter_data(azul)
-
-		roja = lu.open_lightcurve(path_roja)
-		roja = lu.filter_data(roja)
-
-		curva = pd.concat([azul, roja], axis=1, keys=['azul', 'roja'], join='inner')
-
-		# Si no hay suficientes puntos para calcular las features con ambas bandas me salto la curva de luz
-		if len(curva.index) < 100:
-			print 'curva ' + macho_id + ' descartada por falta de puntos sincronizados'
-			# continue	
-
-		# Para cada feature calculo el valor y la confianza y los agrego a una lista
-		header = '#Punto Sigma_B Eta_B stetson_L_B CuSum_B B-R\n'
-		feat_values = []
-
-
 		print('###### Variability index ######')
 		x_values, y_values = lu.feature_progress(curva, ft.var_index, 10)
 		puntos = x_values
 		feat_values.append(y_values)
-
-
+		
 		print('########## Eta #############')
 		x_values, y_values = lu.feature_progress(curva, ft.eta, 10)
 		feat_values.append(y_values)
-
 
 		print('######### Stetson L ##########')
 		x_values, y_values = lu.feature_progress(curva, ft.stetsonL, 10)
 		feat_values.append(y_values)
 
-
 		print('######### CumSum ###########')
 		x_values, y_values = lu.feature_progress(curva, ft.cu_sum, 10)
 		feat_values.append(y_values)
 
-
 		print('########## B-R ############')
 		x_values, y_values = lu.feature_progress(curva, ft.B_R, 10)
+		feat_values.append(y_values)
+
+		print('########## Stetson J ############')
+		x_values, y_values = lu.feature_progress(curva, ft.stetsonJ, 10)
+		feat_values.append(y_values)
+
+		print('########## Stetson K ############')
+		x_values, y_values = lu.feature_progress(curva['azul'], ft.stetsonK, 10)
+		feat_values.append(y_values)
+
+		print('########## Skewness ############')
+		x_values, y_values = lu.feature_progress(curva['azul'], ft.skew, 10)
+		feat_values.append(y_values)
+
+		print('########## Kurtosis ############')
+		x_values, y_values = lu.feature_progress(curva['azul'], ft.small_kurtosis, 10)
+		feat_values.append(y_values)
+
+		print('########## Kurtosis ############')
+		x_values, y_values = lu.feature_progress(curva['azul'], ft.small_kurtosis, 10)
+		feat_values.append(y_values)
+
+		print('########## Standard Deviation ############')
+		x_values, y_values = lu.feature_progress(curva['azul'], ft.std, 10)
+		feat_values.append(y_values)
+
+		print('########## Beyond 1 std ############')
+		x_values, y_values = lu.feature_progress(curva['azul'], ft.beyond1_std, 10)
+		feat_values.append(y_values)
+
+		print('########## Max Slope ############')
+		x_values, y_values = lu.feature_progress(curva['azul'], ft.max_slope, 10)
+		feat_values.append(y_values)
+
+		print('########## Amplitude ############')
+		x_values, y_values = lu.feature_progress(curva['azul'], ft.amplitude, 10)
+		feat_values.append(y_values)
+
+		print('########## Median absolute deviation ############')
+		x_values, y_values = lu.feature_progress(curva['azul'], ft.median_abs_dev, 10)
 		feat_values.append(y_values)
 
 		lu.save_lc(path_azul, header, puntos, feat_values)

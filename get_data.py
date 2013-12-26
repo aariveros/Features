@@ -2,12 +2,26 @@ import pandas as pd
 import lightcurves.lc_utils as lu
 import lightcurves.features as ft
 
-paths_azules, paths_rojas = lu.get_lightcurve_paths(separate_bands=True)
+# Paths a las curvas de cada clase
+paths ='/Users/npcastro/workspace/Features/lightcurves_paths/Be_lc.txt '
+# path ='/Users/npcastro/workspace/Features/lightcurves_paths/RRL.txt	'		
+# path ='/Users/npcastro/workspace/Features/lightcurves_paths/microlensing_lc.txt'
+# path ='/Users/npcastro/workspace/Features/lightcurves_paths/CEPH.txt'		
+# path ='/Users/npcastro/workspace/Features/lightcurves_paths/non_variables.txt'
+# path ='/Users/npcastro/workspace/Features/lightcurves_paths/EB.txt'			
+# path ='/Users/npcastro/workspace/Features/lightcurves_paths/longperiod_lc.txt'
+# path ='/Users/npcastro/workspace/Features/lightcurves_paths/quasar_lc.txt'
+# path = '/Users/npcastro/workspace/Features/lightcurves_paths/Todas.txt'
+
+paths_azules, paths_rojas = lu.get_lightcurve_paths(path, separate_bands=True)
 
 criterio = lu.var_completeness
 
 # Creo los archivos donde voy a escribir los resultados
-header = '#Macho_id Sigma_B Sigma_B_conf Eta_B Eta_B_conf stetson_L_B stetson_L_B_conf CuSum_B CuSum_B_conf B-R B-R_conf class\n'
+header = 	'#Macho_id Sigma_B Sigma_B_conf Eta_B Eta_B_conf stetson_L_B stetson_L_B_conf CuSum_B CuSum_B_conf B-R B-R_conf' +
+			'stetson_J stetson_J_conf stetson_K stetson_K_conf skew skew_conf kurt kurt_conf std std_conf beyond1_std beyond1_std_conf' +
+			'max_slope max_slope_conf amplitude amplitude_conf med_abs_dev med_abs_dev_conf class\n'
+
 lu.init_results_file(header)
 
 # Para cada curva de luz

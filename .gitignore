@@ -4,3 +4,6 @@
 lightcurves_paths/
 
 *.pyc
+
+Resultados/
+.Resultados/

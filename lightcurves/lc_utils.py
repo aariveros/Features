@@ -7,7 +7,7 @@ import re
 LC_FILE_PATH = '/Users/npcastro/workspace/Features/lightcurves_paths/Todas.txt'
 
 
-RESULTS_DIR_PATH = '/Users/npcastro/Dropbox/Tesis/Codigo python/Resultados/'
+RESULTS_DIR_PATH = '/Users/npcastro/workspace/Features/Resultados/'
 
 
 """
@@ -120,7 +120,7 @@ def feature_progress( lc, feature, percentage=1 ):
     x_values = []
     y_values = []
 
-    steps = int(len(lc.index) / percentage - 2)
+    steps = int(len(lc.index) / percentage) - 2
 
     for i in range(3, steps):
         y_values.append(feature( lc.iloc[0:i*percentage]) )
@@ -129,7 +129,7 @@ def feature_progress( lc, feature, percentage=1 ):
         # x_values.append( aux )
         print('Progress: ' + '{0:.2f}'.format(aux*100) + '%')    
 
-        x_values.append(i)
+        x_values.append(i*percentage)
 
     x_values.append(len(lc.index))
     y_values.append(feature(lc))

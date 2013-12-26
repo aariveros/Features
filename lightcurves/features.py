@@ -106,7 +106,7 @@ def stetsonL( curva ):
 # Ambas bandas
 def stetsonJ( curva, media_a = None, media_r = None ):
 
-	# Agrego esta linea para cuando se usa esta función sola como feature
+	# Agrego esta linea para cuando se usa esta funcion sola como feature
 	if media_a == None or media_r == None:
 		media_a, media_r = curva['azul']['mag'].mean(), curva['roja']['mag'].mean()
 
