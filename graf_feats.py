@@ -44,13 +44,18 @@ curva = pd.concat([azul, roja], axis=1, keys=['azul', 'roja'], join='inner')
 
 
 # # ######### Con #############
-x_values, y_values, completitud = lu.get_feat_and_comp(curva, ft.con, lu.var_completeness)
-lu.graf_feature( x_values, y_values, 'Con', x_values[2:], completitud, 4)
+# x_values, y_values, completitud = lu.get_feat_and_comp(curva, ft.con, lu.var_completeness)
+# lu.graf_feature( x_values, y_values, 'Con', x_values[2:], completitud, 4)
 
 
 # # ######### CumSum ###########
 # x_values, y_values, completitud = lu.get_feat_and_comp(curva, ft.cu_sum, lu.var_completeness, 10)
 # lu.graf_feature( x_values, y_values, 'CuSum', x_values[2:], completitud, 5)
+
+# x_values, y_values, completitud = lu.get_feat_and_comp(curva, ft.cu_sum2, lu.var_completeness, 10)
+# lu.graf_feature( x_values, y_values, 'CuSum2', x_values[2:], completitud, 6)
+
+
 
 
 # ########## B-R ############
@@ -65,50 +70,50 @@ lu.graf_feature( x_values, y_values, 'Con', x_values[2:], completitud, 4)
 # lu.graf_feature( x_values, y_values, 'B-R', x_values[2:], completitud, 6)
 
 
-######### Stetson L ##########
-# x_values, y_values, completitud = lu.get_feat_and_comp(curva, ft.stetsonL, lu.var_completeness, 10)
-# lu.graf_feature( x_values, y_values, 'Stetson-L', x_values[2:], completitud, 7)
+# ######### Stetson L ##########
+x_values, y_values, completitud = lu.get_feat_and_comp(curva, ft.stetsonL, lu.var_completeness, 10)
+lu.graf_feature( x_values, y_values, 'Stetson-L', x_values[2:], completitud, 7)
 
 
-######### Stetson J ##########
+# ######### Stetson J ##########
 # x_values, y_values, completitud = lu.get_feat_and_comp(curva, ft.stetsonJ, lu.var_completeness, 10)
 # lu.graf_feature( x_values, y_values, 'Stetson-J', x_values[2:], completitud, 8)
 
 
-######### Stetson K ##########
+# ######### Stetson K ##########
 # x_values, y_values, completitud = lu.get_feat_and_comp(curva['azul'], ft.stetsonK, lu.var_completeness, 10)
 # lu.graf_feature( x_values, y_values, 'Stetson-K', x_values[2:], completitud, 9)
 
 
-# ######### Skew ##########
+# # ######### Skew ##########
 # x_values, y_values, completitud = lu.get_feat_and_comp(curva['azul'], ft.skew, lu.var_completeness, 10)
 # lu.graf_feature( x_values, y_values, 'Skewness', x_values[2:], completitud, 10)
 
 
-# ######### Kurtosis ##########
+# # ######### Kurtosis ##########
 # x_values, y_values, completitud = lu.get_feat_and_comp(curva['azul'], ft.small_kurtosis, lu.var_completeness, 10)
 # lu.graf_feature( x_values, y_values, 'Kurtosis', x_values[2:], completitud, 10)
 
 
-######### Standar deviation ##########
+# ######### Standar deviation ##########
 # x_values, y_values, completitud = lu.get_feat_and_comp(curva['azul'], ft.std, lu.var_completeness, 10)
 # lu.graf_feature( x_values, y_values, 'Standar deviation', x_values[2:], completitud, 10)
 
 
-######### Beyond 1 std ##########
+# ######### Beyond 1 std ##########
 # x_values, y_values, completitud = lu.get_feat_and_comp(curva['azul'], ft.beyond1_std, lu.var_completeness, 10)
 # lu.graf_feature( x_values, y_values, 'Beyond 1 std', x_values[2:], completitud, 10)
 
 
-######### Max slope ##########
+# ######### Max slope ##########
 # x_values, y_values, completitud = lu.get_feat_and_comp(curva['azul'], ft.max_slope, lu.var_completeness, 10)
 # lu.graf_feature( x_values, y_values, 'Max slope', x_values[2:], completitud, 10)
 
 
-######### Amplitude ##########
+# ######### Amplitude ##########
 # x_values, y_values, completitud = lu.get_feat_and_comp(curva['azul'], ft.amplitude, lu.var_completeness, 10)
 # lu.graf_feature( x_values, y_values, 'Amplitud', x_values[2:], completitud, 10)
 
-######### Median abs dev ##########
+# ######### Median abs dev ##########
 # x_values, y_values, completitud = lu.get_feat_and_comp(curva['azul'], ft.median_abs_dev, lu.var_completeness, 10)
 # lu.graf_feature( x_values, y_values, 'Median absolute deviation', x_values[2:], completitud, 10)

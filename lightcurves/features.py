@@ -55,33 +55,39 @@ def con( curva ):
 
 
 # Usa una banda
-def cu_sum( curva ):
+def cu_sum(curva):
 	curva = curva['azul']
-	n = len( curva.index )
+	n = len(curva.index)
 	mag = curva['mag']
 	media = mag.mean()
 	std = mag.std()
 	
 	partial_sums = []
-	minimo = float("inf")
-	maximo = -minimo
 
-	for l in range(n):
-		m = 1/( n * std )
+	aux = mag.iloc[0] - media
+	minimo = aux
+	maximo = minimo
+	partial_sums.append(aux)
 
-		aux = 0
-		for i in range(l):
-			aux += mag.iloc[i] - media
+	m = 1/( n * std )
 
-		aux = m*aux
+	for i in range(0,n-1):
+		aux = partial_sums[i] + (mag.iloc[i] - media)
+		partial_sums.append(aux)
+
+		aux = m * aux
 		if(aux > maximo):
 			maximo = aux
 		if(aux < minimo):
 			minimo = aux
 
-		# partial_sums.append(m * aux)
-	# return max(partial_sums) - min(partial_sums)
 	return maximo - minimo
+
+
+
+
+
+
 
 
 # Recibe ambas bandas de la curva
@@ -100,7 +106,8 @@ def stetsonL( curva ):
 # Ambas bandas
 def stetsonJ( curva, media_a = None, media_r = None ):
 
-	if media_a == None:
+	# Agrego esta linea para cuando se usa esta función sola como feature
+	if media_a == None or media_r == None:
 		media_a, media_r = curva['azul']['mag'].mean(), curva['roja']['mag'].mean()
 
 	n = len(curva.index)
