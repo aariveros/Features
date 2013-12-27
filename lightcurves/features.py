@@ -84,12 +84,6 @@ def cu_sum(curva):
 	return maximo - minimo
 
 
-
-
-
-
-
-
 # Recibe ambas bandas de la curva
 def B_R( curva ):
 

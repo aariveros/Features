@@ -1,6 +1,7 @@
 import pandas as pd
 import lightcurves.lc_utils as lu
 import lightcurves.features as ft
+import lightcurves.lc_IO as io
 
 # Paths a las curvas de cada clase
 paths ='/Users/npcastro/workspace/Features/lightcurves_paths/Be_lc.txt '
@@ -22,7 +23,7 @@ header = 	'#Macho_id Sigma_B Sigma_B_conf Eta_B Eta_B_conf stetson_L_B stetson_L
 			'stetson_J stetson_J_conf stetson_K stetson_K_conf skew skew_conf kurt kurt_conf std std_conf beyond1_std beyond1_std_conf' +
 			'max_slope max_slope_conf amplitude amplitude_conf med_abs_dev med_abs_dev_conf class\n'
 
-lu.init_results_file(header)
+io.init_results_file(header)
 
 # Para cada curva de luz
 for path_azul, path_roja in zip(paths_azules, paths_rojas):
@@ -93,7 +94,7 @@ for path_azul, path_roja in zip(paths_azules, paths_rojas):
 				linea = linea + str(features[f][indice]) + " " + str(confianzas[f][indice]) + " "
 
 			linea = linea + str(lu.get_lc_class(path_azul))
-			lu.save_line(linea, p)
+			io.save_line(linea, p)
 
 	except(KeyboardInterrupt):
 		break
