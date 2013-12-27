@@ -26,78 +26,72 @@ lu.init_results_file(header)
 
 # Para cada curva de luz
 for path_azul, path_roja in zip(paths_azules, paths_rojas):
-	
-	try:
-		# Abro ambas bandas, filtro datos extremos y combino en un frame
-		azul = lu.open_lightcurve(path_azul)
-		azul = lu.filter_data(azul)
 
-		roja = lu.open_lightcurve(path_roja)
-		roja = lu.filter_data(roja)
+    try:
+        # Abro ambas bandas, filtro datos extremos y combino en un frame
+        azul = lu.open_lightcurve(path_azul)
+        azul = lu.filter_data(azul)
 
-		curva = pd.concat([azul, roja], axis=1, keys=['azul', 'roja'], join='inner')
+        roja = lu.open_lightcurve(path_roja)
+        roja = lu.filter_data(roja)
 
-		# Obtengo el id de la curva
-		macho_id = lu.get_lightcurve_id(path_azul)
+        curva = pd.concat([azul, roja], axis=1, keys=['azul', 'roja'], join='inner')
 
-		# Si no hay suficientes puntos para calcular las features con ambas bandas me salto la curva de luz
-		if len(curva.index) < 100:
-			print 'curva ' + macho_id + ' descartada por falta de puntos sincronizados'
-			continue		
+        # Obtengo el id de la curva
+        macho_id = lu.get_lightcurve_id(path_azul)
 
-		# Para cada feature calculo el valor y la confianza y los agrego a una lista
-		features = []
-		confianzas = []
+        # Si no hay suficientes puntos para calcular las features con ambas bandas me salto la curva de luz
+        if len(curva.index) < 100:
+            print 'curva ' + macho_id + ' descartada por falta de puntos sincronizados'
+            continue
 
+        # Para cada feature calculo el valor y la confianza y los agrego a una lista
+        features = []
+        confianzas = []
 
-		print('########## Eta #############')
-		x_values, y_values, completitud = lu.get_feat_and_comp(curva, ft.eta, criterio)
-		features.append(y_values)
-		confianzas.append(completitud)
+        print('########## Eta #############')
+        x_values, y_values, completitud = lu.get_feat_and_comp(curva, ft.eta, criterio)
+        features.append(y_values)
+        confianzas.append(completitud)
 
+        print('###### Variability index ######')
+        x_values, y_values, completitud = lu.get_feat_and_comp(curva, ft.var_index, criterio)
+        features.append(y_values)
+        confianzas.append(completitud)
 
-		print('###### Variability index ######')
-		x_values, y_values, completitud = lu.get_feat_and_comp(curva, ft.var_index, criterio)
-		features.append(y_values)
-		confianzas.append(completitud)
+        print('######### Stetson L ##########')
+        x_values, y_values, completitud = lu.get_feat_and_comp(curva, ft.stetsonL, criterio, 10)
+        features.append(y_values)
+        confianzas.append(completitud)
 
+        print('######### CumSum ###########')
+        x_values, y_values, completitud = lu.get_feat_and_comp(curva, ft.cu_sum, criterio, 10)
+        features.append(y_values)
+        confianzas.append(completitud)
 
-		print('######### Stetson L ##########')
-		x_values, y_values, completitud = lu.get_feat_and_comp(curva, ft.stetsonL, criterio, 10)
-		features.append(y_values)
-		confianzas.append(completitud)
+        print('########## B-R ############')
+        x_values, y_values, completitud = lu.get_feat_and_comp(curva, ft.B_R, criterio)
+        features.append(y_values)
+        confianzas.append(completitud)
 
+        porcentajes = [20, 40, 60, 80, 100]
 
-		print('######### CumSum ###########')
-		x_values, y_values, completitud = lu.get_feat_and_comp(curva, ft.cu_sum, criterio, 10)
-		features.append(y_values)
-		confianzas.append(completitud)
+        for p in porcentajes:
 
+            # Agrego las features y sus confianzas al string de resultado
+            linea = macho_id + " "
+            for f in range(len(features)):
+                total = len(confianzas[f])
+                indice = (total * p / 100) - 1
 
-		print('########## B-R ############')
-		x_values, y_values, completitud = lu.get_feat_and_comp(curva, ft.B_R, criterio)
-		features.append(y_values)
-		confianzas.append(completitud)
+                linea = linea + str(features[f][indice]) + " " + str(confianzas[f][indice]) + " "
 
+            linea = linea + str(lu.get_lc_class(path_azul))
+            lu.save_line(linea, p)
 
-		porcentajes = [20,40,60,80,100]
-
-		for p in porcentajes:
-			
-			# Agrego las features y sus confianzas al string de resultado
-			linea = macho_id + " "
-			for f in range(len(features)):
-				total = len(confianzas[f])
-				indice = (total * p/100) - 1
-
-				linea = linea + str(features[f][indice]) + " " + str(confianzas[f][indice]) + " "
-
-			linea = linea + str(lu.get_lc_class(path_azul))
-			lu.save_line(linea, p)
-
-	except(KeyboardInterrupt):
-		break
-	except:
-		print '\n'
-		print 'curva ' + macho_id + ' descartada por error'
-		print '\n'
+    except(KeyboardInterrupt):
+        break
+    except:
+        print '\n'
+        print 'curva ' + macho_id + ' descartada por error'
+        print '\n'

@@ -6,10 +6,12 @@ con el path absoluto de todas las curvas de luz que encuentra.
 
 import os
 
+
 def absoluteFilePaths(directory):
-   for dirpath,_,filenames in os.walk(directory):
-       for f in filenames:
-           yield os.path.abspath(os.path.join(dirpath, f))
+    for dirpath, _, filenames in os.walk(directory):
+        for f in filenames:
+            yield os.path.abspath(os.path.join(dirpath, f))
+
 
 """
  Recibe un directorio, busca recursivamente los archivos en busqueda de estrellas
@@ -19,6 +21,7 @@ def absoluteFilePaths(directory):
  y solo escribira esos paths en un archivo con el nombre de la clase.
 """
 
+
 def writePathsFile(dir, label=None):
     files = absoluteFilePaths(dir)
 
@@ -26,12 +29,12 @@ def writePathsFile(dir, label=None):
         with open(label + '.txt', 'w') as archivo:
             for f in files:
                 if '.mjd' in f and label in f:
-                    archivo.write( f + '\n')
+                    archivo.write(f + '\n')
     else:
         with open('paths.txt', 'w') as archivo:
             for f in files:
                 if '.mjd' in f:
-                    archivo.write( f + '\n')        
+                    archivo.write(f + '\n')
 
 
 if __name__ == '__main__':
