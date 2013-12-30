@@ -1,16 +1,16 @@
 from __future__ import division
 import matplotlib.pyplot as plt
-import numpy as np
 import pandas as pd
-import re
+from lc_utils import *
+
+RESULTS_DIR_PATH = '/Users/npcastro/workspace/Features/Resultados/'
 
 def save_line(linea, p):
     with open(RESULTS_DIR_PATH + 'Resultados {0}.txt'.format(p), 'a') as f:
         f.write(linea + '\n')
         f.close()
 
-def init_results_file(header):
-    porcentajes = [20, 40, 60, 80, 100]
+def init_results_file(header, porcentajes = [20, 40, 60, 80, 100]):    
     for p in porcentajes:
         f = open(RESULTS_DIR_PATH + 'Resultados {0}.txt'.format(p), 'w')
         f.write(header)
@@ -27,6 +27,8 @@ def save_lc(path, header, puntos, feat_values):
             linea = str(puntos[i])
             for f in feat_values:
                 linea = linea + ' ' + str(f[i])
+
+            linea = linea.strip()
             
             archivo.write(linea + '\n')
 

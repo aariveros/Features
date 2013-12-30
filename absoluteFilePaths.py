@@ -1,10 +1,10 @@
+import os
+
 """
 Hace una busqueda recursiva por todos los directorios del directorio recibido. Y retorna una lista
-con el path absoluto de todas las curvas de luz que encuentra.
+con el path absoluto de todos los archivos que encuentra
 
 """
-
-import os
 
 def absoluteFilePaths(directory):
    for dirpath,_,filenames in os.walk(directory):
