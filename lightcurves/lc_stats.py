@@ -2,8 +2,16 @@ from __future__ import division
 import lc_IO as io
 import numpy as np
 import pandas as pd
+import lc_utils as lu
 import os
+import re
 
+
+def normalize( d, minimo, maximo, new_min=0, new_max=1 ):
+    if(maximo == minimo):
+        return d * (new_max - new_min) + new_min
+    else:
+        return (float(d - minimo) / (maximo - minimo)) * (new_max - new_min) + new_min
 
 """
  Retorna el valor de una feature calculada con la curva cortada hasta distintos
@@ -194,23 +202,51 @@ def get_training_set(path):
     header = ' '.join(aux)
 
     # Agrego el label y el macho_id
-    header = '#Macho_id ' + header + ' label\n'
+    header = '#Macho_id ' + header + ' label'
 
-    print header
+    # print header
 
-    io.init_results_file(header, [20])
+    # io.init_results_file(header, [20])
+
+    # Lista de lineas a escribir en el archivo final
+    lineas = []
+    lineas.append(header)
 
     # Para cada archivo
     for a in archivos:
+
+        linea = []
+
+        # Agrego el macho_id de la curva
+        linea.append(lu.get_lightcurve_id(a))
+
         # Armo un dataframe con los valores de las features en el tiempo
-        df = pd.read_csv(path, sep=" ", index_col=0)
+        df = pd.read_csv(a, sep=" ", index_col=0)
 
-        
+        # Para cada feature 
+        for c in df.columns:
+            serie = df[c]
 
-    # Calculo las comp
+            # Obtengo el porcentaje de la curva que voy a considerar
+            total = len(serie.index)
+            parcial = int(total*20/100)
 
-    # Obtengo el label
+            # calculo su completitud y guardo el valor de la feature en el mismo punto
+            valor_feature = serie.iloc[parcial]
+            confianza = var_completeness(serie[0:parcial].tolist())
+            linea.append(str(valor_feature))
+            linea.append(str(confianza))
 
-    # Armo la linea
+        # Obtengo el label
+        linea.append(str(lu.get_lc_class(a)))
 
-    # Agrego la linea al archivo de respuesta
+        lineas.append(' '.join(linea))
+
+        # print lineas
+
+    # Escribo el archivo de respuestas
+    with open('Resultados 20.txt', 'w') as f:
+        print lineas
+        for linea in lineas:
+            f.write(linea + '\n')
+    f.close()
