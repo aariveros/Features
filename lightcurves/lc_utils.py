@@ -144,38 +144,13 @@ def feature_progress( lc, feature, percentage=1 ):
 """
 
 def get_feat_and_comp(lc, feature, comp, percentage=1):
-    x_values = []
-    y_values = []
-
-    steps = int(len(lc.index) / percentage) - 2
-
-    for i in range(3, steps):
-        y_values.append( feature( lc.iloc[0:i*percentage]) )
-        
-        aux = float(i*percentage)/len(lc.index)
-        # x_values.append( aux )
-        print('Progress: ' + '{0:.2f}'.format(aux*100) + '%')    
-
-        x_values.append(i*percentage)
-        
-    x_values.append(len(lc.index))
-    y_values.append(feature(lc))
+    x_values, y_values = feature_progress(lc, feature, percentage)
     
     completitud = []
     for i in range(2, len(y_values)):
         completitud.append(comp(y_values[0:i]))
 
     return x_values, y_values, completitud
-
-# def get_feat_and_comp(lc, feature, percentage=1):
-#     progress, feature_values = feature_progess( lc, feature )
-
-#     completitud = []
-#     for i in range(2, len(feature_values)):
-#         completitud.append( var_completeness(feature_values[0:i]))
-
-#     return progress, feature_values, completitud
-
 
 
 """

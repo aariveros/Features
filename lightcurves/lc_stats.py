@@ -246,7 +246,6 @@ def get_training_set(path):
 
     # Escribo el archivo de respuestas
     with open('Resultados 20.txt', 'w') as f:
-        print lineas
         for linea in lineas:
             f.write(linea + '\n')
     f.close()

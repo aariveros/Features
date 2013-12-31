@@ -9,8 +9,8 @@ import lightcurves.lc_IO as io
 # path = "/Users/npcastro/workspace/Features/lightcurves_paths/EB.txt"
 # path = "/Users/npcastro/workspace/Features/lightcurves_paths/longperiod_lc.txt"
 # path = "/Users/npcastro/workspace/Features/lightcurves_paths/microlensing_lc.txt"
-# path = "/Users/npcastro/workspace/Features/lightcurves_paths/non_variables.txt"
-path = "/Users/npcastro/workspace/Features/lightcurves_paths/quasar_lc.txt"
+path = "/Users/npcastro/workspace/Features/lightcurves_paths/non_variables.txt"
+# path = "/Users/npcastro/workspace/Features/lightcurves_paths/quasar_lc.txt"
 # path = "/Users/npcastro/workspace/Features/lightcurves_paths/RRL.txt"
 
 paths_azules, paths_rojas = lu.get_lightcurve_paths(path, separate_bands=True)
@@ -40,7 +40,7 @@ for path_azul, path_roja in zip(paths_azules, paths_rojas):
 		continue	
 
 	# Para cada feature calculo el valor y la confianza y los agrego a una lista
-	header = '#Punto Sigma_B Eta_B stetson_L_B CuSum_B B-R stetson_J stetson_K skew kurt std beyond1_std max_slope amplitude med_abs_dev \n'
+	header = '#Punto Sigma_B Eta_B stetson_L_B CuSum_B B-R stetson_J stetson_K skew kurt std beyond1_std max_slope amplitude med_abs_dev\n'
 	
 	feat_values = []
 
