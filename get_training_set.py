@@ -30,46 +30,53 @@ def get_training_set(path):
     # Agrego el label y el macho_id
     header = '#Macho_id ' + header + ' label'
 
-    # Lista de lineas a escribir en el archivo final
-    lineas = []
-    lineas.append(header)
 
-    # Para cada archivo
-    for a in archivos:
+    """ Aqui itero para cada porcentaje"""
 
-        linea = []
+    porcentajes = [20, 40, 60, 80]
 
-        # Agrego el macho_id de la curva
-        linea.append(lu.get_lightcurve_id(a))
+    for p in porcentajes:
 
-        # Armo un dataframe con los valores de las features en el tiempo
-        df = pd.read_csv(a, sep=" ", index_col=0)
+        print 'Generando training set con ' + str(p) + '% de las curvas'
 
-        # Para cada feature 
-        for c in df.columns:
-            serie = df[c]
+        # Lista de lineas a escribir en el archivo final
+        lineas = []
+        lineas.append(header)
 
-            # Obtengo el porcentaje de la curva que voy a considerar
-            total = len(serie.index)
-            parcial = int(total*20/100)
+        # Para cada archivo
+        for a in archivos:
 
-            # calculo su completitud y guardo el valor de la feature en el mismo punto
-            valor_feature = serie.iloc[parcial]
-            confianza = st.var_completeness(serie[0:parcial].tolist())
-            linea.append(str(valor_feature))
-            linea.append(str(confianza))
+            linea = []
 
-        # Obtengo el label
-        linea.append(str(lu.get_lc_class(a)))
+            # Agrego el macho_id de la curva
+            linea.append(lu.get_lightcurve_id(a))
 
-        lineas.append(' '.join(linea))
+            # Armo un dataframe con los valores de las features en el tiempo
+            df = pd.read_csv(a, sep=" ", index_col=0)
 
+            # Para cada feature 
+            for c in df.columns:
+                serie = df[c]
 
-    # Escribo el archivo de respuestas
-    with open('Resultados 20.txt', 'w') as f:
-        for linea in lineas:
-            f.write(linea + '\n')
-    f.close()
+                # Obtengo el porcentaje de la curva que voy a considerar
+                total = len(serie.index)
+                parcial = int(total*p/100)
+
+                # calculo su completitud y guardo el valor de la feature en el mismo punto
+                valor_feature = serie.iloc[parcial]
+                confianza = st.var_completeness(serie[0:parcial].tolist())
+                linea.append(str(valor_feature))
+                linea.append(str(confianza))
+
+            # Obtengo el label y agrego la linea a la lista de lineas
+            linea.append(str(lu.get_lc_class(a)))
+            lineas.append(' '.join(linea))
+
+        # Escribo el set de entrenamiento en un archivo
+        with open('Resultados ' + str(p) + '.txt', 'w') as f:
+            for linea in lineas:
+                f.write(linea + '\n')
+        f.close()
 
 
 if __name__ == '__main__':

@@ -1,0 +1,17 @@
+Pendientes
+
+1. Regularizar paso de bandas a las features (en algunas se pasan una banda y en otras dos). Es mas transparente pasar siempre dos. Pero se pierde la capacidad de elegir para que banda se quiere calcular. Podría agregarse una opción al método.
+
+2. Análisis de las nuevas Features. Basicamente graficar confianza y evolución de la feature y ver como se comportan.
+
+3. Log de errores: en get_feat_progress no se registran los errores que hay en las curvas. Debería registrar el id de las curvas que fallan. 
+
+4. En graf_feature agregar opcion de si se quiere mostrar y/o guardar los graficos generados.
+
+5. Acelerar stetsonJ con operaciones vectoriales.
+
+6. Agregar cython a los metodos de las features
+
+7. a futuro se podria considerar la distancia al corte de los puntos. Nose si es buena idea, los arboles normales no lo hacen
+
+8. Traspasar incertidumbre como promedio en vez de producto 
