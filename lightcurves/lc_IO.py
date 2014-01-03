@@ -1,5 +1,6 @@
 from __future__ import division
 import matplotlib.pyplot as plt
+import numpy as np
 import pandas as pd
 from lc_utils import *
 
@@ -65,3 +66,17 @@ def graf_feature( x_values, y_values, title, comp_x_values, comp_y_values, num_g
     
     plt.show()
     plt.close()
+
+def graf_lc( x_values, y_values, title, percentage = 1):
+    plt.figure(1)
+    indice = int(len(x_values)*percentage)
+
+    plt.plot( x_values[0:indice], y_values[0:indice], 'bo')
+    plt.xlim(0.0, 1.0)
+    plt.ylim(-8.6, -8.0)
+    plt.title(title)
+
+    plt.xlabel( 'Porcentaje de curva')
+    plt.ylabel( 'Magnitud' )
+    # plt.show()
+    plt.savefig(str(percentage*100) + '.png')

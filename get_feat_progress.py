@@ -8,8 +8,8 @@ import lightcurves.lc_IO as io
 # path = "/Users/npcastro/workspace/Features/lightcurves_paths/CEPH.txt"
 # path = "/Users/npcastro/workspace/Features/lightcurves_paths/EB.txt"
 # path = "/Users/npcastro/workspace/Features/lightcurves_paths/longperiod_lc.txt"
-# path = "/Users/npcastro/workspace/Features/lightcurves_paths/microlensing_lc.txt"
-path = "/Users/npcastro/workspace/Features/lightcurves_paths/non_variables.txt"
+path = "/Users/npcastro/workspace/Features/lightcurves_paths/microlensing_lc.txt"
+# path = "/Users/npcastro/workspace/Features/lightcurves_paths/non_variables.txt"
 # path = "/Users/npcastro/workspace/Features/lightcurves_paths/quasar_lc.txt"
 # path = "/Users/npcastro/workspace/Features/lightcurves_paths/RRL.txt"
 

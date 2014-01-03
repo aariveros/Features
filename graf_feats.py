@@ -16,7 +16,7 @@ paths = lu.get_lightcurve_paths()
 # 2862-2863     non_variables
 # 12527-12528   quasar_lc
 # 12645-12646   RRL
-a, b = 0, 1 
+a, b = 967, 968 
 
 azul = lu.open_lightcurve( paths[a] )
 azul = lu.filter_data(azul)
@@ -31,13 +31,22 @@ curva = pd.concat([azul, roja], axis=1, keys=['azul', 'roja'], join='inner')
 
 # plt.figure(1)
 # plt.plot( curva['azul']['mag'], 'bo')
-# plt.title('algo')
+# plt.title('longperiod')
 # plt.show()
+
+# y_values = curva['azul']['mag']
+# total = len(y_values)
+# x_values = []
+
+# for i in range(len(y_values)):
+# 	x_values.append(float(i)/total)
+
+io.graf_lc2( x_values, y_values, 'Longperiod')
 
 
 ###### Variability index ######
-x_values, y_values, completitud = st.get_feat_and_comp(curva, ft.var_index, lu.var_completeness)
-io.graf_feature( x_values, y_values, 'Variability index', x_values[2:], completitud, 2)
+# x_values, y_values, completitud = st.get_feat_and_comp(curva, ft.var_index, lu.var_completeness)
+# io.graf_feature( x_values, y_values, 'Variability index', x_values[2:], completitud, 2)
 
 
 # # ########## Eta #############
