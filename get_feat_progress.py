@@ -74,35 +74,35 @@ for path_azul, path_roja in zip(paths_azules, paths_rojas):
 	feat_values.append(y_values)
 
 	print('########## Stetson K ############')
-	x_values, y_values = lu.feature_progress(curva['azul'], ft.stetsonK, i)
+	x_values, y_values = lu.feature_progress(curva, ft.stetsonK, i)
 	feat_values.append(y_values)
 
 	print('########## Skewness ############')
-	x_values, y_values = lu.feature_progress(curva['azul'], ft.skew, i)
+	x_values, y_values = lu.feature_progress(curva, ft.skew, i)
 	feat_values.append(y_values)
 
 	print('########## Kurtosis ############')
-	x_values, y_values = lu.feature_progress(curva['azul'], ft.small_kurtosis, i)
+	x_values, y_values = lu.feature_progress(curva, ft.small_kurtosis, i)
 	feat_values.append(y_values)
 
 	print('########## Standard Deviation ############')
-	x_values, y_values = lu.feature_progress(curva['azul'], ft.std, i)
+	x_values, y_values = lu.feature_progress(curva, ft.std, i)
 	feat_values.append(y_values)
 
 	print('########## Beyond 1 std ############')
-	x_values, y_values = lu.feature_progress(curva['azul'], ft.beyond1_std, i)
+	x_values, y_values = lu.feature_progress(curva, ft.beyond1_std, i)
 	feat_values.append(y_values)
 
 	print('########## Max Slope ############')
-	x_values, y_values = lu.feature_progress(curva['azul'], ft.max_slope, i)
+	x_values, y_values = lu.feature_progress(curva, ft.max_slope, i)
 	feat_values.append(y_values)
 
 	print('########## Amplitude ############')
-	x_values, y_values = lu.feature_progress(curva['azul'], ft.amplitude, i)
+	x_values, y_values = lu.feature_progress(curva, ft.amplitude, i)
 	feat_values.append(y_values)
 
 	print('########## Median absolute deviation ############')
-	x_values, y_values = lu.feature_progress(curva['azul'], ft.median_abs_dev, i)
+	x_values, y_values = lu.feature_progress(curva, ft.median_abs_dev, i)
 	feat_values.append(y_values)
 
 	io.save_lc(path_azul, header, puntos, feat_values)

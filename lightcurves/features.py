@@ -5,16 +5,19 @@ from scipy import stats
 """
 	Los siguientes metodos reciben todos un dataframe de una curva de luz
 	y retornan el valor de una feature particular.
+
+	Ahora, todas las features reciben ambas bandas, y un parametro que dice que banda utilizar, en caso
+	de que utilicen una sola. Por default se asume que se usa la banda azul
 """
 
 # Usa una banda
-def var_index( curva ):
-	curva = curva['azul']
+def var_index(curva, banda='azul'):
+	curva = curva[banda]
 	return curva['mag'].std() / curva['mag'].mean()
 
 # Usa una banda
-def eta( curva ):
-	curva = curva['azul']
+def eta(curva, banda='azul'):
+	curva = curva[banda]
 	n = len(curva.index)
 
 	R = 1.0/((n - 1) * curva['mag'].var())
@@ -28,8 +31,8 @@ def eta( curva ):
 	return R * nSum
 
 # Usa una banda
-def con( curva ):
-	curva = curva['azul']
+def con( curva, banda='azul' ):
+	curva = curva[banda]
 	n = len(curva.index)
 	
 	if( n < 4 ):
@@ -55,8 +58,8 @@ def con( curva ):
 
 
 # Usa una banda
-def cu_sum(curva):
-	curva = curva['azul']
+def cu_sum(curva, banda='azul'):
+	curva = curva[banda]
 	n = len(curva.index)
 	mag = curva['mag']
 	media = mag.mean()
@@ -94,7 +97,7 @@ def stetsonL( curva ):
 
 	# return stetsonJ(curva) * stetsonK(curva['azul']) / 0.798
 	media_a, media_r = curva['azul']['mag'].mean(), curva['roja']['mag'].mean() 
-	return stetsonJ(curva, media_a, media_r) * stetsonK(curva['azul'], media_a) / 0.798
+	return stetsonJ(curva, media_a, media_r) * stetsonK(curva, media_a, 'azul') / 0.798
 
 
 # Ambas bandas
@@ -114,7 +117,9 @@ def stetsonJ( curva, media_a = None, media_r = None ):
 
 
 # Una sola banda
-def stetsonK( curva, media = None ):
+def stetsonK( curva, media = None, banda='azul' ):
+	
+	curva = curva[banda]
 
 	if media == None:
 		media = curva['mag'].mean()
@@ -139,11 +144,13 @@ def delta( curva, pos, media ):
 	return aux * ((curva['mag'].iloc[pos] - media) / curva['err'].iloc[pos])
 
 # Una sola banda
-def skew (curva):
+def skew (curva, banda='azul'):
+	curva = curva[banda]
 	return stats.skew(curva['mag'])
 
 # Una sola banda
-def small_kurtosis(curva):
+def small_kurtosis(curva, banda='azul'):
+	curva = curva[banda]
 	n = len(curva.index)
 	media = curva['mag'].mean()
 
@@ -158,10 +165,12 @@ def small_kurtosis(curva):
 	return c1 * suma - c2
 
 
-def std(curva):
+def std(curva, banda='azul'):
+	curva = curva[banda]
 	return curva['mag'].std()
 
-def beyond1_std(curva):
+def beyond1_std(curva, banda='azul'):
+	curva = curva[banda]
 	n = len(curva.index)
 	
 	media = np.average(curva['mag'], weights=curva['err'])
@@ -182,7 +191,8 @@ def beyond1_std(curva):
 
 	return float(frac) / n
 
-def max_slope(curva):
+def max_slope(curva, banda='azul'):
+	curva = curva[banda]
 	max_slope = 0
 
 	for i in range(len(curva.index) - 1):
@@ -194,10 +204,12 @@ def max_slope(curva):
 	return max_slope
 
 
-def amplitude(curva):
+def amplitude(curva, banda='azul'):
+	curva = curva[banda]
 	return curva['mag'].max() - curva['mag'].min()
 
-def median_abs_dev(curva):
+def median_abs_dev(curva, banda='azul'):
+	curva = curva[banda]
 	median = np.median(curva['mag'])
 
 	devs = []
@@ -208,8 +220,8 @@ def median_abs_dev(curva):
 	return np.median(devs)
 
 
-def period( curva ):
-	curva = curva['azul']
+def period( curva, banda='azul' ):
+	curva = curva[banda]
 
 	t = np.array(curva['mjd'])[np.newaxis]
 	h = np.array(curva['mag'])   
