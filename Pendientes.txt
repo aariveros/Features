@@ -1,5 +1,7 @@
 Pendientes
 
+1. Es necesario normalizar las confianzas en el caso de la matriz de confusion??
+
 2. Análisis de las nuevas Features. Basicamente graficar confianza y evolución de la feature y ver como se comportan.
 
 3. Log de errores: en get_feat_progress no se registran los errores que hay en las curvas. Debería registrar el id de las curvas que fallan. 
@@ -12,4 +14,11 @@ Pendientes
 
 7. a futuro se podria considerar la distancia al corte de los puntos. Nose si es buena idea, los arboles normales no lo hacen
 
-8. Traspasar incertidumbre como promedio en vez de producto 
+8. Agregar pruning basado en una cantidad o porcentaje minimo de tuplas para seguir partiendo un nodo
+
+9. Probar otros tipos de indices
+
+10. Implementar k-fold
+
+11. Tengo que volver a samplear las features. Hay algunas curvas que samplee con el metodo antiguo que estan sampleadas 
+	muy pocas veces. 

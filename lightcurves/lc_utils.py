@@ -110,8 +110,8 @@ def filter_data( lc, rango = 3, norm = False ):
  Retorna el valor de una feature calculada con la curva cortada hasta distintos
  porcentajes. Y el porcentaje de completitud de la curva.
 
- percentage: si se especifica un porcentaje, solo se calculan las features
- hasta ese porcentaje de puntos
+ percentage: si se especifica un porcentaje, ese porcenaje de veces 
+ la feature 
 """
 
 def feature_progress( lc, feature, percentage=1 ):

@@ -133,8 +133,12 @@ def var_completeness( y_values ):
         variaciones.append(aux)
 
     varianza = sum(variaciones) / (n-1)
-    
-    return 1 - normalize( varianza, min_var, max_var)
+
+    if min_var == max_var:
+        return 1
+
+    else:
+        return 1 - normalize( varianza, min_var, max_var)
 
 """
  Calcula la confianza de una feature incompleta. 
@@ -145,7 +149,12 @@ def var_completeness( y_values ):
 """
 def trust( y_values ):
     n = len(y_values)
-    final = y_values[-1]
+
+    # Por mientras. Tengo que resamplear las features de las be
+    if n > 0: 
+        final = y_values[-1]
+    else:
+        final = 0
 
     variaciones = []
     max_var = 0
@@ -158,7 +167,15 @@ def trust( y_values ):
             max_var = aux
         variaciones.append(aux)
 
-    prom_var = sum(variaciones) / (n - 1)
+    prom_var = 0
+
+    if n > 1:
+        prom_var = sum(variaciones) / (n - 1)
+    elif n == 1:
+        prom_var = sum(variaciones) / n 
+
+    if n == 0:
+        return 0
 
     return 1 - normalize(prom_var, min_var, max_var)
 

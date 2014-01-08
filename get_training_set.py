@@ -28,12 +28,12 @@ def get_training_set(path):
     header = ' '.join(aux)
 
     # Agrego el label y el macho_id
-    header = '#Macho_id ' + header + ' label'
+    header = 'Macho_id ' + header + ' class'
 
 
     """ Aqui itero para cada porcentaje"""
 
-    porcentajes = [20, 40, 60, 80]
+    porcentajes = [20, 40, 60, 80, 100]
 
     for p in porcentajes:
 
@@ -54,17 +54,25 @@ def get_training_set(path):
             # Armo un dataframe con los valores de las features en el tiempo
             df = pd.read_csv(a, sep=" ", index_col=0)
 
+            # print lu.get_lightcurve_id(a)
+            # print len(df.index)
+
+
             # Para cada feature 
             for c in df.columns:
                 serie = df[c]
 
                 # Obtengo el porcentaje de la curva que voy a considerar
                 total = len(serie.index)
-                parcial = int(total*p/100)
+                parcial = int(total*p/100) - 1
 
                 # calculo su completitud y guardo el valor de la feature en el mismo punto
                 valor_feature = serie.iloc[parcial]
-                confianza = st.var_completeness(serie[0:parcial].tolist())
+
+                # confianza = st.var_completeness(serie[0:parcial].tolist())
+                # confianza = st.completeness(serie[0:parcial].tolist())
+                confianza = st.trust(serie[0:parcial].tolist())
+                
                 linea.append(str(valor_feature))
                 linea.append(str(confianza))
 
@@ -80,6 +88,6 @@ def get_training_set(path):
 
 
 if __name__ == '__main__':
-	RESULTS_DIR_PATH = '/Users/npcastro/workspace/Features/Entrenamiento/'
+	RESULTS_DIR_PATH = '/Users/npcastro/workspace/Features/Entrenamiento trust/'
 	path = '/Users/npcastro/workspace/Features/Resultados'	
 	get_training_set(path)
