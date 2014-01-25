@@ -4,7 +4,7 @@ import numpy as np
 import pandas as pd
 from lc_utils import *
 
-RESULTS_DIR_PATH = '/Users/npcastro/workspace/Features/Resultados/'
+RESULTS_DIR_PATH = 'Datos/Resultados/'
 
 def save_line(linea, p):
     with open(RESULTS_DIR_PATH + 'Resultados {0}.txt'.format(p), 'a') as f:

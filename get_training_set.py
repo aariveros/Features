@@ -73,13 +73,13 @@ def get_training_set(path):
             lineas.append(' '.join(linea))
 
         # Escribo el set de entrenamiento en un archivo
-        with open('Resultados ' + str(p) + '.txt', 'w') as f:
+        with open('Resultados/Resultados ' + str(p) + '.txt', 'w') as f:
             for linea in lineas:
                 f.write(linea + '\n')
         f.close()
 
 
 if __name__ == '__main__':
-	RESULTS_DIR_PATH = '/Users/npcastro/workspace/Features/Entrenamiento/'
-	path = '/Users/npcastro/workspace/Features/Resultados'	
-	get_training_set(path)
+    RESULTS_DIR_PATH = 'Entrenamiento'
+    path = 'Resultados'
+    get_training_set(path)

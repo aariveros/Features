@@ -29,14 +29,14 @@ def writePathsFile(dir, label=None):
                 if '.mjd' in f and label in f:
                     archivo.write(f + '\n')
     else:
-        with open('paths.txt', 'w') as archivo:
+        with open('lightcurves_paths/paths.txt', 'w') as archivo:
             for f in files:
                 if '.mjd' in f:
                     archivo.write(f + '\n')
 
 
 if __name__ == '__main__':
-    dir = "/Users/npcastro/Dropbox/lightcurves"
+    dir = "Datos/lightcurves"
     # Para todas los paths en un solo archivo
     writePathsFile(dir)
 
