@@ -71,7 +71,8 @@ def get_training_set(path):
 
                 # confianza = st.var_completeness(serie[0:parcial].tolist())
                 # confianza = st.completeness(serie[0:parcial].tolist())
-                confianza = st.trust(serie[0:parcial].tolist())
+                # confianza = st.trust(serie[0:parcial].tolist())
+                confianza = st.new_var(serie[0:parcial].tolist())
                 
                 linea.append(str(valor_feature))
                 linea.append(str(confianza))
@@ -81,13 +82,14 @@ def get_training_set(path):
             lineas.append(' '.join(linea))
 
         # Escribo el set de entrenamiento en un archivo
-        with open('Resultados ' + str(p) + '.txt', 'w') as f:
+        with open(RESULTS_DIR_PATH + 'Entrenamiento ' + str(p) + '.txt', 'w') as f:
             for linea in lineas:
                 f.write(linea + '\n')
         f.close()
 
 
 if __name__ == '__main__':
-	RESULTS_DIR_PATH = '/Users/npcastro/workspace/Features/Entrenamiento trust/'
-	path = '/Users/npcastro/workspace/Features/Resultados'	
-	get_training_set(path)
+    RESULTS_DIR_PATH = '/Users/npcastro/workspace/Features/Entrenamiento var_comp/'
+    # RESULTS_DIR_PATH = '/Users/npcastro/workspace/Features/Entrenamiento new_var/'
+    path = '/Users/npcastro/workspace/Features/Resultados'
+    get_training_set(path)

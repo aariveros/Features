@@ -49,7 +49,7 @@ def graf_feature( x_values, y_values, title, comp_x_values, comp_y_values, num_g
     plt.axhline(y = y_values[-1], color = 'r')
     plt.title( title)
     plt.ylabel( 'Feature Value' )
-    plt.xlabel( "% of points")
+    # plt.xlabel( "% of points")
     # plt.xlim(0.0, 1.0)
     plt.xlim(x_values[0], x_values[len(x_values)-1])
     ax = plt.gca()
@@ -57,10 +57,10 @@ def graf_feature( x_values, y_values, title, comp_x_values, comp_y_values, num_g
 
     plt.subplot(212)
     plt.plot( comp_x_values, comp_y_values, '.')
-    plt.xlabel( 'Porcentaje de curva')
+    plt.xlabel( 'Curve percentage')
     # plt.xlim(0.0, 1.0)
     plt.xlim(x_values[0], x_values[len(x_values)-1])
-    plt.ylabel( 'Completitud' )
+    plt.ylabel( 'Stability' )
     plt.ylim(0.0, 1.0)
     # plt.savefig(title+'.png')
     

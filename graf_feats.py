@@ -16,7 +16,7 @@ paths = lu.get_lightcurve_paths()
 # 2862-2863     non_variables
 # 12527-12528   quasar_lc
 # 12645-12646   RRL
-a, b = 967, 968 
+a, b = 461, 462 
 
 azul = lu.open_lightcurve( paths[a] )
 azul = lu.filter_data(azul)
@@ -41,7 +41,7 @@ curva = pd.concat([azul, roja], axis=1, keys=['azul', 'roja'], join='inner')
 # for i in range(len(y_values)):
 # 	x_values.append(float(i)/total)
 
-io.graf_lc2( x_values, y_values, 'Longperiod')
+# io.graf_lc2( x_values, y_values, 'Eclipsing Binarie')
 
 
 ###### Variability index ######
@@ -60,8 +60,8 @@ io.graf_lc2( x_values, y_values, 'Longperiod')
 
 
 # # ######### CumSum ###########
-# x_values, y_values, completitud = st.get_feat_and_comp(curva, ft.cu_sum, lu.var_completeness, 10)
-# io.graf_feature( x_values, y_values, 'CuSum', x_values[2:], completitud, 5)
+x_values, y_values, completitud = st.get_feat_and_comp(curva, ft.cu_sum, lu.var_completeness, 10)
+io.graf_feature( x_values, y_values, 'CuSum', x_values[2:], completitud, 5)
 
 # x_values, y_values, completitud = st.get_feat_and_comp(curva, ft.cu_sum2, lu.var_completeness, 10)
 # io.graf_feature( x_values, y_values, 'CuSum2', x_values[2:], completitud, 6)

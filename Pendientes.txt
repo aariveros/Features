@@ -18,7 +18,18 @@ Pendientes
 
 9. Probar otros tipos de indices
 
-10. Implementar k-fold
+10. Usar k-fold de scikit
 
 11. Tengo que volver a samplear las features. Hay algunas curvas que samplee con el metodo antiguo que estan sampleadas 
 	muy pocas veces. 
+
+12. Hacer graficos que verifiquen que las features con mayor grado de confianza se encuentran mas cerca de su valor final.
+
+13. sanity check. Si resultados son malos, ir eliminando las features que veamos que su valor esta lejos
+	del valor que debiera tener. Si las eliminamos, deberiamos comprobar que el f score aumenta
+
+14. Agregar parametros al arbol que regulen su comportamiento. Ejemplo profundidad maxima.
+
+15. Prunning del arbol
+
+16. Que pasa si simplemente ajustamos una gaussiana a los valores que a tomado la feature?? Y hacemos que el árbol funcione con distribuciones de probabilidades
