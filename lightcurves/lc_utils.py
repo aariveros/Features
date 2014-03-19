@@ -165,7 +165,7 @@ def completeness( y_values ):
     n = len(y_values)
 
     for i in range(1, n):
-        variaciones.append( abs(y_values[i] - y_values[i-1]))
+        variaciones.append(abs(y_values[i] - y_values[i-1]))
 
     max_var = max(variaciones)
     min_var = 0
@@ -176,7 +176,8 @@ def completeness( y_values ):
     # print( 'Maxima varianza: ' + str(max_var))
     # print( 'Minima varianza: ' + str(min_var))
     # print( 'Promedio de varianza. ' + str(aux))
-    return 1 - normalize( prom_Var, min_var, max_var)   
+    return prom_var
+    #return 1 - normalize( prom_var, min_var, max_var)
 
 """
  Retorna el grado de confianza de una feature incompleta.   
@@ -202,7 +203,8 @@ def var_completeness( y_values ):
 
     varianza = sum(variaciones) / (n-1)
     
-    return 1 - normalize( varianza, min_var, max_var)
+    return varianza
+    #return 1 - normalize( varianza, min_var, max_var)
 
 """
  Calcula la confianza de una feature incompleta. 
@@ -228,7 +230,9 @@ def trust( y_values ):
 
     prom_var = sum(variaciones) / (n - 1)
 
-    return 1 - normalize(prom_var, min_var, max_var)
+    return prom_var
+    #return 1 - normalize(prom_var, min_var, max_var)
+
 
 """
  Retorna el grado de completitud de una feature para cada cantidad de puntos 

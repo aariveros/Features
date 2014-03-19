@@ -89,6 +89,7 @@ def get_training_set(path):
 
 
 if __name__ == '__main__':
+    
     RESULTS_DIR_PATH = '/Users/npcastro/workspace/Features/Entrenamiento var_comp/'
     # RESULTS_DIR_PATH = '/Users/npcastro/workspace/Features/Entrenamiento new_var/'
     path = '/Users/npcastro/workspace/Features/Resultados'
