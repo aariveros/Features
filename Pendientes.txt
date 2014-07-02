@@ -33,3 +33,10 @@ Pendientes
 15. Prunning del arbol
 
 16. Que pasa si simplemente ajustamos una gaussiana a los valores que a tomado la feature?? Y hacemos que el árbol funcione con distribuciones de probabilidades
+
+17. Podriamos considerar lo que vimos en el paper que presento Ariel. Segun cuantos puntos hemos tenido para calcular la feature extraer
+una probabilidad de que el valor final sea efectivamente el valor real.
+
+Tal vez si demostramos que la media de la feature tiende a parecerse al valor final, podriamos usar directamente la ecuacion que ahi mostraban.
+
+18. Agregar config a Features y pyRF para centralizar todas las rutas y configuraciones generales. Asi queda mas limpio el codigo en general

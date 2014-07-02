@@ -33,37 +33,62 @@ def save_lc(path, header, puntos, feat_values):
             
             archivo.write(linea + '\n')
 
-"""
-x_value: Eje x, porcentajes de completitud de la curva para los que se calcula la feature
-y_value: Valor de la feature para cada porcentaje de puntos usados
-title: Titulo del grafico
-comp_x_values: Eje x para el indice de completitud de la feature
-comp_y_values: Valores del indice de completitud
-num_graf: Numero del grafico
 
-"""
 def graf_feature( x_values, y_values, title, comp_x_values, comp_y_values, num_graf ):
+    """
+    x_value: Eje x, porcentajes de completitud de la curva para los que se calcula la feature
+    y_value: Valor de la feature para cada porcentaje de puntos usados
+    title: Titulo del grafico
+    comp_x_values: Eje x para el indice de completitud de la feature
+    comp_y_values: Valores del indice de completitud
+    num_graf: Numero del grafico
+
+    """
+
+    #### Curva superior del grafico ####
+
+    # Creo y grafico la figura
     plt.figure(num_graf)
     plt.subplot(211)
     plt.plot( x_values,y_values, '.')
-    plt.axhline(y = y_values[-1], color = 'r')
+    # plt.axhline(y = y_values[-1], color = 'r')
+
+
+    # Labels
     plt.title( title)
-    plt.ylabel( 'Feature Value' )
+    # plt.ylabel( 'Feature Value' )
+    plt.ylabel( 'Brillo', rotation = 'horizontal', horizontalalignment = 'right')
     # plt.xlabel( "% of points")
+    
+
+    # Dimensiones
     # plt.xlim(0.0, 1.0)
     plt.xlim(x_values[0], x_values[len(x_values)-1])
+    
+    # Otros
     ax = plt.gca()
     ax.xaxis.grid(True)
+    ax.yaxis.labelpad = 8
 
+    #### Curva inferior del grafico ####
+
+    # Creo y grafico
     plt.subplot(212)
     plt.plot( comp_x_values, comp_y_values, '.')
-    plt.xlabel( 'Curve percentage')
-    # plt.xlim(0.0, 1.0)
+    plt.axhline(y = comp_y_values[-1], color = 'r')
+
+    # Labels
+    # plt.ylabel( 'Stability' )
+    plt.ylabel( 'Valor descriptor', rotation = 'horizontal', horizontalalignment = 'right' )
+    # plt.ylim(0.0, 1.0)
+    # plt.xlabel( 'Curve percentage')
+    plt.xlabel( 'Porcentaje de curva')
+    plt.xlim(0.0, 1.0)
     plt.xlim(x_values[0], x_values[len(x_values)-1])
-    plt.ylabel( 'Stability' )
-    plt.ylim(0.0, 1.0)
-    # plt.savefig(title+'.png')
     
+
+    # Guardo y/o muestro
+    # plt.savefig(title+'.png')
     plt.show()
     plt.close()
 

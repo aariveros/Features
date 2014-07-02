@@ -43,15 +43,16 @@ def feature_progress( lc, feature, percentage=1 ):
 
 
 
-"""
- Retorna los valores de una feature calculada progresivamente a medida que se completa
- la curva. Ademas retorna la confianza en la feature a medida que esta avanza
 
- percentage:    Fraccion de puntos de la curva para los que se calculara la feature. Sirve
-                para acelerar el calculo de features mas lentas. 
-"""
 
 def get_feat_and_comp(lc, feature, comp, percentage=1):
+    """
+     Retorna los valores de una feature calculada progresivamente a medida que se completa
+     la curva. Ademas retorna la confianza en la feature a medida que esta avanza
+
+     percentage:    Fraccion de puntos de la curva para los que se calculara la feature. Sirve
+                    para acelerar el calculo de features mas lentas. 
+    """
     x_values = []
     y_values = []
 
