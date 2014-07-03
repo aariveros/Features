@@ -16,6 +16,8 @@ paths = lu.get_lightcurve_paths()
 # 2862-2863     non_variables
 # 12527-12528   quasar_lc
 # 12645-12646   RRL
+
+
 a, b = 461, 462 
 
 azul = lu.open_lightcurve( paths[a] )
@@ -24,6 +26,8 @@ azul = lu.filter_data(azul)
 # Combinacion de bandas en un solo dataframe
 roja = lu.open_lightcurve( paths[b])
 roja = lu.filter_data(roja)
+
+# Ojo que el join es inner, lo que solo es necesario para la StetsonL
 curva = pd.concat([azul, roja], axis=1, keys=['azul', 'roja'], join='inner')
 
 

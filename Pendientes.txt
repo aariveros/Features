@@ -14,11 +14,7 @@ Pendientes
 
 7. a futuro se podria considerar la distancia al corte de los puntos. Nose si es buena idea, los arboles normales no lo hacen
 
-8. Agregar pruning basado en una cantidad o porcentaje minimo de tuplas para seguir partiendo un nodo
-
 9. Probar otros tipos de indices
-
-10. Usar k-fold de scikit
 
 11. Tengo que volver a samplear las features. Hay algunas curvas que samplee con el metodo antiguo que estan sampleadas 
 	muy pocas veces. 
@@ -28,14 +24,8 @@ Pendientes
 13. sanity check. Si resultados son malos, ir eliminando las features que veamos que su valor esta lejos
 	del valor que debiera tener. Si las eliminamos, deberiamos comprobar que el f score aumenta
 
-14. Agregar parametros al arbol que regulen su comportamiento. Ejemplo profundidad maxima.
-
-15. Prunning del arbol
-
-16. Que pasa si simplemente ajustamos una gaussiana a los valores que a tomado la feature?? Y hacemos que el árbol funcione con distribuciones de probabilidades
-
 17. Podriamos considerar lo que vimos en el paper que presento Ariel. Segun cuantos puntos hemos tenido para calcular la feature extraer
-una probabilidad de que el valor final sea efectivamente el valor real.
+una probabilidad de que el valor final sea efectivamente el valor real. (Teorema fundamental del limite?)
 
 Tal vez si demostramos que la media de la feature tiende a parecerse al valor final, podriamos usar directamente la ecuacion que ahi mostraban.
 

@@ -92,6 +92,29 @@ def graf_feature( x_values, y_values, title, comp_x_values, comp_y_values, num_g
     plt.show()
     plt.close()
 
+def graf_feature_progress( y_values, title ):
+    plt.figure()
+
+    total_points = len(y_values)
+    x_values = [ float(i) / total_points for i in xrange(total_points) ]
+
+    plt.plot( x_values, y_values, '.')
+    plt.axhline(y = comp_y_values[-1], color = 'r')
+
+    # Labels
+    plt.ylabel( 'Feature Value', rotation = 'horizontal', horizontalalignment = 'right' )
+    # plt.ylim(0.0, 1.0)
+
+    plt.xlabel( 'Curve percentage')    
+    plt.xlim(0.0, 1.0)
+
+    #plt.xlim(x_values[0], x_values[len(x_values)-1])
+
+    # Guardo y/o muestro
+    # plt.savefig(title+'.png')
+    plt.show()
+    plt.close()
+
 def graf_lc( x_values, y_values, title, percentage = 1):
     plt.figure(1)
     indice = int(len(x_values)*percentage)

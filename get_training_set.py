@@ -12,7 +12,6 @@ def get_training_set(path):
        for f in filenames:
             if '.txt' in f:
                 archivos.append(os.path.abspath(os.path.join(dirpath, f)))
-
     
     # Obtengo el header con las features de los datos
     with open(archivos[0], 'r') as f:
@@ -57,7 +56,6 @@ def get_training_set(path):
             # print lu.get_lightcurve_id(a)
             # print len(df.index)
 
-
             # Para cada feature 
             for c in df.columns:
                 serie = df[c]
@@ -92,5 +90,5 @@ if __name__ == '__main__':
     
     RESULTS_DIR_PATH = '/Users/npcastro/workspace/Features/Entrenamiento var_comp/'
     # RESULTS_DIR_PATH = '/Users/npcastro/workspace/Features/Entrenamiento new_var/'
-    path = '/Users/npcastro/workspace/Features/Resultados'
+    path = '/Users/npcastro/workspace/Features/Feature Progress'
     get_training_set(path)

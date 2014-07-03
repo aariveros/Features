@@ -1,3 +1,5 @@
+# Descripción del código
+
 import pandas as pd
 import lightcurves.lc_utils as lu
 import lightcurves.features as ft
@@ -16,6 +18,7 @@ path = 'lightcurves_paths/paths.txt'
 
 paths_azules, paths_rojas = lu.get_lightcurve_paths(path, separate_bands=True)
 
+# Elijo una de las posibles formas para evaluar la completitud de una feature
 criterio = lu.var_completeness
 
 # Creo los archivos donde voy a escribir los resultados
@@ -29,6 +32,7 @@ io.init_results_file(header)
 # Para cada curva de luz
 for path_azul, path_roja in zip(paths_azules, paths_rojas):
 
+    # Ocupo try para poder interrumpir el proceso con ctrl + c
     try:
         # Abro ambas bandas, filtro datos extremos y combino en un frame
         azul = lu.open_lightcurve(path_azul)
@@ -37,6 +41,7 @@ for path_azul, path_roja in zip(paths_azules, paths_rojas):
         roja = lu.open_lightcurve(path_roja)
         roja = lu.filter_data(roja)
 
+        # Ojo que estoy ocupando inner join, porque la stetsonL lo exige. Podría hacerlo distinto
         curva = pd.concat([azul, roja], axis=1, keys=['azul', 'roja'], join='inner')
 
         # Obtengo el id de la curva

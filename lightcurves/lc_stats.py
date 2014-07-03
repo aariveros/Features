@@ -13,15 +13,14 @@ def normalize( d, minimo, maximo, new_min=0, new_max=1 ):
     else:
         return (float(d - minimo) / (maximo - minimo)) * (new_max - new_min) + new_min
 
-"""
- Retorna el valor de una feature calculada con la curva cortada hasta distintos
- porcentajes. Y el porcentaje de completitud de la curva.
-
- percentage: si se especifica un porcentaje, solo se calculan las features
- hasta ese porcentaje de puntos
-"""
-
 def feature_progress( lc, feature, percentage=1 ):
+    """
+     Retorna el valor de una feature calculada con la curva cortada hasta distintos
+     porcentajes. Y el porcentaje de completitud de la curva.
+
+     percentage: si se especifica un porcentaje, solo se calculan las features
+     hasta ese porcentaje de puntos
+    """
     x_values = []
     y_values = []
 
@@ -40,9 +39,6 @@ def feature_progress( lc, feature, percentage=1 ):
     y_values.append(feature(lc))
 
     return x_values, y_values
-
-
-
 
 
 def get_feat_and_comp(lc, feature, comp, percentage=1):

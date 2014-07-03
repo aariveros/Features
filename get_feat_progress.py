@@ -1,3 +1,5 @@
+# Corre sobre un directorio de curvas y calcula el valor de varias features para todos los puntos de una curva. 
+
 import pandas as pd
 import lightcurves.lc_utils as lu
 import lightcurves.features as ft
@@ -14,9 +16,7 @@ path = "lightcurves_paths/microlensing_lc.txt"
 # path = "lightcurves_paths/RRL.txt"
 
 paths_azules, paths_rojas = lu.get_lightcurve_paths(path, separate_bands=True)
-
-criterio = lu.var_completeness
-
+header = '#Punto Sigma_B Eta_B stetson_L_B CuSum_B B-R stetson_J stetson_K skew kurt std beyond1_std max_slope amplitude med_abs_dev\n'
 
 # Para cada curva de luz
 for path_azul, path_roja in zip(paths_azules, paths_rojas):
@@ -40,11 +40,9 @@ for path_azul, path_roja in zip(paths_azules, paths_rojas):
 		continue	
 
 	# Para cada feature calculo el valor y la confianza y los agrego a una lista
-	header = '#Punto Sigma_B Eta_B stetson_L_B CuSum_B B-R stetson_J stetson_K skew kurt std beyond1_std max_slope amplitude med_abs_dev\n'
-	
 	feat_values = []
 
-	# i determina la fraccion de puntos que se van a utilizar de la curva total (queremos samplear 100 veces el valor de a feature)
+	# i determina la fraccion de puntos que se van a utilizar de la curva total (queremos samplear 100 veces el valor de la feature)
 	i = len(curva.index) / 100
 
 	# try:

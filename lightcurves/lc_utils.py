@@ -4,8 +4,7 @@ import numpy as np
 import pandas as pd
 import re
 
-LC_FILE_PATH = '/Users/npcastro/workspace/Features/lightcurves_paths/Todas.txt'
-RESULTS_DIR_PATH = '/Users/npcastro/workspace/Features/Resultados/'
+from config import *
 
 
 """
@@ -110,7 +109,7 @@ def filter_data( lc, rango = 3, norm = False ):
  Retorna el valor de una feature calculada con la curva cortada hasta distintos
  porcentajes. Y el porcentaje de completitud de la curva.
 
- percentage: si se especifica un porcentaje, ese porcenaje de veces 
+ percentage: si se especifica un porcentaje, ese porcentaje de veces se calcula 
  la feature 
 """
 
