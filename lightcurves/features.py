@@ -16,19 +16,35 @@ def var_index(curva, banda='azul'):
 	return curva['mag'].std() / curva['mag'].mean()
 
 # Usa una banda
+# def eta(curva, banda='azul'):
+# 	curva = curva[banda]
+# 	n = len(curva.index)
+
+# 	R = 1.0/((n - 1) * curva['mag'].var())
+
+# 	nSum = 0
+    
+#  	for i in range(n - 1):
+#  		aux = curva['mag'].iloc[i+1] - curva['mag'].iloc[i] 
+#  		nSum += aux**2
+	
+# 	return R * nSum
+
 def eta(curva, banda='azul'):
 	curva = curva[banda]
-	n = len(curva.index)
+	mag = curva['mag'].tolist()
 
-	R = 1.0/((n - 1) * curva['mag'].var())
+	n = len(curva)
+
+	R = 1.0/((n - 1) * np.var(mag))
 
 	nSum = 0
     
- 	for i in range(n - 1):
- 		aux = curva['mag'].iloc[i+1] - curva['mag'].iloc[i] 
+ 	for i in xrange(n - 1):
+ 		aux = mag[i+1] - mag[i] 
  		nSum += aux**2
 	
-	return R * nSum
+	return R * nSum	
 
 # Usa una banda
 def con( curva, banda='azul' ):
@@ -93,33 +109,13 @@ def B_R( curva ):
 	return curva['azul']['mag'].mean() - curva['roja']['mag'].mean()
 
 # Ambas bandas
-def stetsonL( curva ):
-
-	# return stetsonJ(curva) * stetsonK(curva['azul']) / 0.798
-	media_a, media_r = curva['azul']['mag'].mean(), curva['roja']['mag'].mean() 
-	return stetsonJ(curva, media_a, media_r) * stetsonK(curva, media_a, 'azul') / 0.798
-
 def stetsonL2( curva ):
 	media_a, media_r = curva['azul']['mag'].mean(), curva['roja']['mag'].mean() 
-	return stetsonJ2(curva, media_a, media_r) * stetsonK2(curva, media_a, 'azul') / 0.798	
+	return stetsonJ(curva, media_a, media_r) * stetsonK(curva, media_a, 'azul') / 0.798	
 
 
 # Ambas bandas
 def stetsonJ( curva, media_a = None, media_r = None ):
-
-	# Agrego esta linea para cuando se usa esta funcion sola como feature
-	if media_a == None or media_r == None:
-		media_a, media_r = curva['azul']['mag'].mean(), curva['roja']['mag'].mean()
-
-	n = len(curva.index)
-	suma = 0
-	for i in range(n):
-		p_i = delta(curva['azul'], i, media_a) * delta(curva['roja'], i, media_r)
-		suma += (np.sign(p_i) * np.sqrt(abs(p_i)))
-	
-	return (1.0/n)*suma
-
-def stetsonJ2( curva, media_a = None, media_r = None ):
 	azul_mag = curva['azul']['mag'].tolist()
 	azul_err = curva['azul']['err'].tolist()
 
@@ -133,31 +129,13 @@ def stetsonJ2( curva, media_a = None, media_r = None ):
 	n = len(azul_mag)
 	suma = 0
 	for i in range(n):
-		p_i = delta2(azul_mag, azul_err, i, media_a) * delta2(roja_mag, roja_err, i, media_r)
+		p_i = delta(azul_mag, azul_err, i, media_a) * delta(roja_mag, roja_err, i, media_r)
 		suma += (np.sign(p_i) * np.sqrt(abs(p_i)))
 	
 	return (1.0/n)*suma
 
 # Una sola banda
-def stetsonK( curva, media = None, banda='azul' ):
-	
-	curva = curva[banda]
-
-	if media == None:
-		media = curva['mag'].mean()
-
-	n = len(curva.index)
-
-	num = 0
-	den = 0
-	for i in range(n):
-		aux = delta(curva,i, media)
-		num += abs(aux)
-		den += aux**2
-
-	return (1/np.sqrt(n)) * num / np.sqrt(den)
-
-def stetsonK2( curva, media=None, banda='azul'):
+def stetsonK( curva, media=None, banda='azul'):
 	
 	mag = curva[banda]['mag'].tolist()
 	err = curva[banda]['err'].tolist()
@@ -171,7 +149,7 @@ def stetsonK2( curva, media=None, banda='azul'):
 	den = 0
 
 	for i in range(n):
-		aux = delta2(mag, err, i, media)
+		aux = delta(mag, err, i, media)
 		num += abs(aux)
 		den += aux**2
 
@@ -180,14 +158,7 @@ def stetsonK2( curva, media=None, banda='azul'):
 
 
 # Recibe una sola banda
-def delta( curva, pos, media ):
-
-	n = len( curva.index )
-	aux = np.sqrt((n / (n - 1)))
-	# return aux * ((curva['mag'].iloc[pos] - curva['mag'].mean()) / curva['err'].iloc[pos])
-	return aux * ((curva['mag'].iloc[pos] - media) / curva['err'].iloc[pos])
-
-def delta2( mag, err, pos, media ):
+def delta( mag, err, pos, media ):
 	n = len(mag)
 	aux = np.sqrt((n / (n - 1)))
 	return aux * ( (mag[pos] - media) / err[pos])

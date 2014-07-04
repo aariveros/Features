@@ -173,7 +173,7 @@ def graf_lc_and_feature_progress( x_values, mag_values, feat_values, macho_id, c
 
     # Labels
     plt.ylabel( 'Feature', rotation = 'horizontal', horizontalalignment = 'right' )
-    # plt.ylim(0.0, 1.0)
+    plt.ylim(-7.0, 7.0)
 
     plt.xlabel( 'Curve percentage')    
     plt.xlim(0.0, 1.0)
