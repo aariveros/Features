@@ -99,6 +99,10 @@ def stetsonL( curva ):
 	media_a, media_r = curva['azul']['mag'].mean(), curva['roja']['mag'].mean() 
 	return stetsonJ(curva, media_a, media_r) * stetsonK(curva, media_a, 'azul') / 0.798
 
+def stetsonL2( curva ):
+	media_a, media_r = curva['azul']['mag'].mean(), curva['roja']['mag'].mean() 
+	return stetsonJ2(curva, media_a, media_r) * stetsonK2(curva, media_a, 'azul') / 0.798	
+
 
 # Ambas bandas
 def stetsonJ( curva, media_a = None, media_r = None ):
@@ -115,6 +119,24 @@ def stetsonJ( curva, media_a = None, media_r = None ):
 	
 	return (1.0/n)*suma
 
+def stetsonJ2( curva, media_a = None, media_r = None ):
+	azul_mag = curva['azul']['mag'].tolist()
+	azul_err = curva['azul']['err'].tolist()
+
+	roja_mag = curva['roja']['mag'].tolist()
+	roja_err = curva['roja']['err'].tolist()
+
+	# Agrego esta linea para cuando se usa esta funcion sola como feature
+	if media_a == None or media_r == None:
+		media_a, media_r = np.mean(azul_mag), np.mean(roja_mag)
+
+	n = len(azul_mag)
+	suma = 0
+	for i in range(n):
+		p_i = delta2(azul_mag, azul_err, i, media_a) * delta2(roja_mag, roja_err, i, media_r)
+		suma += (np.sign(p_i) * np.sqrt(abs(p_i)))
+	
+	return (1.0/n)*suma
 
 # Una sola banda
 def stetsonK( curva, media = None, banda='azul' ):
@@ -135,6 +157,28 @@ def stetsonK( curva, media = None, banda='azul' ):
 
 	return (1/np.sqrt(n)) * num / np.sqrt(den)
 
+def stetsonK2( curva, media=None, banda='azul'):
+	
+	mag = curva[banda]['mag'].tolist()
+	err = curva[banda]['err'].tolist()
+
+	if media == None:
+		media = np.mean(mag)
+
+	n = len(mag)
+
+	num = 0
+	den = 0
+
+	for i in range(n):
+		aux = delta2(mag, err, i, media)
+		num += abs(aux)
+		den += aux**2
+
+	return (1/np.sqrt(n)) * num / np.sqrt(den)
+
+
+
 # Recibe una sola banda
 def delta( curva, pos, media ):
 
@@ -142,6 +186,11 @@ def delta( curva, pos, media ):
 	aux = np.sqrt((n / (n - 1)))
 	# return aux * ((curva['mag'].iloc[pos] - curva['mag'].mean()) / curva['err'].iloc[pos])
 	return aux * ((curva['mag'].iloc[pos] - media) / curva['err'].iloc[pos])
+
+def delta2( mag, err, pos, media ):
+	n = len(mag)
+	aux = np.sqrt((n / (n - 1)))
+	return aux * ( (mag[pos] - media) / err[pos])
 
 # Una sola banda
 def skew (curva, banda='azul'):

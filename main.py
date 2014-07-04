@@ -1,5 +1,5 @@
-# Toma un directorio de curvas y grafica la evolucion de un set de features para una muestra de
-# cada clase de curvas
+# Grafica la evolucion de un set de features para una muestra de
+# cada clase de curvas.
 
 import pandas as pd
 import lightcurves.lc_utils as lu
@@ -21,16 +21,32 @@ if __name__ == '__main__':
 
     paths = lu.get_lightcurve_paths()
 
-    a, b = 0, 1
+    features = [ft.var_index, ft.eta, ft.cu_sum, ft.B_R, ft.stetsonL2, ft.median_abs_dev]
+    feature_names = ['Variability Index', 'Eta', 'Cum Sum', 'B-R', 'StetsonL', 'Median absolute deviation' ]
 
-    azul = lu.open_lightcurve( paths[a] )
-    azul = lu.filter_data(azul)
-    roja = lu.open_lightcurve( paths[b])
-    roja = lu.filter_data(roja)
+    for j in xrange(len(features)):
+        feature = features[j]
+        feature_name = feature_names[j]
 
-    # Combinacion de bandas en un solo dataframe
-    # Ojo que el join es inner, lo que solo es necesario para la StetsonL
-    curva = pd.concat([azul, roja], axis=1, keys=['azul', 'roja'], join='inner')
+        a, b = 0, 1
 
-    
+        for i in xrange(10):
+            azul = lu.open_lightcurve( paths[a] )
+            azul = lu.filter_data(azul)
+            roja = lu.open_lightcurve( paths[b])
+            roja = lu.filter_data(roja)
+
+            # Combinacion de bandas en un solo dataframe
+            # Ojo que el join es inner, lo que solo es necesario para la StetsonL
+            curva = pd.concat([azul, roja], axis=1, keys=['azul', 'roja'], join='inner')
+
+            title = lu.get_lightcurve_id(paths[a])  + ' ' + feature_name
+
+            ###### Variability index ######
+            x_values, y_values = st.feature_progress(curva, feature, 1)
+            #io.graf_feature_progress(y_values, title)
+            io.graf_lc_and_feature_progress(curva.index.tolist(), curva['azul']['mag'].tolist(), y_values, title)
+
+            a += 2
+            b += 2
 

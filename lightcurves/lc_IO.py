@@ -3,8 +3,9 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 from lc_utils import *
+from lc_stats import *
 
-RESULTS_DIR_PATH = 'Datos/Resultados/'
+from config import *
 
 def save_line(linea, p):
     with open(RESULTS_DIR_PATH + 'Resultados {0}.txt'.format(p), 'a') as f:
@@ -99,9 +100,11 @@ def graf_feature_progress( y_values, title ):
     x_values = [ float(i) / total_points for i in xrange(total_points) ]
 
     plt.plot( x_values, y_values, '.')
-    plt.axhline(y = comp_y_values[-1], color = 'r')
+    plt.axhline(y = y_values[-1], color = 'r')
 
     # Labels
+    plt.title(title)
+
     plt.ylabel( 'Feature Value', rotation = 'horizontal', horizontalalignment = 'right' )
     # plt.ylim(0.0, 1.0)
 
@@ -111,9 +114,64 @@ def graf_feature_progress( y_values, title ):
     #plt.xlim(x_values[0], x_values[len(x_values)-1])
 
     # Guardo y/o muestro
-    # plt.savefig(title+'.png')
-    plt.show()
+    plt.savefig(RESULTS_DIR_PATH + title + '.png')
+    #plt.show()
     plt.close()
+
+def graf_lc_and_feature_progress( x_values, mag_values, feat_values, title ):
+    """
+    x_values: tiempos en que fueron medidos los puntos de la curva
+    mag_values: valores de la curva de luz en el tiempo
+    feat_values: valores de la feature en el tiempo
+    title: titulo del grafico. 
+    """
+
+    mag_values = normalize_z(mag_values)
+    feat_values = normalize_z(feat_values)
+
+    plt.figure()
+    plt.subplot(211)
+
+    ###### Grafico curva de luz en la parte superior del grafico #######
+    plt.plot( x_values, mag_values, '.')
+
+    # Labels
+    plt.title(title)
+    plt.ylabel( 'Mag', rotation = 'horizontal', horizontalalignment = 'right')
+    plt.xlabel( "MJD")
+    
+    # Dimensiones
+    plt.xlim(x_values[0], x_values[-1])
+    # plt.ylim(-2, -10)
+    
+    # Otros
+    ax = plt.gca()
+    ax.xaxis.grid(True)
+    ax.yaxis.labelpad = 8
+
+    ###### Feature ######
+    plt.subplot(212)
+
+    total_points = len(feat_values)
+    x_values = [ float(i) / total_points for i in xrange(total_points) ]
+
+    plt.plot( x_values, feat_values, '.')
+    plt.axhline(y = feat_values[-1], color = 'r')
+
+    # Labels
+    plt.ylabel( 'Feature', rotation = 'horizontal', horizontalalignment = 'right' )
+    # plt.ylim(0.0, 1.0)
+
+    plt.xlabel( 'Curve percentage')    
+    plt.xlim(0.0, 1.0)
+
+    #plt.xlim(x_values[0], x_values[len(x_values)-1])
+
+    # Guardo y/o muestro
+    plt.savefig(RESULTS_DIR_PATH + title + '.png')
+    #plt.show()
+    plt.close()
+
 
 def graf_lc( x_values, y_values, title, percentage = 1):
     plt.figure(1)

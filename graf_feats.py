@@ -71,8 +71,6 @@ io.graf_feature( x_values, y_values, 'CuSum', x_values[2:], completitud, 5)
 # io.graf_feature( x_values, y_values, 'CuSum2', x_values[2:], completitud, 6)
 
 
-
-
 # ########## B-R ############
 # plt.subplot(2, 1, 1)
 # plt.plot( curva['azul']['mag'], 'bo')

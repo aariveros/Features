@@ -6,12 +6,23 @@ import lc_utils as lu
 import os
 import re
 
+import sys
+
 
 def normalize( d, minimo, maximo, new_min=0, new_max=1 ):
     if(maximo == minimo):
         return d * (new_max - new_min) + new_min
     else:
         return (float(d - minimo) / (maximo - minimo)) * (new_max - new_min) + new_min
+
+def normalize_z( values ):
+    media =  np.mean(values)
+    std = np.std(values)
+
+    aux = (pd.Series(values) - media) / std
+    return aux.tolist()
+
+
 
 def feature_progress( lc, feature, percentage=1 ):
     """
@@ -31,7 +42,11 @@ def feature_progress( lc, feature, percentage=1 ):
         
         aux = float(i*percentage)/len(lc.index)
         # x_values.append( aux )
-        print('Progress: ' + '{0:.2f}'.format(aux*100) + '%')    
+        
+        sys.stdout.write('Progress: ' + '{0:.2f}'.format(aux*100) + '%')
+        sys.stdout.flush()
+        sys.stdout.write('\r')
+        sys.stdout.flush()
 
         x_values.append(i*percentage)
 
@@ -59,7 +74,10 @@ def get_feat_and_comp(lc, feature, comp, percentage=1):
         
         aux = float(i*percentage)/len(lc.index)
         x_values.append( aux )
-        print('Progress: ' + '{0:.2f}'.format(aux*100) + '%')    
+        sys.stdout.write('Progress: ' + '{0:.2f}'.format(aux*100) + '%')
+        sys.stdout.flush()
+        sys.stdout.write('\r')
+        sys.stdout.flush()  
 
         # x_values.append(i*percentage)
         
