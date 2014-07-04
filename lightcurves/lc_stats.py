@@ -42,11 +42,13 @@ def feature_progress( lc, feature, percentage=1 ):
         
         aux = float(i*percentage)/len(lc.index)
         # x_values.append( aux )
-        
+
+        print '\n'
         sys.stdout.write('Progress: ' + '{0:.2f}'.format(aux*100) + '%')
         sys.stdout.flush()
         sys.stdout.write('\r')
         sys.stdout.flush()
+        print '\n'
 
         x_values.append(i*percentage)
 

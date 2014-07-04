@@ -24,29 +24,42 @@ if __name__ == '__main__':
     features = [ft.var_index, ft.eta, ft.cu_sum, ft.B_R, ft.stetsonL2, ft.median_abs_dev]
     feature_names = ['Variability Index', 'Eta', 'Cum Sum', 'B-R', 'StetsonL', 'Median absolute deviation' ]
 
-    for j in xrange(len(features)):
-        feature = features[j]
-        feature_name = feature_names[j]
+    clases = { 'Be_lc': 0, 'CEPH': 255, 'EB': 457, 'longperiod_lc': 967, 'microlensing_lc': 1697, 'non_variables': 2862, 'quasar_lc': 12527, 'RRL':12645 }
 
-        a, b = 0, 1
+    # Para cada clase de estrella
+    for clase in clases.keys():
 
-        for i in xrange(10):
-            azul = lu.open_lightcurve( paths[a] )
-            azul = lu.filter_data(azul)
-            roja = lu.open_lightcurve( paths[b])
-            roja = lu.filter_data(roja)
+        print ('\n' + '###### ' + clase + ' ######' + '\n')
 
-            # Combinacion de bandas en un solo dataframe
-            # Ojo que el join es inner, lo que solo es necesario para la StetsonL
-            curva = pd.concat([azul, roja], axis=1, keys=['azul', 'roja'], join='inner')
+        # Para cada feature
+        for j in xrange(len(features)):
+            feature = features[j]
+            feature_name = feature_names[j]
 
-            title = lu.get_lightcurve_id(paths[a])  + ' ' + feature_name
+            print feature_name
 
-            ###### Variability index ######
-            x_values, y_values = st.feature_progress(curva, feature, 1)
-            #io.graf_feature_progress(y_values, title)
-            io.graf_lc_and_feature_progress(curva.index.tolist(), curva['azul']['mag'].tolist(), y_values, title)
+            a = clases[clase]
+            b = a + 1
 
-            a += 2
-            b += 2
+            # Tomo 10 estrellas como muestra
+            for i in xrange(10):
+                azul = lu.open_lightcurve( paths[a] )
+                azul = lu.filter_data(azul)
+                roja = lu.open_lightcurve( paths[b])
+                roja = lu.filter_data(roja)
+
+                # Combinacion de bandas en un solo dataframe
+                # Ojo que el join es inner, lo que solo es necesario para la StetsonL
+                curva = pd.concat([azul, roja], axis=1, keys=['azul', 'roja'], join='inner')
+
+                macho_id = lu.get_lightcurve_id(paths[a])
+                print macho_id
+
+                ###### Variability index ######
+                x_values, y_values = st.feature_progress(curva, feature, 1)
+                #io.graf_feature_progress(y_values, title)
+                io.graf_lc_and_feature_progress(curva.index.tolist(), curva['azul']['mag'].tolist(), y_values, macho_id, clase, feature_name)
+
+                a += 2
+                b += 2
 

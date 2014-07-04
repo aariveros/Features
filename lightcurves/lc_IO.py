@@ -7,6 +7,8 @@ from lc_stats import *
 
 from config import *
 
+import os
+
 def save_line(linea, p):
     with open(RESULTS_DIR_PATH + 'Resultados {0}.txt'.format(p), 'a') as f:
         f.write(linea + '\n')
@@ -118,12 +120,23 @@ def graf_feature_progress( y_values, title ):
     #plt.show()
     plt.close()
 
-def graf_lc_and_feature_progress( x_values, mag_values, feat_values, title ):
-    """
-    x_values: tiempos en que fueron medidos los puntos de la curva
-    mag_values: valores de la curva de luz en el tiempo
-    feat_values: valores de la feature en el tiempo
-    title: titulo del grafico. 
+def graf_lc_and_feature_progress( x_values, mag_values, feat_values, macho_id, class_name, feat_name ):
+    """Genera un grafico con la curva de luz en la parte superior, y con la evolucion de un descriptor en la parte inferior.
+
+    Parameters
+    ----------
+    x_values: list(float)
+        tiempos en que fueron medidos los puntos de la curva
+    mag_values: list(float)
+        valores de la curva de luz en el tiempo
+    feat_values: list(float)
+        valores de la feature en el tiempo
+    title: string
+        titulo del grafico. 
+    class_name: string 
+        nombre de la clase de estrella que se esta graficando. (Necesario para crear el directorio y guardarlo)
+    feat_name: string
+        nombre de la feature que se esta graficando
     """
 
     mag_values = normalize_z(mag_values)
@@ -136,7 +149,7 @@ def graf_lc_and_feature_progress( x_values, mag_values, feat_values, title ):
     plt.plot( x_values, mag_values, '.')
 
     # Labels
-    plt.title(title)
+    plt.title(macho_id + ' ' + feat_name)
     plt.ylabel( 'Mag', rotation = 'horizontal', horizontalalignment = 'right')
     plt.xlabel( "MJD")
     
@@ -168,9 +181,7 @@ def graf_lc_and_feature_progress( x_values, mag_values, feat_values, title ):
     #plt.xlim(x_values[0], x_values[len(x_values)-1])
 
     # Guardo y/o muestro
-    plt.savefig(RESULTS_DIR_PATH + title + '.png')
-    #plt.show()
-    plt.close()
+    save(RESULTS_DIR_PATH + class_name + '/' + feat_name + '/' + macho_id + '.png')
 
 
 def graf_lc( x_values, y_values, title, percentage = 1):
@@ -186,3 +197,30 @@ def graf_lc( x_values, y_values, title, percentage = 1):
     plt.ylabel( 'Magnitud' )
     # plt.show()
     plt.savefig(str(percentage*100) + '.png')
+
+def save(path):
+    """Save a figure from pyplot.
+ 
+    Parameters
+    ----------
+    path : string
+        The path (and filename) to save the
+        figure to.
+    """
+    
+    # Extract the directory and filename from the given path
+    directory = os.path.split(path)[0]
+    filename = os.path.split(path)[1]
+    if directory == '':
+        directory = '.'
+ 
+    # If the directory does not exist, create it
+    if not os.path.exists(directory):
+        os.makedirs(directory)
+ 
+    # The final path to save to
+    savepath = os.path.join(directory, filename)
+ 
+    # Actually save the figure
+    plt.savefig(savepath)
+    plt.close()
