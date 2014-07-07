@@ -1,4 +1,5 @@
 import os
+from config import *
 
 """
 Hace una busqueda recursiva por todos los directorios del directorio recibido. Y retorna una lista
@@ -36,7 +37,7 @@ def writePathsFile(dir, label=None):
 
 
 if __name__ == '__main__':
-    dir = "Datos/lightcurves"
+    dir = LC_PATH
     # Para todas los paths en un solo archivo
     writePathsFile(dir)
 

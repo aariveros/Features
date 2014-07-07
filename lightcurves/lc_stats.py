@@ -37,7 +37,7 @@ def feature_progress( lc, feature, percentage=1 ):
 
     steps = int(len(lc.index) / percentage) - 2
 
-    print ''
+    #print ''
     for i in range(3, steps):
         y_values.append(feature( lc.iloc[0:i*percentage]) )
         

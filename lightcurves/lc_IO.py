@@ -183,6 +183,83 @@ def graf_lc_and_feature_progress( x_values, mag_values, feat_values, macho_id, c
     # Guardo y/o muestro
     save(RESULTS_DIR_PATH + class_name + '/' + feat_name + '/' + macho_id + '.png')
 
+def graf_lc_and_feature_progress_unnormalized( x_values, mag_values, feat_values, macho_id, class_name, feat_name ):
+    """Genera un grafico  de tres partes curva de luz, evolucion de feature normalizada y sin normalizar.
+
+    Parameters
+    ----------
+    x_values: list(float)
+        tiempos en que fueron medidos los puntos de la curva
+    mag_values: list(float)
+        valores de la curva de luz en el tiempo
+    feat_values: list(float)
+        valores de la feature en el tiempo
+    title: string
+        titulo del grafico. 
+    class_name: string 
+        nombre de la clase de estrella que se esta graficando. (Necesario para crear el directorio y guardarlo)
+    feat_name: string
+        nombre de la feature que se esta graficando
+    """
+
+    mag_values = normalize_z(mag_values)
+
+    plt.figure()
+    plt.subplot(311)
+
+    ###### Grafico curva de luz en la parte superior del grafico #######
+    plt.plot( x_values, mag_values, '.')
+
+    # Labels
+    plt.title(macho_id + ' ' + feat_name)
+    plt.ylabel( 'Mag', rotation = 'horizontal', horizontalalignment = 'right')
+    plt.xlabel( "MJD")
+    
+    # Dimensiones
+    plt.xlim(x_values[0], x_values[-1])
+    # plt.ylim(-2, -10)
+    
+    # Otros
+    ax = plt.gca()
+    ax.xaxis.grid(True)
+    ax.yaxis.labelpad = 8
+
+    ###### Feature normalizada ######
+    plt.subplot(312)
+
+    normed_feat_values = normalize_z(feat_values)
+
+    total_points = len(normed_feat_values)
+    x_values = [ float(i) / total_points for i in xrange(total_points) ]
+
+    plt.plot( x_values, normed_feat_values, '.')
+    plt.axhline(y = normed_feat_values[-1], color = 'r')
+
+    # Labels
+    plt.ylabel( 'Feature', rotation = 'horizontal', horizontalalignment = 'right' )
+    plt.ylim(-7.0, 7.0)
+
+    plt.xlabel( 'Curve percentage')    
+    plt.xlim(0.0, 1.0)
+
+    ###### Feature sin normalizar ######
+    plt.subplot(313)
+
+    total_points = len(feat_values)
+    x_values = [ float(i) / total_points for i in xrange(total_points) ]
+
+    plt.plot( x_values, feat_values, '.')
+    plt.axhline(y = feat_values[-1], color = 'r')
+
+    # Labels
+    plt.ylabel( 'Feature', rotation = 'horizontal', horizontalalignment = 'right' )
+
+    plt.xlabel( 'Curve percentage')    
+    plt.xlim(0.0, 1.0)
+
+    # Guardo y/o muestro
+    save(RESULTS_DIR_PATH + class_name + '/' + feat_name + '/' + macho_id + '.png')
+
 
 def graf_lc( x_values, y_values, title, percentage = 1):
     plt.figure(1)

@@ -12,24 +12,10 @@ from scipy import stats
 
 # Usa una banda
 def var_index(curva, banda='azul'):
-	curva = curva[banda]
-	return curva['mag'].std() / curva['mag'].mean()
+	mag = curva[banda]['mag'].tolist()
+	return np.std(mag) / np.mean(mag)
 
 # Usa una banda
-# def eta(curva, banda='azul'):
-# 	curva = curva[banda]
-# 	n = len(curva.index)
-
-# 	R = 1.0/((n - 1) * curva['mag'].var())
-
-# 	nSum = 0
-    
-#  	for i in range(n - 1):
-#  		aux = curva['mag'].iloc[i+1] - curva['mag'].iloc[i] 
-#  		nSum += aux**2
-	
-# 	return R * nSum
-
 def eta(curva, banda='azul'):
 	curva = curva[banda]
 	mag = curva['mag'].tolist()
@@ -75,23 +61,22 @@ def con( curva, banda='azul' ):
 
 # Usa una banda
 def cu_sum(curva, banda='azul'):
-	curva = curva[banda]
-	n = len(curva.index)
-	mag = curva['mag']
-	media = mag.mean()
-	std = mag.std()
+	mag = curva[banda]['mag'].tolist()
+	n = len(mag)
+	media = np.mean(mag)
+	std = np.std(mag)
 	
 	partial_sums = []
 
-	aux = mag.iloc[0] - media
+	aux = mag[0] - media
 	minimo = aux
 	maximo = minimo
 	partial_sums.append(aux)
 
 	m = 1/( n * std )
 
-	for i in range(0,n-1):
-		aux = partial_sums[i] + (mag.iloc[i] - media)
+	for i in xrange(0,n-1):
+		aux = partial_sums[i] + (mag[i] - media)
 		partial_sums.append(aux)
 
 		aux = m * aux
@@ -102,14 +87,12 @@ def cu_sum(curva, banda='azul'):
 
 	return maximo - minimo
 
-
 # Recibe ambas bandas de la curva
 def B_R( curva ):
-
 	return curva['azul']['mag'].mean() - curva['roja']['mag'].mean()
 
 # Ambas bandas
-def stetsonL2( curva ):
+def stetsonL( curva ):
 	media_a, media_r = curva['azul']['mag'].mean(), curva['roja']['mag'].mean() 
 	return stetsonJ(curva, media_a, media_r) * stetsonK(curva, media_a, 'azul') / 0.798	
 
@@ -170,13 +153,14 @@ def skew (curva, banda='azul'):
 
 # Una sola banda
 def small_kurtosis(curva, banda='azul'):
-	curva = curva[banda]
-	n = len(curva.index)
-	media = curva['mag'].mean()
+	mag = curva[banda]['mag']
+	n = len(mag)
+	media = np.mean(mag)
+	var = np.var(mag)
 
 	suma = 0
 	for i in range(n):
-		suma += ((curva['mag'].iloc[i] - media) / curva['mag'].var())**4
+		suma += ((mag[i] - media) / var)**4
 
 	c1 = (n*(n + 1) / (n - 1)*(n - 2)*(n - 3))
 
@@ -184,39 +168,41 @@ def small_kurtosis(curva, banda='azul'):
 
 	return c1 * suma - c2
 
-
 def std(curva, banda='azul'):
 	curva = curva[banda]
 	return curva['mag'].std()
 
+# def beyond1_std(curva, banda='azul'):
 def beyond1_std(curva, banda='azul'):
-	curva = curva[banda]
-	n = len(curva.index)
+	mag = curva[banda]['mag']
+	n = len(mag)
 	
-	media = np.average(curva['mag'], weights=curva['err'])
+	media = np.average(mag, weights=curva[banda]['err'])
 
 	var = 0
-	for i in range(n):
-		var += ((curva['mag'].iloc[i]) - media)**2
+	for i in xrange(n):
+		var += ((mag[i]) - media)**2
 
 	std = np.sqrt( (1.0/(n-1)) * var )
 
 	frac = 0
 
-	for i in range(n):
-		punto = curva['mag'].iloc[i]
+	for i in xrange(n):
+		punto = mag[i]
 
 		if punto > media + std or punto < media - std:
 			frac += 1
 
 	return float(frac) / n
 
-def max_slope(curva, banda='azul'):
-	curva = curva[banda]
+def max_slope(curva, banda='azul'):	
+	mag = curva[banda]['mag']
 	max_slope = 0
 
-	for i in range(len(curva.index) - 1):
-		slope = float(curva['mag'].iloc[i+1] - curva['mag'].iloc[i]) / (curva.index.values[i+1] - curva.index.values[i])
+	index = curva.index.tolist()
+
+	for i in xrange(len(mag) - 1):
+		slope = float(mag[i+1] - mag[i]) / (index[i+1] - index[i])
 
 		if slope > max_slope:
 			max_slope = slope
@@ -229,13 +215,13 @@ def amplitude(curva, banda='azul'):
 	return curva['mag'].max() - curva['mag'].min()
 
 def median_abs_dev(curva, banda='azul'):
-	curva = curva[banda]
-	median = np.median(curva['mag'])
+	mag = curva[banda]['mag'].tolist()
+	median = np.median(mag)
 
 	devs = []
 
-	for i in range(len(curva.index)):
-		devs.append(abs(curva['mag'].iloc[i] - median))
+	for i in xrange(len(mag)):
+		devs.append(abs(mag[i] - median))
 
 	return np.median(devs)
 
