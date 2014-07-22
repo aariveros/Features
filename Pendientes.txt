@@ -8,13 +8,7 @@ Pendientes
 
 4. En graf_feature agregar opcion de si se quiere mostrar y/o guardar los graficos generados.
 
-5. Acelerar stetsonJ con operaciones vectoriales.
-
-6. Agregar cython a los metodos de las features
-
 7. a futuro se podria considerar la distancia al corte de los puntos. Nose si es buena idea, los arboles normales no lo hacen
-
-9. Probar otros tipos de indices
 
 11. Tengo que volver a samplear las features. Hay algunas curvas que samplee con el metodo antiguo que estan sampleadas 
 	muy pocas veces. 

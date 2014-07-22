@@ -9,6 +9,16 @@ from config import *
 
 import os
 
+def add_names( title, x_name, y_name):
+    if title:
+        plt.title(title) 
+
+    if x_name:
+        plt.xlabel(x_name)
+
+    if y_name:
+        plt.ylabel(y_name, rotation = 'horizontal', labelpad=20)
+
 def save_line(linea, p):
     with open(RESULTS_DIR_PATH + 'Resultados {0}.txt'.format(p), 'a') as f:
         f.write(linea + '\n')
@@ -21,6 +31,17 @@ def init_results_file(header, porcentajes = [20, 40, 60, 80, 100]):
         f.close()
 
 def save_lc(path, header, puntos, feat_values):
+    """ Guarda la evolucion de las features de una curva en un .txt
+
+    Parameters 
+    ----------
+
+    path: Nombre del archivo de la curva de luz.
+    header: String con el nombre de las features calculadas
+    puntos: Indice de los puntos para los que fueron calculadas las features
+    feat_values: Valores de las distintas features
+
+    """
     macho_id = get_lightcurve_id(path)
     class_name = get_lc_name(path)
 
@@ -33,7 +54,6 @@ def save_lc(path, header, puntos, feat_values):
                 linea = linea + ' ' + str(f[i])
 
             linea = linea.strip()
-            
             archivo.write(linea + '\n')
 
 
@@ -56,15 +76,8 @@ def graf_feature( x_values, y_values, title, comp_x_values, comp_y_values, num_g
     plt.plot( x_values,y_values, '.')
     # plt.axhline(y = y_values[-1], color = 'r')
 
+    add_names(title=title, x_name=None, y_name=Brillo)
 
-    # Labels
-    plt.title( title)
-    # plt.ylabel( 'Feature Value' )
-    plt.ylabel( 'Brillo', rotation = 'horizontal', horizontalalignment = 'right')
-    # plt.xlabel( "% of points")
-    
-
-    # Dimensiones
     # plt.xlim(0.0, 1.0)
     plt.xlim(x_values[0], x_values[len(x_values)-1])
     
@@ -80,16 +93,11 @@ def graf_feature( x_values, y_values, title, comp_x_values, comp_y_values, num_g
     plt.plot( comp_x_values, comp_y_values, '.')
     plt.axhline(y = comp_y_values[-1], color = 'r')
 
-    # Labels
-    # plt.ylabel( 'Stability' )
-    plt.ylabel( 'Valor descriptor', rotation = 'horizontal', horizontalalignment = 'right' )
-    # plt.ylim(0.0, 1.0)
-    # plt.xlabel( 'Curve percentage')
-    plt.xlabel( 'Porcentaje de curva')
+    add_names(x_name='Porcentaje de curva', y_name='Valor descriptor')
+
     plt.xlim(0.0, 1.0)
     plt.xlim(x_values[0], x_values[len(x_values)-1])
     
-
     # Guardo y/o muestro
     # plt.savefig(title+'.png')
     plt.show()
@@ -104,14 +112,10 @@ def graf_feature_progress( y_values, title ):
     plt.plot( x_values, y_values, '.')
     plt.axhline(y = y_values[-1], color = 'r')
 
-    # Labels
-    plt.title(title)
+    add_names(title, 'Curve percentage', 'Feature Value')
 
-    plt.ylabel( 'Feature Value', rotation = 'horizontal', horizontalalignment = 'right' )
-    # plt.ylim(0.0, 1.0)
-
-    plt.xlabel( 'Curve percentage')    
     plt.xlim(0.0, 1.0)
+    # plt.ylim(0.0, 1.0)
 
     #plt.xlim(x_values[0], x_values[len(x_values)-1])
 
@@ -148,10 +152,7 @@ def graf_lc_and_feature_progress( x_values, mag_values, feat_values, macho_id, c
     ###### Grafico curva de luz en la parte superior del grafico #######
     plt.plot( x_values, mag_values, '.')
 
-    # Labels
-    plt.title(macho_id + ' ' + feat_name)
-    plt.ylabel( 'Mag', rotation = 'horizontal', horizontalalignment = 'right')
-    plt.xlabel( "MJD")
+    add_names(macho_id + ' ' + feat_name, "MJD", 'Mag')
     
     # Dimensiones
     plt.xlim(x_values[0], x_values[-1])
@@ -171,11 +172,9 @@ def graf_lc_and_feature_progress( x_values, mag_values, feat_values, macho_id, c
     plt.plot( x_values, feat_values, '.')
     plt.axhline(y = feat_values[-1], color = 'r')
 
-    # Labels
-    plt.ylabel( 'Feature', rotation = 'horizontal', horizontalalignment = 'right' )
+    add_names(x_name='Curve percentage', y_name='Feature')
+     
     plt.ylim(-7.0, 7.0)
-
-    plt.xlabel( 'Curve percentage')    
     plt.xlim(0.0, 1.0)
 
     #plt.xlim(x_values[0], x_values[len(x_values)-1])

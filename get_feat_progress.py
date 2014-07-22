@@ -6,11 +6,11 @@ import lightcurves.features as ft
 import lightcurves.lc_IO as io
 
 
-# path = "lightcurves_paths/Be_lc.txt"
+path = "lightcurves_paths/Be_lc.txt"
 # path = "lightcurves_paths/CEPH.txt"
 # path = "lightcurves_paths/EB.txt"
 # path = "lightcurves_paths/longperiod_lc.txt"
-path = "lightcurves_paths/microlensing_lc.txt"
+# path = "lightcurves_paths/microlensing_lc.txt"
 # path = "lightcurves_paths/non_variables.txt"
 # path = "lightcurves_paths/quasar_lc.txt"
 # path = "lightcurves_paths/RRL.txt"

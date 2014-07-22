@@ -4,8 +4,9 @@ import numpy as np
 import pandas as pd
 import re
 
-from config import *
+import sys
 
+from config import *
 
 """
 fp: Absolute file path of the lightcurve file
@@ -87,14 +88,18 @@ def get_lc_band(fp):
         return "B"
 
 
-"""
- Recibe una curva de luz, y la retorna eliminando todos los puntos
- que se encuentran fuera de una cantidad errores promedio
- lc: dataframe de la curva de luz
- rango: rango de filtro, default 3 medias del error
- norm: si es true la curva se centra en 0, default false
-"""
+
 def filter_data( lc, rango = 3, norm = False ):
+    """ Recibe una curva de luz, y la retorna eliminando todos los puntos
+     que se encuentran fuera de una cantidad errores promedio
+
+     Parameters
+     ----------
+
+     lc: dataframe de la curva de luz
+     rango: rango de filtro, default 3 medias del error
+     norm: si es true la curva se centra en 0, default false
+    """
 
     [magnitud_media, error_medio] = lc.mean( axis = 0)
 
@@ -124,7 +129,10 @@ def feature_progress( lc, feature, percentage=1 ):
         
         aux = float(i*percentage)/len(lc.index)
         # x_values.append( aux )
-        print('Progress: ' + '{0:.2f}'.format(aux*100) + '%')    
+
+        # print('Progress: ' + '{0:.2f}'.format(aux*100) + '%')    
+        sys.stdout.write('Progress: ' + '{0:.2f}'.format(aux*100) + '%')
+        sys.stdout.flush()
 
         x_values.append(i*percentage)
 
