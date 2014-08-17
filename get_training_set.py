@@ -1,3 +1,5 @@
+# Crea un set de entrenamiento a partir del progreso de las distintas features
+
 import lightcurves.lc_utils as lu
 import lightcurves.lc_stats as st
 import pandas as pd

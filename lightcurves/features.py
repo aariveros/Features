@@ -3,47 +3,44 @@ import pandas as pd
 from scipy import stats
 
 """
-	Los siguientes metodos reciben todos un dataframe de una curva de luz
-	y retornan el valor de una feature particular.
+Los siguientes metodos reciben todos un dataframe de una curva de luz
+y retornan el valor de una feature particular.
 
-	Ahora, todas las features reciben ambas bandas, y un parametro que dice que banda utilizar, en caso
-	de que utilicen una sola. Por default se asume que se usa la banda azul
+Ahora, todas las features reciben ambas bandas, y un parametro que dice que banda utilizar, en caso
+de que utilicen una sola. Por default se asume que se usa la banda azul
 """
 
 # Usa una banda
-def var_index(curva, banda='azul'):
-	mag = curva[banda]['mag'].tolist()
-	return np.std(mag) / np.mean(mag)
+def var_index(X):
+	"""
+	X: arreglo de valores	
+	"""
+	return np.std(X) / np.mean(X)
 
 # Usa una banda
-def eta(curva, banda='azul'):
-	curva = curva[banda]
-	mag = curva['mag'].tolist()
+def eta(X):
 
-	n = len(curva)
+	n = len(X)
 
-	R = 1.0/((n - 1) * np.var(mag))
-
+	R = 1.0/((n - 1) * np.var(X))
 	nSum = 0
     
  	for i in xrange(n - 1):
- 		aux = mag[i+1] - mag[i] 
+ 		aux = X[i+1] - X[i] 
  		nSum += aux**2
 	
 	return R * nSum	
 
 # Usa una banda
-def con( curva, banda='azul' ):
-	curva = curva[banda]
-	n = len(curva.index)
+def con(X):
+	
+	n = len(X)
 	
 	if( n < 4 ):
 		return 0
 
-	mag = curva['mag']
-
-	mean = mag.mean()
-	std = mag.std()
+	mean = np.mean(X)
+	std = np.std(X)
 
 	minLimit = mean - 2*std
 	maxLimit = mean + 2*std
@@ -51,24 +48,24 @@ def con( curva, banda='azul' ):
 	count = 0;
 
 	for i in range( n - 2 ):
-		if( (mag.iloc[i] > maxLimit) or (mag.iloc[i] < minLimit) ):
-			if( (mag.iloc[i + 1] > maxLimit) or (mag.iloc[i + 1] < minLimit) ):
-				if( (mag.iloc[i + 2] > maxLimit) or (mag.iloc[i + 2] < minLimit) ):
+		if( (X[i] > maxLimit) or (X[i] < minLimit) ):
+			if( (X[i + 1] > maxLimit) or (X[i + 1] < minLimit) ):
+				if( (X[i + 2] > maxLimit) or (X[i + 2] < minLimit) ):
 					count += 1
 
 	return float(count) / (n - 2)
 
 
 # Usa una banda
-def cu_sum(curva, banda='azul'):
-	mag = curva[banda]['mag'].tolist()
-	n = len(mag)
-	media = np.mean(mag)
-	std = np.std(mag)
+def cu_sum(X):
+	
+	n = len(X)
+	media = np.mean(X)
+	std = np.std(X)
 	
 	partial_sums = []
 
-	aux = mag[0] - media
+	aux = X[0] - media
 	minimo = aux
 	maximo = minimo
 	partial_sums.append(aux)
@@ -76,7 +73,7 @@ def cu_sum(curva, banda='azul'):
 	m = 1/( n * std )
 
 	for i in xrange(0,n-1):
-		aux = partial_sums[i] + (mag[i] - media)
+		aux = partial_sums[i] + (X[i] - media)
 		partial_sums.append(aux)
 
 		aux = m * aux
@@ -88,56 +85,49 @@ def cu_sum(curva, banda='azul'):
 	return maximo - minimo
 
 # Recibe ambas bandas de la curva
-def B_R( curva ):
-	return curva['azul']['mag'].mean() - curva['roja']['mag'].mean()
-
-# Ambas bandas
-def stetsonL( curva ):
-	media_a, media_r = curva['azul']['mag'].mean(), curva['roja']['mag'].mean() 
-	return stetsonJ(curva, media_a, media_r) * stetsonK(curva, media_a, 'azul') / 0.798	
+def B_R( X_azul, X_roja ):
+	return np.mean(X_azul) - np.mean(X_roja)
 
 
 # Ambas bandas
-def stetsonJ( curva, media_a = None, media_r = None ):
-	azul_mag = curva['azul']['mag'].tolist()
-	azul_err = curva['azul']['err'].tolist()
+def stetsonL( X_azul, err_azul, X_roja, err_roja ):
+	media_a, media_r = np.mean(X_azul), np.mean(X_roja)
+	
+	return stetsonJ(X_azul, err_azul, X_roja, err_roja, media_a, media_r) * stetsonK(X_azul, err_azul, media_a) / 0.798	
 
-	roja_mag = curva['roja']['mag'].tolist()
-	roja_err = curva['roja']['err'].tolist()
+
+# Ambas bandas
+def stetsonJ( X_azul, err_azul, X_roja, err_roja, media_a = None, media_r = None ):
 
 	# Agrego esta linea para cuando se usa esta funcion sola como feature
 	if media_a == None or media_r == None:
-		media_a, media_r = np.mean(azul_mag), np.mean(roja_mag)
+		media_a, media_r = np.mean(X_azul), np.mean(X_roja)
 
-	n = len(azul_mag)
+	n = len(X_azul)
 	suma = 0
 	for i in range(n):
-		p_i = delta(azul_mag, azul_err, i, media_a) * delta(roja_mag, roja_err, i, media_r)
+		p_i = delta(X_azul, err_azul, i, media_a) * delta(X_roja, err_roja, i, media_r)
 		suma += (np.sign(p_i) * np.sqrt(abs(p_i)))
 	
 	return (1.0/n)*suma
 
 # Una sola banda
-def stetsonK( curva, media=None, banda='azul'):
-	
-	mag = curva[banda]['mag'].tolist()
-	err = curva[banda]['err'].tolist()
+def stetsonK( X, err, media=None):
 
 	if media == None:
-		media = np.mean(mag)
+		media = np.mean(X)
 
-	n = len(mag)
+	n = len(X)
 
 	num = 0
 	den = 0
 
 	for i in range(n):
-		aux = delta(mag, err, i, media)
+		aux = delta(X, err, i, media)
 		num += abs(aux)
 		den += aux**2
 
 	return (1/np.sqrt(n)) * num / np.sqrt(den)
-
 
 
 # Recibe una sola banda
@@ -147,37 +137,31 @@ def delta( mag, err, pos, media ):
 	return aux * ( (mag[pos] - media) / err[pos])
 
 # Una sola banda
-def skew (curva, banda='azul'):
-	curva = curva[banda]
-	return stats.skew(curva['mag'])
+def skew (X):
+	return stats.skew(X)
 
 # Una sola banda
-def small_kurtosis(curva, banda='azul'):
-	mag = curva[banda]['mag']
-	n = len(mag)
+def small_kurtosis(mag):
+	n = float(len(mag))
 	media = np.mean(mag)
-	var = np.var(mag)
+	std = np.std(mag)
 
 	suma = 0
-	for i in range(n):
-		suma += ((mag[i] - media) / var)**4
+	for i in range(int(n)):
+		suma += ((mag[i] - media) / std)**4
 
-	c1 = (n*(n + 1) / (n - 1)*(n - 2)*(n - 3))
+	c1 = n*(n + 1) / ((n - 1)*(n - 2)*(n - 3))
 
-	c2 = 3 * (n - 1)**2 / (n-2)*(n-3)
+	c2 = 3 * (n - 1)**2 / ((n-2)*(n-3))
 
 	return c1 * suma - c2
 
-def std(curva, banda='azul'):
-	curva = curva[banda]
-	return curva['mag'].std()
+def std(X):
+	return np.std(X)
 
-# def beyond1_std(curva, banda='azul'):
-def beyond1_std(curva, banda='azul'):
-	mag = curva[banda]['mag']
+def beyond1_std(mag, err):
 	n = len(mag)
-	
-	media = np.average(mag, weights=curva[banda]['err'])
+	media = np.average(mag, weights= 1 / np.array(err)**2)
 
 	var = 0
 	for i in xrange(n):
@@ -195,11 +179,11 @@ def beyond1_std(curva, banda='azul'):
 
 	return float(frac) / n
 
-def max_slope(curva, banda='azul'):	
-	mag = curva[banda]['mag']
+# Recibe un array de magnitudes y uno con el tiempo de las mediciones
+def max_slope(mag, t_obs):	
 	max_slope = 0
 
-	index = curva.index.tolist()
+	index = t_obs
 
 	for i in xrange(len(mag) - 1):
 		slope = float(mag[i+1] - mag[i]) / (index[i+1] - index[i])
@@ -209,13 +193,10 @@ def max_slope(curva, banda='azul'):
 
 	return max_slope
 
+def amplitude(mag):
+	return (max(mag) - min(mag)) / 2
 
-def amplitude(curva, banda='azul'):
-	curva = curva[banda]
-	return curva['mag'].max() - curva['mag'].min()
-
-def median_abs_dev(curva, banda='azul'):
-	mag = curva[banda]['mag'].tolist()
+def median_abs_dev(mag):
 	median = np.median(mag)
 
 	devs = []
@@ -225,98 +206,6 @@ def median_abs_dev(curva, banda='azul'):
 
 	return np.median(devs)
 
-
-def period( curva, banda='azul' ):
-	curva = curva[banda]
-
-	t = np.array(curva['mjd'])[np.newaxis]
-	h = np.array(curva['mag'])   
-
-	mean = np.mean(h)
-	variance = np.std(h)
-
-	N = len(h);
-	T = np.amax(t) - np.amin(t)
-
-	hifac = 10
-
-	f = np.transpose(np.arange(4/T,hifac*N/(2*T),1/T))
-
-	w = np.array(2*np.pi*f);
-
-	tau = np.divide(np.arctan2(sum(np.sin(2*w*t.T),0), sum(np.cos(2*w*t.T),0)), 2*w)
-
-	cterm = np.cos(w*t.T - np.tile(w*tau,(1,len(t)))).T
-	sterm = np.sin(w*t.T - np.tile(w*tau,(1,len(t)))).T
-
-	P = (np.divide(np.square(sum(np.inner(cterm,np.diag(h-mean)),1)), sum(np.square(cterm),1)) + np.divide(np.square(sum(np.inner(sterm,np.diag(h-mean)),1)), sum(np.square(sterm),1)))/(2*variance)
-	
-	return 1/f[P.argmax()]
-
-
-# Estas features estan mal hechas. Tienen que entrenarse con un set de curvas de luz
-# clasificadas para poder usarse
-
-
-def nAbove4( curva ):
-	x_values, y_values = complete_ac( curva )
-
-	desviacion = np.std(y_values)
-	pass
-
-def nBelow4( curva ):
-	pass
-
-# Recibe una sola banda
-def stetsonK_ac( curva ):
-
-	x_values, y_values = complete_ac( curva )
-	desviaciones = []
-	for i in range( len(y_values)):
-		desviaciones.append( np.std(y_values[0:i+1]))
-
-	d = {'mag':  pd.Series(y_values), 'err': pd.Series(desviaciones)}
-	df = pd.DataFrame(d)
-	df['err'].iloc[0] = curva['err'].mean()
-	# df['err'].iloc[1] = curva['err'].mean()
-
-	# return stetsonK( y_values, np.mean(y_values))
-	return stetsonK( df, df['mag'].mean())
-
-"""
- Calcula la funcion de autocorrelacion, para una serie de puntos (curva),
- con parametro time_lag.
-"""
-
-def auto_correlation( curva, time_lag, media, var ):
-	n = len( curva.index )
-	# media = curva['mag'].mean()
-	# var = curva['mag'].var()
-	c = 1.0/((n - time_lag)*var)
-
-	suma = 0
-	for i in range( n - time_lag ):
-		suma += (curva['mag'].iloc[i] - media) * (curva['mag'].iloc[i + time_lag] - media)
-
-	return c * suma
-
-"""
- Calcula la funcion de autocorrelacion, para todos los posibles time_lags retornando
- en una lista los valores AC y los time lags. 
-"""
-
-def complete_ac( curva ):
-	y_values = []
-	x_values = []
-	n = len(curva.index)
-	media = curva['mag'].mean()
-	var = curva['mag'].var()
-
-	for i in range(n - 1):
-		x_values.append(i)
-		y_values.append(auto_correlation(curva, i, media, var))
-
-	return x_values, y_values
   
 
 

@@ -8,6 +8,41 @@ import sys
 
 from config import *
 
+import random
+
+def prepare_lightcurve(curva, n_sampled_points):
+    t_obs = np.array(curva.index.reshape(len(curva.index),1))
+    t_obs = (t_obs - np.mean(t_obs)) / np.std(t_obs)
+
+    # Array con los brillos normalizados
+    y_obs = curva['mag'].reshape(len(curva.index), 1)
+    y_obs = (y_obs - np.mean(y_obs)) / np.std(y_obs)
+
+    # Array con los errores de las mediciones normalizados segun las observaciones
+    # No tiene sentido centrar los errores
+    err_obs = curva['err'].reshape(len(curva.index), 1)
+    err_obs = err_obs / curva['mag'].std()
+
+    min_time = np.min(t_obs)
+    max_time = np.max(t_obs)
+
+    # Tomo una muestra aleatoria de puntos de la curva de luz (como?)
+    random.seed(1)
+    rand_indices = random.sample(range(0,np.max(np.shape(t_obs))),n_sampled_points)
+    rand_indices.sort()
+
+    t_obs = t_obs[rand_indices]
+    y_obs = y_obs[rand_indices]
+    err_obs = err_obs[rand_indices]
+
+    # Transformo a matriz
+    t_obs = np.asmatrix(t_obs)
+    y_obs = np.asmatrix(y_obs)
+    err_obs = np.asmatrix(err_obs)
+
+    return t_obs, y_obs, err_obs, min_time, max_time
+
+
 """
 fp: Absolute file path of the lightcurve file
 """
@@ -67,6 +102,26 @@ def get_lc_class(fp):
     elif "RRL" in fp:
         return 9
     return 0
+
+def get_lc_class_name(fp):
+    if "Be_lc" in fp:
+        return "Be_lc"
+    elif "CEPH" in fp:
+        return "CEPH"
+    elif "EB" in fp:
+        return "EB"
+    elif "longperiod_lc" in fp:
+        return "longperiod_lc"
+    elif "microlensing_lc" in fp:
+        return "microlensing_lc"
+    elif "non_variables" in fp:
+        return "non_variables"
+    elif "quasar_lc" in fp:
+        return "quasar_lc"
+    elif "RRL" in fp:
+        return "RRL"
+    else:
+        return '0'    
 
 """
  Retorna el nombre de la clase de la estrella
