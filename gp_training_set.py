@@ -199,4 +199,5 @@ def main():
 		archivo.write(linea)
 		archivo.close()
 
-		break
+if __name__ == '__main__':
+	main()
