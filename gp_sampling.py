@@ -7,6 +7,10 @@ import random
 
 def sample_LC(X, y, k, sigmas, x):
     """
+    Takes a set of observerd data (X, y), and a covariance function k
+    and returns a sample taken from the Gaussian Process, defined by 
+    that data.
+
     X: inputs vector with the location of the observed data
     y: vector with the observed values of f(x)
     k: covariance function
