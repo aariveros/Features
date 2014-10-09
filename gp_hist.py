@@ -1,7 +1,6 @@
 import matplotlib.pyplot as plt
 import numpy as np
 import matplotlib.mlab as mlab
-import pylab as pl
 
 def graf_hist(values, real, naive, feature_name):
 	mean = np.mean(values)

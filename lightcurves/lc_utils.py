@@ -11,6 +11,13 @@ from config import *
 import random
 
 def prepare_lightcurve(curva, n_sampled_points):
+    """Toma una curva y la procesa para poder ocuparla en un GP.
+
+    parameters
+    ----------
+    curva: pandas dataframe -> [index: mjd][col: mag]
+    n_sampled_points: cantidad de puntos de la curva que se van a ocupar
+    """
     t_obs = np.array(curva.index.reshape(len(curva.index),1))
     t_obs = (t_obs - np.mean(t_obs)) / np.std(t_obs)
 
@@ -42,7 +49,7 @@ def prepare_lightcurve(curva, n_sampled_points):
 
     return t_obs, y_obs, err_obs, min_time, max_time
 
-def graf_gp_fit(X, y, X_pred, y_pred, sigma):
+def graf_gp_fit(X, y, x_pred, y_pred, sigma):
     """Graf an adjusted gaussian process model over a set of points.
     
     parameters
@@ -59,7 +66,7 @@ def graf_gp_fit(X, y, X_pred, y_pred, sigma):
     X2 = (X2.T).ravel()
     plt.plot(X2,y,'.r')
     
-    # Grafico la regresión ajustada
+    # Grafico la regresion ajustada
     X3 = np.array(x_pred)
     X3 = X3.ravel()
     plt.plot(X3, y_pred, 'b-', label=u'Prediction')
