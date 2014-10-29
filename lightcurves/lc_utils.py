@@ -18,7 +18,7 @@ def prepare_lightcurve(curva, n_sampled_points):
     curva: pandas dataframe -> [index: mjd][col: mag]
     n_sampled_points: cantidad de puntos de la curva que se van a ocupar
     """
-    t_obs = np.array(curva.index.reshape(len(curva.index),1))
+    t_obs = np.array(curva.index).reshape(len(curva.index),1)
     t_obs = (t_obs - np.mean(t_obs)) / np.std(t_obs)
 
     # Array con los brillos normalizados

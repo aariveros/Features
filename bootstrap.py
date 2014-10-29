@@ -1,5 +1,6 @@
 import pandas as pd
 import matplotlib.pyplot as plt
+import matplotlib.mlab as mlab
 import lightcurves.lc_utils as lu
 import numpy as np
 import random
@@ -71,7 +72,15 @@ for lc in samples:
 aux = pd.DataFrame(bootstrap_values, columns=lista)
 
 plt.figure()
-n, bins, patches = plt.hist(aux['StestonK'].tolist(), 25, normed=1, histtype='bar', color = 'b', alpha=0.6)
-plt.axvline(x= real_values['StestonK'], color = 'r', label=u'Real value')
+f_name = 'Skew'
+
+values = aux[f_name].tolist()
+mean = np.mean(values)
+std = np.std(values)
+x = np.linspace(mean - 4*std,mean +4*std,100)
+plt.plot(x,mlab.normpdf(x,mean,std), 'k--')
+
+n, bins, patches = plt.hist(values, 60, normed=1, histtype='bar', color = 'b', alpha=0.6)
+plt.axvline(x= real_values[f_name], color = 'r', label=u'Real value')
 plt.show()
 plt.close()
