@@ -10,7 +10,23 @@ from config import *
 
 import random
 
-def prepare_lightcurve(curva, n_sampled_points):
+def has_both_bands(lc_path, allpaths=LC_FILE_PATH):
+    """
+    lc_path: path de una curva
+    all_paths: path de el archivo la direcciond e las curvas
+    """
+    
+    if not 'B.mjd' in lc_path:
+        return False
+    
+    red = lc_path.replace('B.mjd', 'R.mjd')
+    
+    if not red in all_paths:
+        return False
+    return True
+
+
+def prepare_lightcurve(curva, n_sampled_points=None):
     """Toma una curva y la procesa para poder ocuparla en un GP.
 
     parameters
@@ -34,13 +50,14 @@ def prepare_lightcurve(curva, n_sampled_points):
     max_time = np.max(t_obs)
 
     # Tomo una muestra aleatoria de puntos de la curva de luz (como?)
-    random.seed(1)
-    rand_indices = random.sample(range(0,np.max(np.shape(t_obs))),n_sampled_points)
-    rand_indices.sort()
+    if not (n_sampled_points is None):
+        random.seed(1)
+        rand_indices = random.sample(range(0,np.max(np.shape(t_obs))),n_sampled_points)
+        rand_indices.sort()
 
-    t_obs = t_obs[rand_indices]
-    y_obs = y_obs[rand_indices]
-    err_obs = err_obs[rand_indices]
+        t_obs = t_obs[rand_indices]
+        y_obs = y_obs[rand_indices]
+        err_obs = err_obs[rand_indices]
 
     # Transformo a matriz
     t_obs = np.asmatrix(t_obs)
@@ -145,28 +162,28 @@ def get_lc_class(fp):
         return 9
     return 0
 
+# def get_lc_class_name(fp):
+#     if "Be_lc" in fp:
+#         return "Be_lc"
+#     elif "CEPH" in fp:
+#         return "CEPH"
+#     elif "EB" in fp:
+#         return "EB"
+#     elif "longperiod_lc" in fp:
+#         return "longperiod_lc"
+#     elif "microlensing_lc" in fp:
+#         return "microlensing_lc"
+#     elif "non_variables" in fp:
+#         return "non_variables"
+#     elif "quasar_lc" in fp:
+#         return "quasar_lc"
+#     elif "RRL" in fp:
+#         return "RRL"
+#     else:
+#         return '0'    
+
+
 def get_lc_class_name(fp):
-    if "Be_lc" in fp:
-        return "Be_lc"
-    elif "CEPH" in fp:
-        return "CEPH"
-    elif "EB" in fp:
-        return "EB"
-    elif "longperiod_lc" in fp:
-        return "longperiod_lc"
-    elif "microlensing_lc" in fp:
-        return "microlensing_lc"
-    elif "non_variables" in fp:
-        return "non_variables"
-    elif "quasar_lc" in fp:
-        return "quasar_lc"
-    elif "RRL" in fp:
-        return "RRL"
-    else:
-        return '0'    
-
-
-def get_lc_name(fp):
     """
      Retorna el nombre de la clase de la estrella
     """

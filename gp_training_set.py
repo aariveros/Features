@@ -1,12 +1,22 @@
 # Este script ajusta un gp sobre cada curva de la base de datos. 
-# Luego samplea un grupo de curvas de ese gp calcula un set de features para esas curvas
-# Y a partir de los valores resultantes genera una distribucion gaussiana.
+# Los parametros del GP son elegidos arbitrariamente
+# Para cada curva se guarda el valor de las features calculadas para cada muestra en un txt separado
 
 # --------------------------------------------------------------------------
-from sklearn.gaussian_process import GaussianProcess
 import lightcurves.lc_utils as lu
+import matplotlib.pyplot as plt
 import pandas as pd
 import numpy as np
+import george
+from george import kernels
+import os, sys
+
+lib_path = os.path.abspath('../time-series-feats')
+sys.path.append(lib_path)
+from Feature import FeatureSpace
+
+import time
+import datetime
 
 # Ubicacion de las curvas
 # 0-1           Be_lc
@@ -18,186 +28,81 @@ import numpy as np
 # 12527-12528   quasar_lc
 # 12645-12646   RRL
 
-def main():
-	feature_values = {
-		'var_index': [],
-		'eta': [],
-		'CuSum': [],
-		'B-R': [],
-		'StetsonL': [],
-		'StetsonJ': [],
-		'StetsonK': [],
-		'Skew': [],
-		'small_kurtosis': [],
-		'std': [],
-		'beyond1_std': [],
-		'max_slope': [],
-		'amplitude': [],
-		'median_abs_dev': [],
-	}
 
+paths = lu.get_lightcurve_paths()
 
-	header = ''
-	for f in feature_values.keys():
-		header = header + f + '.l,' + f + '.mean,' + f + '.r,' + f + '.std,' 
+for i in range(len(paths)):
+    start_time = time.time()
+    path = paths[i]
 
-	header = header + 'weight,class\n'
+    # Para descartar algunas curvas
+    if not 'B.mjd' in path:
+        continue
 
-	archivo = open('gp_set.txt', 'w')
-	archivo.write(header)
-	archivo.close()
+    if i in range(2862, 3862):
+        continue
 
+    print 'Curva: ' + lu.get_lightcurve_id(path)
 
+    azul = lu.open_lightcurve(paths[i])
+    total_days = azul.index[-1] - azul.index[0]
 
-	# --------------------------------------------------------------------------
-	# Abro la curva y la corto a un porcentaje dado
-	paths_azules, paths_rojas = lu.get_lightcurve_paths( separate_bands=True)
+    if len(azul.index) < 500:
+        continue
 
-	paths_azules = paths_azules[300:]
+    # Preparo la curva para alimentar el GP
+    t_obs, y_obs, err_obs, min_time, max_time = lu.prepare_lightcurve(azul, 500)
+    t_obs = np.ravel(t_obs)
+    y_obs = np.ravel(y_obs)
+    err_obs = np.ravel(err_obs)
 
-	for path_azul in paths_azules:
+    # Preparo GP
+    var = np.var(y_obs)
+    l = 6 * (max_time - min_time) / float(total_days)   # son 6 dias segun lo observado en otros ajustes
+    kernel = var**2 * kernels.ExpSquaredKernel(l**2)
 
-		# para asegurarme de que sean las misma curva
-		path_roja = path_azul.replace('.B.', '.R.')
+    gp = george.GP(kernel, mean=np.mean(y_obs))
+    gp.compute(t_obs, yerr=err_obs)
+    
+    # Sampleo curvas del GP
+    sys.stdout.write('Sampleando curvas...')
+    sys.stdout.flush()
+    sys.stdout.write('\r')
+    sys.stdout.flush()
 
-		azul = lu.open_lightcurve(path_azul)
-		try:
-			roja = lu.open_lightcurve(path_roja)
-		except:
-			continue
+    samples = []
+    x = np.linspace(min_time, max_time, 500)
 
-		curva = pd.concat([azul, roja], axis=1, keys=['azul', 'roja'], join='inner')
-		clase = lu.get_lc_class_name(path_azul)
+    for s in xrange(100):
+        # sampleo del modelo sobre la curva original
+        m = gp.sample_conditional(y_obs , t_obs)
 
-		if len(curva.index) < 210:
-			continue	
+        # hago una prediccion para obtener la std de la curva sampleada
+        mu, cov = gp.predict(m, x)
+        sigma = np.sqrt(np.diag(cov))
+        samples.append((m, sigma))
 
-		# --------------------------------------------------------------------------
-		# percentage = 0.5
+    # Calculo algunas features para el grupo de muestras
+    sys.stdout.write('Calculando Features...')
+    sys.stdout.flush()
+    sys.stdout.write('\r')
+    sys.stdout.flush()
 
-		mediana = np.median(curva.index)
-		curva = curva.loc[curva.index[0]:mediana]
+    feature_names = ['Amplitude', 'Beyond1Std', 'Con', 'MaxSlope', 'MedianAbsDev', 'MedianBRP', 'PairSlopeTrend', 'Rcs', 'Skew', 'SmallKurtosis', 'Std', 'StestonK', 'VariabilityIndex', 'meanvariance']
+    feature_values = []
 
-		a = min(curva.index)
-		b = max(curva.index)
+    for s in samples:
+        fs = FeatureSpace(featureList=feature_names, Beyond1Std=s[1], MaxSlope=x)
+        fs = fs.calculateFeature(s[0])
+        feature_values.append( map(lambda x: float("{0:.5f}".format(x)),fs.result(method='')) )
 
-		percentage = (mediana - a) / (b - a)
-		extra_time = 1.0 - percentage
+    # Escribo los resultados en un archivo especial para cada curva original
+    lc_class = lu.get_lc_class_name(path)
+    macho_id = lu.get_lightcurve_id(path)
+    file_path = 'GP Samples/' + lc_class + '/' + macho_id + '.txt'
 
-		if len(curva.index) < 101:
-			continue	
+    df = pd.DataFrame(feature_values, columns = feature_names)
+    df.to_csv(file_path, index=False)
 
-
-		# --------------------------------------------------------------------------
-		# Preparo la curva de luz para el ajuste del GP
-		n_sampled_points = 100
-
-		t_obs_b, y_obs_b, err_obs_b, min_time_b, max_time_b = lu.prepare_lightcurve(curva['azul'], n_sampled_points)
-		t_obs_r, y_obs_r, err_obs_r, min_time_r, max_time_r = lu.prepare_lightcurve(curva['roja'], n_sampled_points)
-
-
-		# --------------------------------------------------------------------------
-		# Ajusto dos GP tomando como error el que viene con las mediciones de las curvas
-		dy = np.array(err_obs_b.T)[0]
-		X_b = t_obs_b
-		y_b = np.array(y_obs_b.T)[0]
-
-		# Mesh the input space for evaluations of the real function, the prediction and its MSE
-		# Instanciate a Gaussian Process model
-		gp_b = GaussianProcess(corr='squared_exponential', theta0=1e-1,
-		                     thetaL=1e-3, thetaU=1,
-		                     nugget=(dy/(y_b + 0.0001))**2,
-		                     random_start=100)
-
-		dy = np.array(err_obs_r.T)[0]
-		X_r = t_obs_r
-		y_r = np.array(y_obs_r.T)[0]
-
-		gp_r = GaussianProcess(corr='squared_exponential', theta0=1e-1,
-		                     thetaL=1e-3, thetaU=1,
-		                     nugget=(dy/(y_r + 0.0001))**2,
-		                     random_start=100)
-
-		# Fit to data using Maximum Likelihood Estimation of the parameters
-		gp_b = gp_b.fit(X_b, y_b)
-		gp_r = gp_r.fit(X_r, y_r)
-
-
-		# --------------------------------------------------------------------------
-		# Tomo curvas muestreadas del GP ajustado anteriormente
-
-		number_of_sampled_curves = 100
-		num_locs = n_sampled_points
-
-		np.random.seed(1)
-
-		feature_values = {
-			'var_index': [],
-			'eta': [],
-			'CuSum': [],
-			'B-R': [],
-			'StetsonL': [],
-			'StetsonJ': [],
-			'StetsonK': [],
-			'Skew': [],
-			'small_kurtosis': [],
-			'std': [],
-			'beyond1_std': [],
-			'max_slope': [],
-			'amplitude': [],
-			'median_abs_dev': [],
-		}
-
-		for i in xrange(number_of_sampled_curves):
-
-			x_pred = np.asmatrix(np.linspace(min_time_b,max_time_b + extra_time,num_locs)).T
-			y_pred, MSE = gp_b.predict(x_pred, eval_MSE=True)
-			
-			sigma_b = np.sqrt(MSE)
-			aux_b = np.random.normal(y_pred, sigma_b)
-
-			x_pred = np.asmatrix(np.linspace(min_time_r,max_time_r + extra_time,num_locs)).T
-			y_pred, MSE = gp_r.predict(x_pred, eval_MSE=True)
-
-			sigma_r = np.sqrt(MSE)
-			aux_r = np.random.normal(y_pred, sigma_r)
-
-			# Para cada feature calculo su valor y lo agrego a una lista
-			import lightcurves.features as ft
-			feature_values['var_index'].append(ft.var_index(aux_b))
-			feature_values['eta'].append(ft.eta(aux_b))
-			feature_values['CuSum'].append(ft.cu_sum(aux_b))
-			feature_values['B-R'].append(ft.B_R(aux_b, aux_r))
-			feature_values['StetsonL'].append(ft.stetsonL(aux_b, sigma_b, aux_r, sigma_r))
-			feature_values['StetsonJ'].append(ft.stetsonJ(aux_b, sigma_b, aux_r, sigma_r))
-			feature_values['StetsonK'].append(ft.stetsonK(aux_b, sigma_b))
-			feature_values['Skew'].append(ft.skew(aux_b))
-			feature_values['small_kurtosis'].append(ft.small_kurtosis(aux_b))
-			feature_values['std'].append(ft.std(aux_b))
-			feature_values['beyond1_std'].append(ft.beyond1_std(aux_b, sigma_b))
-			feature_values['max_slope'].append(ft.max_slope(aux_b, x_pred))
-			feature_values['amplitude'].append(ft.amplitude(aux_b))
-			feature_values['median_abs_dev'].append(ft.median_abs_dev(aux_b))
-
-
-		# --------------------------------------------------------------------------
-		# Calculo la media, std, l y r. Despues escribo una linea en el archivo del set de entrenamiento 
-		linea = ''
-
-		for f in feature_values.keys():
-			media = np.mean(feature_values[f])
-			std = np.std(feature_values[f])
-			l = media - 3 * std
-			r = media + 3 * std
-
-			linea = linea + str(l) + ',' + str(media) + ',' + str(r) + ',' + str(std) + ','
-
-		linea = linea + '1.0' + ',' + clase + '\n'
-
-		# Escribir linea
-		archivo = open('gp_set.txt', 'a')
-		archivo.write(linea)
-		archivo.close()
-
-if __name__ == '__main__':
-	main()
+    end_time = time.time()
+    print 'Tiempo tomado por curva: ' + str(datetime.timedelta(0,end_time - start_time))
