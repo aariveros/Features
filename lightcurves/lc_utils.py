@@ -13,7 +13,7 @@ import random
 def has_both_bands(lc_path, allpaths=LC_FILE_PATH):
     """
     lc_path: path de una curva
-    all_paths: path de el archivo la direcciond e las curvas
+    all_paths: path de el archivo la direccion de las curvas
     """
     
     if not 'B.mjd' in lc_path:
@@ -162,34 +162,34 @@ def get_lc_class(fp):
         return 9
     return 0
 
-# def get_lc_class_name(fp):
-#     if "Be_lc" in fp:
-#         return "Be_lc"
-#     elif "CEPH" in fp:
-#         return "CEPH"
-#     elif "EB" in fp:
-#         return "EB"
-#     elif "longperiod_lc" in fp:
-#         return "longperiod_lc"
-#     elif "microlensing_lc" in fp:
-#         return "microlensing_lc"
-#     elif "non_variables" in fp:
-#         return "non_variables"
-#     elif "quasar_lc" in fp:
-#         return "quasar_lc"
-#     elif "RRL" in fp:
-#         return "RRL"
-#     else:
-#         return '0'    
-
-
 def get_lc_class_name(fp):
-    """
-     Retorna el nombre de la clase de la estrella
-    """
-    # /Users/npcastro/Dropbox/Tesis/lightcurves/Be_lc/lc_1.3567.1310.B.mjd
-    pattern = re.compile('lightcurves/.*/')
-    return pattern.search(fp).group().split('/')[1]
+    if "Be_lc" in fp:
+        return "Be_lc"
+    elif "CEPH" in fp:
+        return "CEPH"
+    elif "EB" in fp:
+        return "EB"
+    elif "longperiod_lc" in fp:
+        return "longperiod_lc"
+    elif "microlensing_lc" in fp:
+        return "microlensing_lc"
+    elif "non_variables" in fp:
+        return "non_variables"
+    elif "quasar_lc" in fp:
+        return "quasar_lc"
+    elif "RRL" in fp:
+        return "RRL"
+    else:
+        return '0'    
+
+
+# def get_lc_class_name(fp):
+#     """
+#      Retorna el nombre de la clase de la estrella
+#     """
+#     # /Users/npcastro/Dropbox/Tesis/lightcurves/Be_lc/lc_1.3567.1310.B.mjd
+#     pattern = re.compile('lightcurves/.*/')
+#     return pattern.search(fp).group().split('/')[1]
 
 def get_lc_band(fp):
     """
