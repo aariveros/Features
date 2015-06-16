@@ -31,7 +31,7 @@ def prepare_lightcurve(curva, n_sampled_points=None):
 
     parameters
     ----------
-    curva: pandas dataframe -> [index: mjd][col: mag]
+    curva: pandas dataframe -> [index: mjd][col: mag, err]
     n_sampled_points: cantidad de puntos de la curva que se van a ocupar
     """
     t_obs = np.array(curva.index).reshape(len(curva.index),1)
@@ -43,6 +43,7 @@ def prepare_lightcurve(curva, n_sampled_points=None):
 
     # Array con los errores de las mediciones normalizados segun las observaciones
     # No tiene sentido centrar los errores
+    # Pero hay que normalizarlos igual que a la magnitud
     err_obs = curva['err'].reshape(len(curva.index), 1)
     err_obs = err_obs / curva['mag'].std()
 

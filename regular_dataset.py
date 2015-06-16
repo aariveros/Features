@@ -4,11 +4,14 @@
 import lightcurves.lc_utils as lu
 import pandas as pd
 import numpy as np
-import os, sys
+import sys
+# import os
 
-lib_path = os.path.abspath('../time-series-feats')
-sys.path.append(lib_path)
-from Feature import FeatureSpace
+# lib_path = os.path.abspath('../time-series-feats')
+# sys.path.append(lib_path)
+# from Feature import FeatureSpace
+
+import FATS
 
 
 # Ubicacion de las curvas
@@ -24,6 +27,8 @@ from Feature import FeatureSpace
 paths = lu.get_lightcurve_paths()
 n_points = 300
 feature_values = []
+
+paths = paths[0:100]
 
 for i in range(len(paths)):
     try:
@@ -60,9 +65,9 @@ for i in range(len(paths)):
         sys.stdout.write('\r')
         sys.stdout.flush()
 
-        feature_names = ['Amplitude', 'Beyond1Std', 'Con', 'MaxSlope', 'MedianAbsDev', 'MedianBRP', 'PairSlopeTrend', 'Rcs', 'Skew', 'SmallKurtosis', 'Std', 'StetsonK', 'Eta_e', 'Meanvariance']
+        feature_names = ['Amplitude', 'Con', 'MedianAbsDev', 'MedianBRP', 'PairSlopeTrend', 'Rcs', 'Skew', 'SmallKurtosis', 'Std', 'StetsonK', 'Eta_e', 'Meanvariance']
 
-        fs = FeatureSpace(featureList=feature_names, Beyond1Std=err_obs, MaxSlope=t_obs, Eta_e=t_obs)
+        fs = FATS.FeatureSpace(featureList=feature_names)
         fs = fs.calculateFeature(y_obs)
 
         clase = lu.get_lc_class_name(path)
@@ -70,6 +75,7 @@ for i in range(len(paths)):
         valores.append(clase)
 
         feature_values.append(valores)
+
     except KeyboardInterrupt:
         raise
     except:
