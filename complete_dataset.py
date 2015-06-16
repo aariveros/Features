@@ -47,7 +47,9 @@ for i in range(len(paths)):
         t_obs2, y_obs2, err_obs2 = roja.index, roja.mag.tolist(), roja.err.tolist()
 
 
-        feature_names = ['Amplitude', 'Beyond1Std', 'Con', 'MaxSlope', 'MedianAbsDev', 'MedianBRP', 'PairSlopeTrend', 'Rcs', 'Skew', 'SmallKurtosis', 'Std', 'StetsonK', 'Eta_e', 'Meanvariance']
+        feature_names = ['Amplitude', 'Con', 'MaxSlope', 'MedianAbsDev', 'MedianBRP',
+                         'PairSlopeTrend', 'Rcs', 'Skew', 'SmallKurtosis', 'Std', 'StetsonK',
+                         'Eta_e', 'Meanvariance']
 
-        fs = FeatureSpace(Beyond1Std=err_obs, MaxSlope=t_obs, Eta_e=t_obs)
+        fs = FeatureSpace(featureList=feature_names, Beyond1Std=err_obs, MaxSlope=t_obs, Eta_e=t_obs)
         fs = fs.calculateFeature(y_obs)
