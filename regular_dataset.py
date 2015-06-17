@@ -35,10 +35,6 @@ for i in range(len(paths)):
         if not 'B.mjd' in path:
             continue
 
-        # No incluyo todas las no variables, ni tampoco unas mirolensings que se me cayeron corriendo los gp
-        # if i in range(3562, 12526) or i in range(2778, 2862):
-        #     continue
-
         print 'Curva: ' + lu.get_lightcurve_id(path)
 
         azul = lu.open_lightcurve(path)
@@ -70,8 +66,7 @@ for i in range(len(paths)):
         fs = FATS.FeatureSpace(Data=['magnitude', 'time', 'error'],
                                featureList=None, excludeList=['Color',
                                'Eta_color', 'Q31_color', 'StetsonJ',
-                               'StetsonL', 'CAR_mean', 'CAR_sigma', 'CAR_tau',
-                               'StetsonK_AC'])
+                               'StetsonL', 'CAR_mean', 'CAR_sigma', 'CAR_tau'])
         
         fs = fs.calculateFeature([y_obs, t_obs, err_obs])
 
