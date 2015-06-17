@@ -1,18 +1,14 @@
-# Este script calcula un set de features para cada curva de la base de datos macho
-# Y arma un set de entrenamiento con los valores
+# Calcula un set de features para cada curva de la base de datos macho
+# Y arma un set de entrenamiento con los valores 
+
+# -----------------------------------------------------------------------------
 
 import lightcurves.lc_utils as lu
 import pandas as pd
 import numpy as np
 import sys
-# import os
-
-# lib_path = os.path.abspath('../time-series-feats')
-# sys.path.append(lib_path)
-# from Feature import FeatureSpace
 
 import FATS
-
 
 # Ubicacion de las curvas
 # 0-1           Be_lc
@@ -24,11 +20,12 @@ import FATS
 # 12527-12528   quasar_lc
 # 12645-12646   RRL
 
+# result_dir = 
 paths = lu.get_lightcurve_paths()
-n_points = 300
+min_points = 300
 feature_values = []
 
-paths = paths[0:100]
+percentage = 0.5
 
 for i in range(len(paths)):
     try:
@@ -46,15 +43,20 @@ for i in range(len(paths)):
 
         azul = lu.open_lightcurve(path)
 
-        # Tomo el 60% de las mediciones
-        azul = azul.iloc[0:len(azul) * 6 / 10]
-        total_days = azul.index[-1] - azul.index[0]
-     
-        if len(azul.index) < n_points:
+        # Si la curva completa no tiene al menos min_points no la ocupo
+        if len(azul.index) < min_points:
+            f = open('GP Samples/' + str(int(percentage * 100)) +
+                     '%/pocos_puntos.txt', 'a')
+            f.write(path + '\n')
+            f.close()
             continue
 
+        # Tomo el p% de las mediciones
+        azul = azul.iloc[0:int(len(azul) * percentage)]
+        total_days = azul.index[-1] - azul.index[0]
+
         # Preparo la curva para alimentar el GP
-        t_obs, y_obs, err_obs, min_time, max_time = lu.prepare_lightcurve(azul, n_points)
+        t_obs, y_obs, err_obs, min_time, max_time = lu.prepare_lightcurve(azul, min_points)
         t_obs = np.ravel(t_obs)
         y_obs = np.ravel(y_obs)
         err_obs = np.ravel(err_obs)
@@ -65,22 +67,31 @@ for i in range(len(paths)):
         sys.stdout.write('\r')
         sys.stdout.flush()
 
-        feature_names = ['Amplitude', 'Con', 'MedianAbsDev', 'MedianBRP', 'PairSlopeTrend', 'Rcs', 'Skew', 'SmallKurtosis', 'Std', 'StetsonK', 'Eta_e', 'Meanvariance']
-
-        fs = FATS.FeatureSpace(featureList=feature_names)
-        fs = fs.calculateFeature(y_obs)
+        fs = FATS.FeatureSpace(Data=['magnitude', 'time', 'error'],
+                               featureList=None, excludeList=['Color',
+                               'Eta_color', 'Q31_color', 'StetsonJ',
+                               'StetsonL', 'CAR_mean', 'CAR_sigma', 'CAR_tau',
+                               'StetsonK_AC'])
+        
+        fs = fs.calculateFeature([y_obs, t_obs, err_obs])
 
         clase = lu.get_lc_class_name(path)
-        valores = map(lambda x: float("{0:.5f}".format(x)),fs.result(method=''))
+        valores = map(lambda x: float("{0:.6f}".format(x)),fs.result(method='dict').values())
         valores.append(clase)
 
         feature_values.append(valores)
 
     except KeyboardInterrupt:
         raise
-    except:
+    except Exception, e:
+        f = open('GP Samples/' + str(int(percentage * 100)) +
+                     '%/error.txt', 'a')
+        f.write(path + '\n')
+        f.close()
         continue
 
+feature_names = fs.result(method='dict').keys()
 feature_names.append('class')
 df = pd.DataFrame(feature_values, columns=feature_names)
-df.to_csv('macho_60.csv', index=False)
+
+df.sort(axis=1, inplace=True)
