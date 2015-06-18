@@ -30,7 +30,7 @@ def writePathsFile(dir, label=None):
                 if '.mjd' in f and label in f:
                     archivo.write(f + '\n')
     else:
-        with open('lightcurves_paths/paths.txt', 'w') as archivo:
+        with open('lightcurves_paths/Todas.txt', 'w') as archivo:
             for f in files:
                 if '.mjd' in f:
                     archivo.write(f + '\n')
@@ -39,15 +39,15 @@ def writePathsFile(dir, label=None):
 if __name__ == '__main__':
     dir = LC_PATH
     # Para todas los paths en un solo archivo
-    writePathsFile(dir)
+    # writePathsFile(dir)
 
     # Para elegir un clase particular por archivo
 
-    # writePathsFile(dir, 'Be_lc')
-    # writePathsFile(dir, 'CEPH')
-    # writePathsFile(dir, 'EB')
-    # writePathsFile(dir, 'longperiod_lc')
-    # writePathsFile(dir, 'microlensing_lc')
-    # writePathsFile(dir, 'non_variables')
-    # writePathsFile(dir, 'quasar_lc')
-    # writePathsFile(dir, 'RRL')
+    writePathsFile(dir, 'Be_lc')
+    writePathsFile(dir, 'CEPH')
+    writePathsFile(dir, 'EB')
+    writePathsFile(dir, 'longperiod_lc')
+    writePathsFile(dir, 'microlensing_lc')
+    writePathsFile(dir, 'non_variables')
+    writePathsFile(dir, 'quasar_lc')
+    writePathsFile(dir, 'RRL')
