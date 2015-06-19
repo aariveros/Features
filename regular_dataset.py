@@ -10,6 +10,8 @@ import sys
 
 import FATS
 
+from config import *
+
 # Ubicacion de las curvas
 # 0-1           Be_lc
 # 255-256       CEPH
@@ -20,12 +22,18 @@ import FATS
 # 12527-12528   quasar_lc
 # 12645-12646   RRL
 
-# result_dir = 
 paths = lu.get_lightcurve_paths()
 min_points = 300
 feature_values = []
 
-percentage = 0.5
+paths = paths[0:20]
+
+if len(sys.argv) == 2:
+    percentage = int(sys.argv[1])  / float(100)
+
+else:
+    print 'No se especifico el porcentaje de las curvas a utilizar'
+    percentage = 1
 
 for i in range(len(paths)):
     try:
@@ -52,17 +60,22 @@ for i in range(len(paths)):
         total_days = azul.index[-1] - azul.index[0]
 
         # Preparo la curva para alimentar el GP
-        t_obs, y_obs, err_obs, min_time, max_time = lu.prepare_lightcurve(azul, min_points)
-        t_obs = np.ravel(t_obs)
-        y_obs = np.ravel(y_obs)
-        err_obs = np.ravel(err_obs)
+        # t_obs, y_obs, err_obs, min_time, max_time = lu.prepare_lightcurve(azul, normalize=False)
+        # t_obs = np.ravel(t_obs)
+        # y_obs = np.ravel(y_obs)
+        # err_obs = np.ravel(err_obs)
+
+        t_obs = azul.index.tolist()
+        y_obs = azul['mag'].tolist()
+        err_obs = azul['err'].tolist()
 
         # Calculo algunas features para el grupo de muestras
         sys.stdout.write('Calculando Features...')
         sys.stdout.flush()
         sys.stdout.write('\r')
         sys.stdout.flush()
-
+        
+        # Elimino features que involucran color y las CAR por temas de tiempo
         fs = FATS.FeatureSpace(Data=['magnitude', 'time', 'error'],
                                featureList=None, excludeList=['Color',
                                'Eta_color', 'Q31_color', 'StetsonJ',
@@ -90,3 +103,5 @@ feature_names.append('class')
 df = pd.DataFrame(feature_values, columns=feature_names)
 
 df.sort(axis=1, inplace=True)
+
+df.to_csv(TRAINING_SETS_DIR_PATH + 'Macho regular set ' + str(sys.argv[1]) + '.csv', index=False) 
