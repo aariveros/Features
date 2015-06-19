@@ -20,10 +20,11 @@ import FATS
 # 12527-12528   quasar_lc
 # 12645-12646   RRL
 
-# result_dir = 
 paths = lu.get_lightcurve_paths()
 min_points = 300
 feature_values = []
+
+paths = paths[0:100]
 
 percentage = 0.5
 
@@ -52,7 +53,7 @@ for i in range(len(paths)):
         total_days = azul.index[-1] - azul.index[0]
 
         # Preparo la curva para alimentar el GP
-        t_obs, y_obs, err_obs, min_time, max_time = lu.prepare_lightcurve(azul, min_points)
+        t_obs, y_obs, err_obs, min_time, max_time = lu.prepare_lightcurve(azul)
         t_obs = np.ravel(t_obs)
         y_obs = np.ravel(y_obs)
         err_obs = np.ravel(err_obs)
