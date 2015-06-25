@@ -216,9 +216,11 @@ def filter_data( lc, rango = 3, norm = False ):
      norm: si es true la curva se centra en 0, default false
     """
 
-    [magnitud_media, error_medio] = lc.mean( axis = 0)
+    [magnitud_media, error_medio] = lc.mean(axis = 0)
 
-    lc = lc[lc['err'] < rango * error_medio]
+    lc = lc[(lc['err'] < rango * error_medio) & (np.abs(lc['mag'] - magnitud_media) / lc['mag'].std() < 5 )]
+
+    # lc = lc[lc['err'] < rango * error_medio]
 
     if norm:
         pass

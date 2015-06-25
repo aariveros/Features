@@ -26,7 +26,7 @@ paths = lu.get_lightcurve_paths()
 min_points = 300
 feature_values = []
 
-paths = paths[0:20]
+# paths = paths[0:20]
 
 if len(sys.argv) == 2:
     percentage = int(sys.argv[1])  / float(100)
@@ -46,11 +46,11 @@ for i in range(len(paths)):
         print 'Curva: ' + lu.get_lightcurve_id(path)
 
         azul = lu.open_lightcurve(path)
+        azul = lu.filter_data(azul)
 
-        # Si la curva completa no tiene al menos min_points no la ocupo
+        # Si la curva filtrada no tiene al menos min_points no la ocupo
         if len(azul.index) < min_points:
-            f = open('GP Samples/' + str(int(percentage * 100)) +
-                     '%/pocos_puntos.txt', 'a')
+            f = open(TRAINING_SETS_DIR_PATH + 'problemas/pocos_puntos ' + str(int(percentage * 100)) + '.txt', 'a')
             f.write(path + '\n')
             f.close()
             continue
@@ -92,8 +92,7 @@ for i in range(len(paths)):
     except KeyboardInterrupt:
         raise
     except Exception, e:
-        f = open('GP Samples/' + str(int(percentage * 100)) +
-                     '%/error.txt', 'a')
+        f = open(TRAINING_SETS_DIR_PATH + 'problemas/errores ' + str(int(percentage * 100)) + '.txt', 'a')
         f.write(path + '\n')
         f.close()
         continue
