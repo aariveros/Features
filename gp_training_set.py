@@ -1,3 +1,5 @@
+# coding=utf-8
+
 # Este script ajusta un gp sobre cada curva de la base de datos. 
 # Los parametros del GP son elegidos arbitrariamente
 # Para cada curva se guarda el valor de las features calculadas para cada muestra en un txt separado
