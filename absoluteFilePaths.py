@@ -1,27 +1,29 @@
+# coding=utf-8
+
+# Me todos para generar archivos con el path absoluto a un conjunto de curvas
+# de luz
+# -----------------------------------------------------------------------------
+
 import os
 from config import *
 
-"""
-Hace una busqueda recursiva por todos los directorios del directorio recibido. Y retorna una lista
-con el path absoluto de todos los archivos que encuentra
-
-"""
 def absoluteFilePaths(directory):
+    """Hace una busqueda recursiva por todos los directorios del directorio
+    recibido. Y retorna una lista con el path absoluto de todos los archivos
+    que encuentra.
+    """
     for dirpath, _, filenames in os.walk(directory):
         for f in filenames:
             yield os.path.abspath(os.path.join(dirpath, f))
 
 
-"""
- Recibe un directorio, busca recursivamente los archivos en busqueda de estrellas
- y escribe sus paths absolutos en un archivo.
-
- class: Si se le entrega un string de clase. Va a buscar esa extension en los archivos
- y solo escribira esos paths en un archivo con el nombre de la clase.
-"""
-
-
 def writePathsFile(dir, label=None):
+    """Busca recursivamente los archivos de  estrellas en un directorio y 
+    escribe sus paths absolutos en un archivo.
+
+    label: Si se le entrega un string de clase. Solo considera los archivos
+    con esa extensión
+    """
     files = absoluteFilePaths(dir)
 
     if label:
