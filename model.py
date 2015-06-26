@@ -1,3 +1,9 @@
+# coding=utf-8
+
+# Modelo ocupado con gaussian process. Sacado de uno de los ejemplos en la 
+# documentación del paquete George
+# -----------------------------------------------------------------------------
+
 import numpy as np
 import george
 from george import kernels

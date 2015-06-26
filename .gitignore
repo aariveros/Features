@@ -15,7 +15,6 @@ Datos
 .Datos/
 
 otro.py
-seminario.py
 
 .idea
 
@@ -31,3 +30,5 @@ GP Samples/
 temp.py
 
 sets/
+script.py
+

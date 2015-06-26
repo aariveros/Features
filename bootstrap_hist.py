@@ -1,3 +1,8 @@
+# coding=utf-8
+# Toma una curva de luz, hace un bootstrap simple calcula features sobre
+# las muestras y hace un histograma con ellas
+# -----------------------------------------------------------------------------
+
 import pandas as pd
 import matplotlib.pyplot as plt
 import matplotlib.mlab as mlab
@@ -11,7 +16,11 @@ sys.path.append(lib_path)
 from Feature import FeatureSpace
 
 def bootstrap_sample(lc, percentage, num_samples=100):
-    """Toma una curva de luz y retorna varias muestras aleatorias tomadas de esta
+    """Toma una curva de luz y retorna varias muestras aleatorias tomadas de
+    esta. Para esto hace un muestreo uniforme sin reemplazo.
+
+    percentage: porcentaje de curvas a retornar
+    num_samples: numero de muestras a retornar
     """
 
     num_points = len(lc.index)
@@ -42,8 +51,6 @@ paths = lu.get_lightcurve_paths()
 a, b = 967, 968
 
 azul = lu.open_lightcurve(paths[a])
-#roja = lu.open_lightcurve(paths[b])
-#curva = pd.concat([azul, roja], axis=1, keys=['azul', 'roja'], join='inner')
 
 y_obs = azul['mag']
 t_obs = azul.index

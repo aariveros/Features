@@ -1,6 +1,9 @@
+# coding=utf-8
+
 # Toma un directorio con archivos de features sampleadas de curvas de luz
-# Para cada set de features sampleadas calcula las gaussianas asociada a cada variable
-# Le agrega la clase y un peso con valor 1 y arma un dataframe y lo guarda como set de entrenamiento
+# Para cada set de features sampleadas calcula las gaussianas asociada a cada
+# variable. Le agrega la clase y un peso con valor 1 y arma un dataframe y lo
+# guarda como set de entrenamiento
 
 # --------------------------------------------------------------------------
 import pandas as pd

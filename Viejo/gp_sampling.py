@@ -1,3 +1,8 @@
+# coding=utf-8
+
+# Esto esta hecho con la libreria de GP de scikit
+# -----------------------------------------------------------------------------
+
 import lightcurves.lc_utils as lu
 import lightcurves.features as ft
 import matplotlib.pyplot as plt
