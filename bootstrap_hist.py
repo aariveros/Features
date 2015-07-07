@@ -9,33 +9,13 @@ import matplotlib.mlab as mlab
 import lightcurves.lc_utils as lu
 import numpy as np
 import random
+import bootstrap
 
 import os, sys
 lib_path = os.path.abspath('../time-series-feats')
 sys.path.append(lib_path)
 from Feature import FeatureSpace
 
-def bootstrap_sample(lc, percentage, num_samples=100):
-    """Toma una curva de luz y retorna varias muestras aleatorias tomadas de
-    esta. Para esto hace un muestreo uniforme sin reemplazo.
-
-    percentage: porcentaje de curvas a retornar
-    num_samples: numero de muestras a retornar
-    """
-
-    num_points = len(lc.index)
-    samples_size = int(num_points * percentage)
-
-    random.seed(1)
-
-    samples = []
-
-    for i in xrange(num_samples):
-        rand_indices = random.sample(range(0,num_points),samples_size)
-        rand_indices.sort()
-        samples.append(lc.iloc[rand_indices])
-
-    return samples
 
 # Ubicacion de las curvas
 # 0-1           Be_lc
@@ -57,13 +37,16 @@ t_obs = azul.index
 err_obs = azul['err']
 
 # Calculo el valor de las features para la curva completa
-lista = ['Amplitude', 'Beyond1Std', 'Con', 'MaxSlope', 'MedianAbsDev', 'MedianBRP', 'PairSlopeTrend', 'Rcs', 'Skew', 'SmallKurtosis', 'Std', 'StestonK', 'VariabilityIndex', 'meanvariance']
+lista = ['Amplitude', 'Beyond1Std', 'Con', 'MaxSlope', 'MedianAbsDev',
+         'MedianBRP', 'PairSlopeTrend', 'Rcs', 'Skew', 'SmallKurtosis', 'Std',
+         'StestonK', 'VariabilityIndex', 'meanvariance']
+         
 fs = FeatureSpace(featureList=lista, Beyond1Std=err_obs, MaxSlope=t_obs)
 
 fs = fs.calculateFeature(y_obs)
 real_values = fs.result(method='dict')
 
-samples = bootstrap_sample(azul, 0.8)
+samples = bootstrap.uniform_bootstrap(azul, 0.8)
 bootstrap_values = []
 
 for lc in samples:
