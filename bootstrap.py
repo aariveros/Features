@@ -7,7 +7,7 @@ import lightcurves.lc_utils as lu
 from config import *
 
 import random
-import pickle
+import cPickle
 
 from george import kernels
 import numpy as np
@@ -45,6 +45,7 @@ def GP_bootstrap(lc_path, percentage=1.0, n_samples=100):
     percentage: porcentaje de la curva a utilizar
     """
     try:
+        print lc_path
         lc = lu.open_lightcurve(lc_path)
         lc = lc.iloc[0:int(percentage * lc.index.size)]
 
@@ -74,11 +75,11 @@ def GP_bootstrap(lc_path, percentage=1.0, n_samples=100):
                          samples)
         samples_devs = zip(samples, deviations)
 
-        result_dir = (MODULE_PATH + 'GP Samples/' + str(int(100 * percentage)) +
+        result_dir = (LAB_PATH + 'GP_Samples/MACHO/' + str(int(100 * percentage)) +
                       '%/' + lu.get_lightcurve_id(lc_path) + ' samples.pkl')
 
         output = open(result_dir, 'wb')
-        pickle.dump(samples_devs, output)
+        cPickle.dump(samples_devs, output)
         output.close()
 
     except Exception as e:
