@@ -73,10 +73,13 @@ def GP_bootstrap(lc_path, percentage=1.0, n_samples=100):
         samples = gp.sample_conditional(y_obs, t_obs, n_samples)
         deviations = map(lambda s: np.sqrt(np.diag(gp.predict(s, x)[1])),
                          samples)
+
         samples_devs = zip(samples, deviations)
+        samples_devs = (t_obs, samples_devs)
 
         result_dir = (LAB_PATH + 'GP_Samples/MACHO/' + str(int(100 * percentage)) +
-                      '%/' + lu.get_lightcurve_id(lc_path) + ' samples.pkl')
+                      '%/' + lu.get_lc_class_name(lc_path) + '/' +
+                      lu.get_lightcurve_id(lc_path) + ' samples.pkl')
 
         output = open(result_dir, 'wb')
         cPickle.dump(samples_devs, output)
