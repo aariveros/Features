@@ -8,9 +8,12 @@
 
 import lightcurves.lc_utils as lu
 import pandas as pd
+
+import multiprocessing
 import sys
 import pickle
 import re
+import os
 
 import FATS
 
@@ -19,12 +22,14 @@ from config import *
 def get_paths(directory):
     """Entrega todos los paths absolutos a objetos serializados de un directorio
     """
+    files = []
     for dirpath, _, filenames in os.walk(directory):
         for f in filenames:
             if '.pkl' in f:
-                yield os.path.abspath(os.path.join(dirpath, f))
+                files.append(os.path.abspath(os.path.join(dirpath, f)))
+    return files
 
-def calc_features(samples_path, output_path):
+def calc_features(samples_path):
     feature_values = []
     
     # Elimino features que involucran color y las CAR por temas de tiempo
@@ -36,7 +41,7 @@ def calc_features(samples_path, output_path):
     # s[1] es un arreglo para cada muestra donde cada muestra tiene dos
     # arreglos uno para las observaciones y otro para los errores
     f = open(samples_path, 'r')
-    samples = load(f)
+    samples = pickle.load(f)
     f.close()
     
     # Estas variables son comunes a todas las muestras
@@ -64,13 +69,21 @@ def calc_features(samples_path, output_path):
 
 if __name__ == '__main__':
 
-    if len(sys.argv) == 2:
+    if len(sys.argv) == 3:
         percentage = sys.argv[1]
+        n_jobs = int(sys.argv[2])
+    elif len(sys.argv) == 2:
+        percentage = sys.argv[1]
+        n_jobs = 30
     else:
         percentage = '100'
+        n_jobs = 30
 
     path = LAB_PATH + 'GP_Samples/MACHO/' + percentage + '%/'
 
     # Obtengo los archivos con las muestras serializadas
     files = get_paths(path)
 
+    chunksize = int(len(files)/n_jobs)
+    pool = multiprocessing.Pool(processes=n_jobs)
+    pool.map(calc_features, files, chunksize)
