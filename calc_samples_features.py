@@ -64,7 +64,7 @@ def calc_features(samples_path):
     # Escribo los resultados en un archivo especial para cada curva original
     file_path = LAB_PATH + 'Samples_Features/MACHO/' + percentage + '/' + lc_class + '/' + macho_id + '.csv'
 
-    df = pd.DataFrame(feature_values, columns = feature_names)
+    df = pd.DataFrame(feature_values, columns = fs.featureList())
     df.to_csv(file_path, index=False)
 
 if __name__ == '__main__':
