@@ -6,22 +6,35 @@
 # guarda como set de entrenamiento
 
 # --------------------------------------------------------------------------
-import pandas as pd
+import sys
 import os
+
+import pandas as pd
+import FATS
+
 import lightcurves.lc_utils as lu
+from config import *
 
 def get_paths(directory):
     for dirpath, _, filenames in os.walk(directory):
         for f in filenames:
-            yield os.path.abspath(os.path.join(dirpath, f))
+            if '.pkl' in f:
+                yield os.path.abspath(os.path.join(dirpath, f))
 
+if len(sys.argv) == 2:
+    percentage = sys.argv[1]
+else:
+    percentage = '100'
 
-output_file_name = 'gp_u_set_60.csv'
+output_file_name = 'gp_u_set_' + percentage + '.csv'
 
-feature_names = ['Amplitude', 'Beyond1Std', 'Con', 'MaxSlope', 'MedianAbsDev', 'MedianBRP', 'PairSlopeTrend', 'Rcs', 'Skew', 'SmallKurtosis', 'Std', 'StestonK', 'VariabilityIndex', 'meanvariance']
+# Elimino features que involucran color y las CAR por temas de tiempo
+fs = FATS.FeatureSpace(Data=['magnitude', 'time', 'error'], featureList=None,
+                       excludeList=['Color', 'Eta_color', 'Q31_color',
+                       'StetsonJ','StetsonL', 'CAR_mean', 'CAR_sigma', 'CAR_tau'])
 
 linea = []
-for name in feature_names:
+for name in fs.featureList:
     linea.append(name+'.l')
     linea.append(name+'.mean')
     linea.append(name+'.r')
@@ -29,20 +42,16 @@ for name in feature_names:
 linea.append('weight')
 linea.append('class')
 linea = ','.join(linea) + '\n'
-f = open(output_file_name, 'w')
+f = open(TRAINING_SETS_DIR_PATH + 'GP/' + output_file_name, 'w')
 f.write(linea)
 f.close()
 
-path = '/Users/npcastro/workspace/Features/GP Samples/60'
+path = LAB_PATH + 'GP_Samples/MACHO/' + percentage + '%'
 files = get_paths(path)
 
 lineas = []
 
 for f in files:
-    # print f
-    if '.DS_Store' in f or 'error.txt' in f or 'pocos_puntos.txt' in f:
-        continue
-
     df = pd.read_csv(f)
 
     medias = df.mean()
@@ -70,4 +79,3 @@ for f in files:
 f = open(output_file_name, 'a')
 f.writelines(lineas)
 f.close()
-
