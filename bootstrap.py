@@ -89,7 +89,7 @@ def GP_bootstrap(lc_path, percentage=1.0, n_samples=100):
         print e
         err_path = LAB_PATH + 'GP_Samples/MACHO/' + str(int(100 * percentage)) + '%/error.txt'
         f = open(err_path, 'a')
-        f.write(path + '\n')
+        f.write(lc_path + '\n')
         f.close()
 
 def test(lc_path, percentage=1.0):
