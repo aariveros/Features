@@ -17,6 +17,8 @@ import re
 import pandas as pd
 import pickle
 
+import bootstrap
+
 def get_paths(directory):
     """Entrega todos los paths absolutos a objetos serializados de un directorio
     """
@@ -25,14 +27,6 @@ def get_paths(directory):
         for f in filenames:
             if '.pkl' in f:
                 yield(os.path.abspath(os.path.join(dirpath, f)))
-
-
-def calc_features(sample, t_obs, fs):
-    y_obs = sample[0]
-    err_obs = sample[1]
-        
-    fs = fs.calculateFeature([y_obs, t_obs, err_obs])
-    return map(lambda x: float("{0:.6f}".format(x)), fs.result(method='dict').values())
 
 
 if __name__ == '__main__':
@@ -54,13 +48,14 @@ if __name__ == '__main__':
 
     # Elimino features que involucran color y las CAR por temas de tiempo
     # Elimino fluxpercentils porquenose pueden calcular para curvas cortas
-    fs = FATS.FeatureSpace(Data=['magnitude', 'time', 'error'], featureList=None,
-                           excludeList=['Color', 'Eta_color', 'Q31_color',
-                           'FluxPercentileRatioMid20', 'FluxPercentileRatioMid35',
-                           'FluxPercentileRatioMid50', 'FluxPercentileRatioMid65',
-                           'FluxPercentileRatioMid80', 'StetsonJ', 'StetsonL',
-                           'CAR_mean', 'CAR_sigma', 'CAR_tau'])     
-
+    fs = FATS.FeatureSpace(Data=['magnitude', 'time', 'error'], featureList=['Amplitude',
+                           'AndersonDarling', 'Autocor_length', 'Beyond1Std', 'Con',
+                           'Eta_e', 'LinearTrend', 'MaxSlope', 'Mean', 'Meanvariance',
+                           'MedianAbsDev', 'MedianBRP', 'PairSlopeTrend',
+                           'PercentAmplitude', 'PercentDifferenceFluxPercentile',
+                           'Q31', 'Rcs', 'Skew', 'SlottedA_length', 'SmallKurtosis',
+                           'Std', 'StetsonK','StetsonK_AC'], excludeList=None)    
+    count = 0
     for f in files:
  
         # Las muestras vienen en una tupla, s[0] es una lista con los tiempos de medicion
@@ -75,7 +70,7 @@ if __name__ == '__main__':
         lc_class = lu.get_lc_class_name(f)
         macho_id = lu.get_lightcurve_id(f)
 
-        partial_calc = partial(calc_features, t_obs, fs)
+        partial_calc = partial(bootstrap.calc_features, t_obs, fs)
         error = False
         chunksize = int(100/n_jobs)
 
@@ -88,6 +83,7 @@ if __name__ == '__main__':
 
         except Exception as e:
             error = True
+            raise
 
         if error:
             aux = open(LAB_PATH + 'Samples_Features/MACHO/' + percentage + '%/errores.txt', 'a')
@@ -99,4 +95,8 @@ if __name__ == '__main__':
 
             df = pd.DataFrame(feature_values, columns=fs.featureList)
             df.to_csv(file_path, index=False)
+
+        if count >= 1:
+            break
+        count += 1
         

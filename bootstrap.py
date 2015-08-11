@@ -118,4 +118,9 @@ def test(lc_path, percentage=1.0):
     
     return lc
 
-
+def calc_features(sample, t_obs, fs):
+    y_obs = sample[0]
+    err_obs = sample[1]
+        
+    fs = fs.calculateFeature([y_obs, t_obs, err_obs])
+    return map(lambda x: float("{0:.6f}".format(x)), fs.result(method='dict').values())
