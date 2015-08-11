@@ -33,3 +33,8 @@ sets/
 script.py
 
 Conteo.csv
+
+algo.py
+algo.pkl
+
+feature_names.txt
