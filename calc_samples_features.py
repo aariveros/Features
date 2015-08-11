@@ -48,13 +48,13 @@ if __name__ == '__main__':
 
     # Elimino features que involucran color y las CAR por temas de tiempo
     # Elimino fluxpercentils porquenose pueden calcular para curvas cortas
-    fs = FATS.FeatureSpace(Data=['magnitude', 'time', 'error'], featureList=['Amplitude',
-                           'AndersonDarling', 'Autocor_length', 'Beyond1Std', 'Con',
-                           'Eta_e', 'LinearTrend', 'MaxSlope', 'Mean', 'Meanvariance',
-                           'MedianAbsDev', 'MedianBRP', 'PairSlopeTrend',
-                           'PercentAmplitude', 'PercentDifferenceFluxPercentile',
-                           'Q31', 'Rcs', 'Skew', 'SlottedA_length', 'SmallKurtosis',
-                           'Std', 'StetsonK','StetsonK_AC'], excludeList=None)    
+    # fs = FATS.FeatureSpace(Data=['magnitude', 'time', 'error'], featureList=['Amplitude',
+    #                        'AndersonDarling', 'Autocor_length', 'Beyond1Std', 'Con',
+    #                        'Eta_e', 'LinearTrend', 'MaxSlope', 'Mean', 'Meanvariance',
+    #                        'MedianAbsDev', 'MedianBRP', 'PairSlopeTrend',
+    #                        'PercentAmplitude', 'PercentDifferenceFluxPercentile',
+    #                        'Q31', 'Rcs', 'Skew', 'SlottedA_length', 'SmallKurtosis',
+    #                        'Std', 'StetsonK','StetsonK_AC'], excludeList=None)
     count = 0
     for f in files:
  
@@ -70,7 +70,8 @@ if __name__ == '__main__':
         lc_class = lu.get_lc_class_name(f)
         macho_id = lu.get_lightcurve_id(f)
 
-        partial_calc = partial(bootstrap.calc_features, t_obs, fs)
+        # partial_calc = partial(bootstrap.calc_features, t_obs, fs)
+        partial_calc = partial(bootstrap.calc_features, t_obs)
         error = False
         chunksize = int(100/n_jobs)
 
