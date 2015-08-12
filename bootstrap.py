@@ -12,7 +12,7 @@ import cPickle
 from george import kernels
 import numpy as np
 import george
-
+import FATS
 
 def uniform_bootstrap(lc, percentage, num_samples=100):
     """Toma una curva de luz y retorna varias muestras aleatorias tomadas de
@@ -118,7 +118,7 @@ def test(lc_path, percentage=1.0):
     
     return lc
 
-def calc_features(sample, t_obs):
+def calc_features(t_obs, sample):
     y_obs = sample[0]
     err_obs = sample[1]
 
@@ -129,9 +129,16 @@ def calc_features(sample, t_obs):
                            'PercentAmplitude', 'PercentDifferenceFluxPercentile',
                            'Q31', 'Rcs', 'Skew', 'SlottedA_length', 'SmallKurtosis',
                            'Std', 'StetsonK','StetsonK_AC'], excludeList=None)
+
+    # fs = FATS.FeatureSpace(Data=['magnitude', 'time', 'error'],
+    #                        featureList=None, excludeList=['Color',
+    #                        'Eta_color', 'Q31_color', 'StetsonJ',
+    #                        'StetsonL', 'CAR_mean', 'CAR_sigma', 'CAR_tau'])
         
     fs = fs.calculateFeature([y_obs, t_obs, err_obs])
     result = map(lambda x: float("{0:.6f}".format(x)), fs.result(method='dict').values())
     del fs
 
     return result
+
+

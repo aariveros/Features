@@ -45,16 +45,11 @@ if __name__ == '__main__':
 
     # Obtengo los archivos con las muestras serializadas
     files = get_paths(path)
-
-    # Elimino features que involucran color y las CAR por temas de tiempo
-    # Elimino fluxpercentils porquenose pueden calcular para curvas cortas
-    # fs = FATS.FeatureSpace(Data=['magnitude', 'time', 'error'], featureList=['Amplitude',
-    #                        'AndersonDarling', 'Autocor_length', 'Beyond1Std', 'Con',
-    #                        'Eta_e', 'LinearTrend', 'MaxSlope', 'Mean', 'Meanvariance',
-    #                        'MedianAbsDev', 'MedianBRP', 'PairSlopeTrend',
-    #                        'PercentAmplitude', 'PercentDifferenceFluxPercentile',
-    #                        'Q31', 'Rcs', 'Skew', 'SlottedA_length', 'SmallKurtosis',
-    #                        'Std', 'StetsonK','StetsonK_AC'], excludeList=None)
+    feature_list = ['Amplitude', 'AndersonDarling', 'Autocor_length', 'Beyond1Std', 'Con',
+                    'Eta_e', 'LinearTrend', 'MaxSlope', 'Mean', 'Meanvariance', 'MedianAbsDev',
+                    'MedianBRP', 'PairSlopeTrend', 'PercentAmplitude', 'PercentDifferenceFluxPercentile',
+                    'Q31', 'Rcs', 'Skew', 'SlottedA_length', 'SmallKurtosis',
+                    'Std', 'StetsonK','StetsonK_AC']
     count = 0
     for f in files:
  
@@ -94,10 +89,10 @@ if __name__ == '__main__':
             # Escribo los resultados en un archivo especial para cada curva original
             file_path = LAB_PATH + 'Samples_Features/MACHO/' + percentage + '%/' + lc_class + '/' + macho_id + '.csv'
 
-            df = pd.DataFrame(feature_values, columns=fs.featureList)
+            df = pd.DataFrame(feature_values, columns=feature_list)
             df.to_csv(file_path, index=False)
 
-        if count >= 1:
+        if count >= 200:
             break
         count += 1
         
