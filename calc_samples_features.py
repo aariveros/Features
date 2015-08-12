@@ -47,7 +47,6 @@ if __name__ == '__main__':
     # Obtengo los archivos con las muestras serializadas
     files = get_paths(path)
 
-
     # Puedo especificar las featurs a ocupar o las features a excluir.
     # Depende que sea mas simple
     # feature_list = ['Amplitude', 'AndersonDarling', 'Autocor_length', 'Beyond1Std', 'Con',
@@ -65,6 +64,7 @@ if __name__ == '__main__':
                            featureList=feature_list, excludeList=exclude_list)
 
     feat_names = fs.featureList
+    print feat_names
     del fs
 
     count = 0
@@ -110,7 +110,7 @@ if __name__ == '__main__':
             df = pd.DataFrame(feature_values, columns=feat_names)
             df.to_csv(file_path, index=False)
 
-        if count >= 200:
+        if count >= 20:
             break
         count += 1
         
