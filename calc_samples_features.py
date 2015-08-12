@@ -17,6 +17,7 @@ import sys
 import os
 
 import pandas as pd
+import FATS
 
 
 def get_paths(directory):
@@ -45,12 +46,27 @@ if __name__ == '__main__':
 
     # Obtengo los archivos con las muestras serializadas
     files = get_paths(path)
-    feature_list = ['Amplitude', 'AndersonDarling', 'Autocor_length', 'Beyond1Std', 'Con',
-                    'Eta_e', 'LinearTrend', 'MaxSlope', 'Mean', 'Meanvariance', 'MedianAbsDev',
-                    'MedianBRP', 'PairSlopeTrend', 'PercentAmplitude', 'PercentDifferenceFluxPercentile',
-                    'Q31', 'Rcs', 'Skew', 'SlottedA_length', 'SmallKurtosis',
-                    'Std', 'StetsonK','StetsonK_AC']
-                    
+
+
+    # Puedo especificar las featurs a ocupar o las features a excluir.
+    # Depende que sea mas simple
+    # feature_list = ['Amplitude', 'AndersonDarling', 'Autocor_length', 'Beyond1Std', 'Con',
+    #                 'Eta_e', 'LinearTrend', 'MaxSlope', 'Mean', 'Meanvariance', 'MedianAbsDev',
+    #                 'MedianBRP', 'PairSlopeTrend', 'PercentAmplitude', 'PercentDifferenceFluxPercentile',
+    #                 'Q31', 'Rcs', 'Skew', 'SlottedA_length', 'SmallKurtosis',
+    #                 'Std', 'StetsonK','StetsonK_AC']
+    # exclude_list = []
+    
+    feature_list = []
+    exclude_list = ['Color', 'Eta_color', 'Q31_color', 'StetsonJ', 'StetsonL',
+                    'CAR_mean', 'CAR_sigma', 'CAR_tau']
+
+    fs = FATS.FeatureSpace(Data=['magnitude', 'time', 'error'], 
+                           featureList=feature_list, excludeList=exclude_list)
+
+    feat_names = fs.featureList
+    del fs
+
     count = 0
     for f in files:
  
@@ -66,7 +82,9 @@ if __name__ == '__main__':
         lc_class = lu.get_lc_class_name(f)
         macho_id = lu.get_lightcurve_id(f)
 
-        partial_calc = partial(bootstrap.calc_features, feature_list, t_obs)
+        partial_calc = partial(bootstrap.calc_features, t_obs,
+                               feature_list=feature_list,
+                               exclude_list=exclude_list)
         error = False
         chunksize = int(100/n_jobs)
 
@@ -89,7 +107,7 @@ if __name__ == '__main__':
             # Escribo los resultados en un archivo especial para cada curva original
             file_path = LAB_PATH + 'Samples_Features/MACHO/' + percentage + '%/' + lc_class + '/' + macho_id + '.csv'
 
-            df = pd.DataFrame(feature_values, columns=feature_list)
+            df = pd.DataFrame(feature_values, columns=feat_names)
             df.to_csv(file_path, index=False)
 
         if count >= 200:

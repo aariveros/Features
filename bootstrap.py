@@ -118,7 +118,7 @@ def test(lc_path, percentage=1.0):
     
     return lc
 
-def calc_features(feature_list, t_obs, sample):
+def calc_features(t_obs, sample, feature_list=None, exclude_list=None):
     """Metodo ocupado para paralelizar el calculo de las features en el cluster
 
     feature_list: lista con los nombres de las features que se desea calcular
@@ -131,7 +131,7 @@ def calc_features(feature_list, t_obs, sample):
     err_obs = sample[1]
 
     fs = FATS.FeatureSpace(Data=['magnitude', 'time', 'error'], 
-                           featureList=feature_list, excludeList=None)
+                           featureList=feature_list, excludeList=exclude_list)
         
     fs = fs.calculateFeature([y_obs, t_obs, err_obs])
     result = map(lambda x: float("{0:.6f}".format(x)), fs.result(method='dict').values())
