@@ -7,17 +7,17 @@
 # --------------------------------------------------------------------------
 
 import lightcurves.lc_utils as lu
-import sys
-import multiprocessing
-import FATS
-import os
-from functools import partial
 from config import *
-import re
-import pandas as pd
-import pickle
-
 import bootstrap
+
+from functools import partial
+import multiprocessing
+import pickle
+import sys
+import os
+
+import pandas as pd
+
 
 def get_paths(directory):
     """Entrega todos los paths absolutos a objetos serializados de un directorio
@@ -50,6 +50,7 @@ if __name__ == '__main__':
                     'MedianBRP', 'PairSlopeTrend', 'PercentAmplitude', 'PercentDifferenceFluxPercentile',
                     'Q31', 'Rcs', 'Skew', 'SlottedA_length', 'SmallKurtosis',
                     'Std', 'StetsonK','StetsonK_AC']
+                    
     count = 0
     for f in files:
  
@@ -65,8 +66,7 @@ if __name__ == '__main__':
         lc_class = lu.get_lc_class_name(f)
         macho_id = lu.get_lightcurve_id(f)
 
-        # partial_calc = partial(bootstrap.calc_features, t_obs, fs)
-        partial_calc = partial(bootstrap.calc_features, t_obs)
+        partial_calc = partial(bootstrap.calc_features, feature_list, t_obs)
         error = False
         chunksize = int(100/n_jobs)
 
