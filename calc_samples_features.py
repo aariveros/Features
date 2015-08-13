@@ -56,9 +56,10 @@ if __name__ == '__main__':
                     'MedianBRP', 'PairSlopeTrend', 'PercentAmplitude', 'PercentDifferenceFluxPercentile',
                     'Q31', 'Rcs', 'Skew', 'SlottedA_length', 'SmallKurtosis',
                     'Std', 'StetsonK','StetsonK_AC']
-    exclude_list = []
+
+    exclude_list = None
     
-    # feature_list = []
+    # feature_list = None 
     # exclude_list = ['Color', 'Eta_color', 'Q31_color', 'StetsonJ', 'StetsonL',
     #                 'CAR_mean', 'CAR_sigma', 'CAR_tau']
 
@@ -98,7 +99,7 @@ if __name__ == '__main__':
 
         except Exception as e:
             error = True
-            raise
+            # raise
 
         if error:
             aux = open(LAB_PATH + 'Samples_Features/MACHO/' + percentage + '%/errores.txt', 'a')
