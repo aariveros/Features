@@ -49,16 +49,16 @@ if __name__ == '__main__':
 
     # Puedo especificar las featurs a ocupar o las features a excluir.
     # Depende que sea mas simple
-    # feature_list = ['Amplitude', 'AndersonDarling', 'Autocor_length', 'Beyond1Std', 'Con',
-    #                 'Eta_e', 'LinearTrend', 'MaxSlope', 'Mean', 'Meanvariance', 'MedianAbsDev',
-    #                 'MedianBRP', 'PairSlopeTrend', 'PercentAmplitude', 'PercentDifferenceFluxPercentile',
-    #                 'Q31', 'Rcs', 'Skew', 'SlottedA_length', 'SmallKurtosis',
-    #                 'Std', 'StetsonK','StetsonK_AC']
-    # exclude_list = []
+    feature_list = ['Amplitude', 'AndersonDarling', 'Autocor_length', 'Beyond1Std', 'Con',
+                    'Eta_e', 'LinearTrend', 'MaxSlope', 'Mean', 'Meanvariance', 'MedianAbsDev',
+                    'MedianBRP', 'PairSlopeTrend', 'PercentAmplitude', 'PercentDifferenceFluxPercentile',
+                    'Q31', 'Rcs', 'Skew', 'SlottedA_length', 'SmallKurtosis',
+                    'Std', 'StetsonK','StetsonK_AC']
+    exclude_list = None
     
-    feature_list = []
-    exclude_list = ['Color', 'Eta_color', 'Q31_color', 'StetsonJ', 'StetsonL',
-                    'CAR_mean', 'CAR_sigma', 'CAR_tau']
+    # feature_list = None 
+    # exclude_list = ['Color', 'Eta_color', 'Q31_color', 'StetsonJ', 'StetsonL',
+    #                 'CAR_mean', 'CAR_sigma', 'CAR_tau']
 
     fs = FATS.FeatureSpace(Data=['magnitude', 'time', 'error'], 
                            featureList=feature_list, excludeList=exclude_list)
@@ -97,7 +97,7 @@ if __name__ == '__main__':
 
         except Exception as e:
             error = True
-            raise
+            # raise
 
         if error:
             aux = open(LAB_PATH + 'Samples_Features/MACHO/' + percentage + '%/errores.txt', 'a')
@@ -110,7 +110,4 @@ if __name__ == '__main__':
             df = pd.DataFrame(feature_values, columns=feat_names)
             df.to_csv(file_path, index=False)
 
-        if count >= 20:
-            break
-        count += 1
         
