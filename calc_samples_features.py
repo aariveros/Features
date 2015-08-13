@@ -8,7 +8,7 @@
 
 import lightcurves.lc_utils as lu
 from config import *
-import bootstrap
+import parallel
 
 from functools import partial
 import multiprocessing
@@ -28,6 +28,8 @@ def get_paths(directory):
         for f in filenames:
             if '.pkl' in f:
                 yield(os.path.abspath(os.path.join(dirpath, f)))
+
+# Podria agregar metodo que filtre las curvas que ya han sido calculadas
 
 
 if __name__ == '__main__':
@@ -49,22 +51,21 @@ if __name__ == '__main__':
 
     # Puedo especificar las featurs a ocupar o las features a excluir.
     # Depende que sea mas simple
-    # feature_list = ['Amplitude', 'AndersonDarling', 'Autocor_length', 'Beyond1Std', 'Con',
-    #                 'Eta_e', 'LinearTrend', 'MaxSlope', 'Mean', 'Meanvariance', 'MedianAbsDev',
-    #                 'MedianBRP', 'PairSlopeTrend', 'PercentAmplitude', 'PercentDifferenceFluxPercentile',
-    #                 'Q31', 'Rcs', 'Skew', 'SlottedA_length', 'SmallKurtosis',
-    #                 'Std', 'StetsonK','StetsonK_AC']
-    # exclude_list = []
+    feature_list = ['Amplitude', 'AndersonDarling', 'Autocor_length', 'Beyond1Std', 'Con',
+                    'Eta_e', 'LinearTrend', 'MaxSlope', 'Mean', 'Meanvariance', 'MedianAbsDev',
+                    'MedianBRP', 'PairSlopeTrend', 'PercentAmplitude', 'PercentDifferenceFluxPercentile',
+                    'Q31', 'Rcs', 'Skew', 'SlottedA_length', 'SmallKurtosis',
+                    'Std', 'StetsonK','StetsonK_AC']
+    exclude_list = []
     
-    feature_list = []
-    exclude_list = ['Color', 'Eta_color', 'Q31_color', 'StetsonJ', 'StetsonL',
-                    'CAR_mean', 'CAR_sigma', 'CAR_tau']
+    # feature_list = []
+    # exclude_list = ['Color', 'Eta_color', 'Q31_color', 'StetsonJ', 'StetsonL',
+    #                 'CAR_mean', 'CAR_sigma', 'CAR_tau']
 
     fs = FATS.FeatureSpace(Data=['magnitude', 'time', 'error'], 
                            featureList=feature_list, excludeList=exclude_list)
 
     feat_names = fs.featureList
-    print feat_names
     del fs
 
     count = 0
@@ -82,8 +83,8 @@ if __name__ == '__main__':
         lc_class = lu.get_lc_class_name(f)
         macho_id = lu.get_lightcurve_id(f)
 
-        partial_calc = partial(bootstrap.calc_features, t_obs,
-                               feature_list=feature_list,
+        partial_calc = partial(parallel.calc_features, t_obs,
+                            list=feature_list,
                                exclude_list=exclude_list)
         error = False
         chunksize = int(100/n_jobs)
@@ -109,8 +110,3 @@ if __name__ == '__main__':
 
             df = pd.DataFrame(feature_values, columns=feat_names)
             df.to_csv(file_path, index=False)
-
-        if count >= 20:
-            break
-        count += 1
-        
