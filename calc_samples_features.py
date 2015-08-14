@@ -85,7 +85,7 @@ if __name__ == '__main__':
         macho_id = lu.get_lightcurve_id(f)
 
         partial_calc = partial(parallel.calc_features, t_obs,
-                            list=feature_list,
+                            feature_list=feature_list,
                                exclude_list=exclude_list)
         error = False
         chunksize = int(100/n_jobs)

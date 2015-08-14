@@ -1,10 +1,14 @@
+# coding=utf-8
+
+# Varios métodos útiles para el manejo de curvas de luz
+
+# -----------------------------------------------------------------------------
+
 from __future__ import division
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 import re
-
-import sys
 
 from config import *
 
@@ -68,39 +72,6 @@ def prepare_lightcurve(curva, n_sampled_points=None):
 
     return t_obs, y_obs, err_obs, min_time, max_time
 
-def graf_gp_fit(X, y, x_pred, y_pred, sigma):
-    """Graf an adjusted gaussian process model over a set of points.
-    
-    parameters
-    ----------
-    X: puntos de las observaciones
-    y: valor de f(x) en las observaciones
-    x_pred: puntos donde se pregunta al gp
-    y_pred: f(x) dde se pregunto al gp
-    sigma: std en los ptos dde se pregunto al modelo
-    
-    """
-    # Grafico las observaciones
-    X2 = np.array(X)
-    X2 = (X2.T).ravel()
-    plt.plot(X2,y,'.r')
-    
-    # Grafico la regresion ajustada
-    X3 = np.array(x_pred)
-    X3 = X3.ravel()
-    plt.plot(X3, y_pred, 'b-', label=u'Prediction')
-    
-    # Agrego el intervalo de confianza
-    plt.fill(np.concatenate([X3, X3[::-1]]), \
-            np.concatenate([y_pred - 1.9600 * sigma,
-                           (y_pred + 1.9600 * sigma)[::-1]]), \
-            alpha=.5, fc='#C0C0C0', ec='None', label='95% confidence interval')
-    
-    # Leyenda
-    plt.xlabel('$x$')
-    plt.ylabel('$f(x)$')
-    plt.legend(loc='upper right')
-
 
 def open_lightcurve(fp):
     """
@@ -110,13 +81,6 @@ def open_lightcurve(fp):
     data = pd.read_table(fp, skiprows = [0,1,2], names = cols,
             index_col = 'mjd', sep = '\s+')
     return data
-
-def open_lightcurves(lc_list):
-    """
-    lc_list: iterable with lightcurve file paths
-    returns: list with Pandas DataFrames for each lightcurve
-    """
-    return map(open_lightcurve, lc_list)
 
 
 def get_lightcurve_paths(path=LC_FILE_PATH, separate_bands=False):
@@ -184,15 +148,6 @@ def get_lc_class_name(fp):
     else:
         return '0'    
 
-
-# def get_lc_class_name(fp):
-#     """
-#      Retorna el nombre de la clase de la estrella
-#     """
-#     # /Users/npcastro/Dropbox/Tesis/lightcurves/Be_lc/lc_1.3567.1310.B.mjd
-#     pattern = re.compile('lightcurves/.*/')
-#     return pattern.search(fp).group().split('/')[1]
-
 def get_lc_band(fp):
     """
     fp: lightcurve file path
@@ -202,7 +157,6 @@ def get_lc_band(fp):
         return "R"
     elif ".B.mjd" in fp:
         return "B"
-
 
 
 def filter_data( lc, rango = 3, norm = False ):
@@ -227,142 +181,3 @@ def filter_data( lc, rango = 3, norm = False ):
         pass
 
     return lc
-
-def feature_progress( lc, feature, percentage=1 ):
-    """
-     Retorna el valor de una feature calculada con la curva cortada hasta distintos
-     porcentajes. Y el porcentaje de completitud de la curva.
-
-     percentage: si se especifica un porcentaje, ese porcentaje de veces se calcula 
-     la feature 
-    """
-    x_values = []
-    y_values = []
-
-    steps = int(len(lc.index) / percentage) - 2
-
-    for i in range(3, steps):
-        y_values.append(feature( lc.iloc[0:i*percentage]) )
-        
-        aux = float(i*percentage)/len(lc.index)
-        # x_values.append( aux )
-
-        # print('Progress: ' + '{0:.2f}'.format(aux*100) + '%')    
-        sys.stdout.write('Progress: ' + '{0:.2f}'.format(aux*100) + '%')
-        sys.stdout.flush()
-
-        x_values.append(i*percentage)
-
-    x_values.append(len(lc.index))
-    y_values.append(feature(lc))
-
-    return x_values, y_values
-
-
-def get_feat_and_comp(lc, feature, comp, percentage=1):
-    """Retorna los valores de una feature calculada progresivamente a medida que se completa
-    la curva. Ademas retorna la confianza en la feature a medida que esta avanza
-
-    parameters
-    ----------
-
-    percentage:    Fraccion de puntos de la curva para los que se calculara la feature. Sirve
-                   para acelerar el calculo de features mas lentas. 
-
-    """
-    x_values, y_values = feature_progress(lc, feature, percentage)
-    
-    completitud = []
-    for i in range(2, len(y_values)):
-        completitud.append(comp(y_values[0:i]))
-
-    return x_values, y_values, completitud
-
-def completeness( y_values ):
-    """Retorna el grado de confianza de una feature incompleta.
-    Retorna 1 -  el promedio de las diferencias entre cada punto y
-    el antecesor. Considera max_var como la maxima diferencia presente, 
-    entre un punto y el siguiente (en valor absoluto) en la curva de luz. 
-    """
-    variaciones = []
-    n = len(y_values)
-
-    for i in range(1, n):
-        variaciones.append(abs(y_values[i] - y_values[i-1]))
-
-    max_var = max(variaciones)
-    min_var = 0
-    # min_var = min(variaciones)
-
-    prom_var = sum(variaciones) / (n - 1)
-
-    # print( 'Maxima varianza: ' + str(max_var))
-    # print( 'Minima varianza: ' + str(min_var))
-    # print( 'Promedio de varianza. ' + str(aux))
-    return prom_var
-    #return 1 - normalize( prom_var, min_var, max_var)
-
-def var_completeness( y_values ):
-    """Retorna el grado de confianza de una feature incompleta.   
-    Retorna 1 - la varianza de los datos, normalizada entre 0 y max_var.
-    Considera max_var como la maxima diferencia con la media de los datos.
-    """
-
-    n = len(y_values)
-    media = np.mean( y_values )
-    variaciones = []
-
-    max_var = 0
-    min_var = 0
-
-    for i in range(len(y_values)):
-        aux = (y_values[i] - media)**2
-
-        if( aux > max_var):
-            max_var = aux
-
-        variaciones.append(aux)
-
-    varianza = sum(variaciones) / (n-1)
-    
-    return varianza
-    #return 1 - normalize( varianza, min_var, max_var)
-
-def trust( y_values ):
-    """Calcula la confianza de una feature incompleta. 
-    Retorna 1 - el promedio de las diferencias entre cada punto y
-    el ultimo valor de la feature. Considera max_var como la maxima diferencia presente, 
-    entre un punto y el ultimo valor de la feature en la curva de luz.
-
-    """
-    n = len(y_values)
-    final = y_values[-1]
-
-    variaciones = []
-    max_var = 0
-    min_var = 0
-
-    for i in range(len(y_values)):
-        aux = abs(y_values[i] - final)
-
-        if(aux > max_var):
-            max_var = aux
-        variaciones.append(aux)
-
-    prom_var = sum(variaciones) / (n - 1)
-
-    return prom_var
-    #return 1 - normalize(prom_var, min_var, max_var)
-
-def completition_progress( y_values ):
-    """Retorna el grado de completitud de una feature para cada cantidad de puntos 
-    posibles
-    """
-    pass
-
-
-def normalize( d, minimo, maximo, new_min=0, new_max=1 ):
-    if(maximo == minimo):
-        return d * (new_max - new_min) + new_min
-    else:
-        return (float(d - minimo) / (maximo - minimo)) * (new_max - new_min) + new_min

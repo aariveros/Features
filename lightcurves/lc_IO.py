@@ -1,7 +1,7 @@
 from __future__ import division
 import matplotlib.pyplot as plt
 import numpy as np
-import pandas as pd
+
 from lc_utils import *
 from lc_stats import *
 
@@ -300,3 +300,36 @@ def save(path):
     # Actually save the figure
     plt.savefig(savepath)
     plt.close()
+
+def graf_gp_fit(X, y, x_pred, y_pred, sigma):
+    """Graf an adjusted gaussian process model over a set of points.
+    
+    parameters
+    ----------
+    X: puntos de las observaciones
+    y: valor de f(x) en las observaciones
+    x_pred: puntos donde se pregunta al gp
+    y_pred: f(x) dde se pregunto al gp
+    sigma: std en los ptos dde se pregunto al modelo
+    
+    """
+    # Grafico las observaciones
+    X2 = np.array(X)
+    X2 = (X2.T).ravel()
+    plt.plot(X2,y,'.r')
+    
+    # Grafico la regresion ajustada
+    X3 = np.array(x_pred)
+    X3 = X3.ravel()
+    plt.plot(X3, y_pred, 'b-', label=u'Prediction')
+    
+    # Agrego el intervalo de confianza
+    plt.fill(np.concatenate([X3, X3[::-1]]), \
+            np.concatenate([y_pred - 1.9600 * sigma,
+                           (y_pred + 1.9600 * sigma)[::-1]]), \
+            alpha=.5, fc='#C0C0C0', ec='None', label='95% confidence interval')
+    
+    # Leyenda
+    plt.xlabel('$x$')
+    plt.ylabel('$f(x)$')
+    plt.legend(loc='upper right')

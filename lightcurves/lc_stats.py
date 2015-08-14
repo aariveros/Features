@@ -93,24 +93,13 @@ def get_feat_and_comp(lc, feature, comp, percentage=1):
 
     return x_values, y_values, completitud
 
-# def get_feat_and_comp(lc, feature, percentage=1):
-#     progress, feature_values = feature_progess( lc, feature )
-
-#     completitud = []
-#     for i in range(2, len(feature_values)):
-#         completitud.append( var_completeness(feature_values[0:i]))
-
-#     return progress, feature_values, completitud
-
-
-"""
- Retorna el grado de confianza de una feature incompleta.
- Retorna 1 -  el promedio de las diferencias entre cada punto y
- el antecesor. Considera max_var como la maxima diferencia presente, 
- entre un punto y el siguiente (en valor absoluto) en la curva de luz. 
-"""
 
 def completeness( y_values ):
+    """Retorna el grado de confianza de una feature incompleta.
+    Retorna 1 -  el promedio de las diferencias entre cada punto y
+    el antecesor. Considera max_var como la maxima diferencia presente, 
+    entre un punto y el siguiente (en valor absoluto) en la curva de luz. 
+    """
     variaciones = []
     n = len(y_values)
 
@@ -128,13 +117,12 @@ def completeness( y_values ):
     # print( 'Promedio de varianza. ' + str(aux))
     return 1 - normalize( prom_Var, min_var, max_var)   
 
-"""
- Retorna el grado de confianza de una feature incompleta.   
- Retorna 1 - la varianza de los datos, normalizada entre 0 y max_var.
- Considera max_var como la maxima diferencia con la media de los datos.
-"""
 
 def var_completeness( y_values ):
+    """Retorna el grado de confianza de una feature incompleta.   
+    Retorna 1 - la varianza de los datos, normalizada entre 0 y max_var.
+    Considera max_var como la maxima diferencia con la media de los datos.
+    """
     n = len(y_values)
     media = np.mean( y_values )
     variaciones = []
