@@ -52,7 +52,7 @@ if __name__ == '__main__':
         n_jobs = 30
 
     samples_path = LAB_PATH + 'GP_Samples/MACHO/' + percentage + '%/'
-    calculated_feats_path = LAB_PATH + 'Samples_Features' + percentage + '%/'
+    calculated_feats_path = LAB_PATH + 'Samples_Features/MACHO/' + percentage + '%/'
 
     # Obtengo los archivos con las muestras serializadas
     files = get_paths(samples_path)
@@ -82,7 +82,9 @@ if __name__ == '__main__':
 
     count = 0
     for f in files:
-        if lu.get_lightcurve_id(f) not in ids: 
+        macho_id = lu.get_lightcurve_id(f) 
+        if macho_id not in ids: 
+            print 'Calculando curva: ' + macho_id
             # Las muestras vienen en una tupla, s[0] es una lista con los tiempos de medicion
             # s[1] es una lista de  muestras  donde cada muestra tiene dos
             # arreglos uno para las observaciones y otro para los errores
@@ -93,7 +95,6 @@ if __name__ == '__main__':
             # Estas variables son comunes a todas las muestras
             t_obs = samples[0]
             lc_class = lu.get_lc_class_name(f)
-            macho_id = lu.get_lightcurve_id(f)
 
             partial_calc = partial(parallel.calc_features, t_obs,
                                 feature_list=feature_list,
@@ -102,7 +103,7 @@ if __name__ == '__main__':
             chunksize = int(100/n_jobs)
 
             try:
-                pool = multiprocessing.Pool(processes=n_jobs)
+                pool = multiprocessing.Pool(processes=n_jobs, maxtasksperchild=2)
                 feature_values = pool.map(partial_calc, samples[1], chunksize)
 
                 pool.close()
@@ -119,6 +120,7 @@ if __name__ == '__main__':
             else:
                 # Escribo los resultados en un archivo especial para cada curva original
                 file_path = LAB_PATH + 'Samples_Features/MACHO/' + percentage + '%/' + lc_class + '/' + macho_id + '.csv'
-
                 df = pd.DataFrame(feature_values, columns=feat_names)
                 df.to_csv(file_path, index=False)
+        else:
+            print 'Curva: ' + macho_id + 'ya calculada'
