@@ -80,10 +80,9 @@ if __name__ == '__main__':
     feat_names = fs.featureList
     del fs
 
-    count = 0
     for f in files:
         macho_id = lu.get_lightcurve_id(f) 
-        
+
         if macho_id not in ids: 
             print 'Calculando curva: ' + macho_id
             # Las muestras vienen en una tupla, s[0] es una lista con los tiempos de medicion
