@@ -23,13 +23,20 @@ import FATS
 def get_paths(directory):
     """Entrega todos los paths absolutos a objetos serializados de un directorio
     """
-
     for dirpath, _, filenames in os.walk(directory):
         for f in filenames:
             if '.pkl' in f:
                 yield(os.path.abspath(os.path.join(dirpath, f)))
 
-# Podria agregar metodo que filtre las curvas que ya han sido calculadas
+def get_ids_in_paths(directory):
+    """Busca todos los csv de un directorio, encuentra los ids y los retorna
+    """
+    ids = []
+    for dirpath, _, filenames in os.walk(directory):
+        for f in filenames:
+            if '.csv' in f:
+                ids.append(lu.get_lightcurve_id(os.path.abspath(os.path.join(dirpath, f))))
+    return ids
 
 
 if __name__ == '__main__':
@@ -44,10 +51,14 @@ if __name__ == '__main__':
         percentage = '100'
         n_jobs = 30
 
-    path = LAB_PATH + 'GP_Samples/MACHO/' + percentage + '%/'
+    samples_path = LAB_PATH + 'GP_Samples/MACHO/' + percentage + '%/'
+    calculated_feats_path = LAB_PATH + 'Samples_Features' + percentage + '%/'
 
     # Obtengo los archivos con las muestras serializadas
-    files = get_paths(path)
+    files = get_paths(samples_path)
+
+    # Obtengo los ids de las curvas que ya han sido calculadas en iteraciones anteriores
+    ids = get_ids_in_paths(calculated_feats_path)
 
     # Puedo especificar las featurs a ocupar o las features a excluir.
     # Depende que sea mas simple
@@ -71,43 +82,43 @@ if __name__ == '__main__':
 
     count = 0
     for f in files:
- 
-        # Las muestras vienen en una tupla, s[0] es una lista con los tiempos de medicion
-        # s[1] es una lista de  muestras  donde cada muestra tiene dos
-        # arreglos uno para las observaciones y otro para los errores
-        aux = open(f, 'r')
-        samples = pickle.load(aux)
-        aux.close()
-
-        # Estas variables son comunes a todas las muestras
-        t_obs = samples[0]
-        lc_class = lu.get_lc_class_name(f)
-        macho_id = lu.get_lightcurve_id(f)
-
-        partial_calc = partial(parallel.calc_features, t_obs,
-                            list=feature_list,
-                               exclude_list=exclude_list)
-        error = False
-        chunksize = int(100/n_jobs)
-
-        try:
-            pool = multiprocessing.Pool(processes=n_jobs)
-            feature_values = pool.map(partial_calc, samples[1], chunksize)
-
-            pool.close()
-            pool.join()
-
-        except Exception as e:
-            error = True
-            # raise
-
-        if error:
-            aux = open(LAB_PATH + 'Samples_Features/MACHO/' + percentage + '%/errores.txt', 'a')
-            aux.write(f + '\n')
+        if lu.get_lightcurve_id(f) not in ids: 
+            # Las muestras vienen en una tupla, s[0] es una lista con los tiempos de medicion
+            # s[1] es una lista de  muestras  donde cada muestra tiene dos
+            # arreglos uno para las observaciones y otro para los errores
+            aux = open(f, 'r')
+            samples = pickle.load(aux)
             aux.close()
-        else:
-            # Escribo los resultados en un archivo especial para cada curva original
-            file_path = LAB_PATH + 'Samples_Features/MACHO/' + percentage + '%/' + lc_class + '/' + macho_id + '.csv'
 
-            df = pd.DataFrame(feature_values, columns=feat_names)
-            df.to_csv(file_path, index=False)
+            # Estas variables son comunes a todas las muestras
+            t_obs = samples[0]
+            lc_class = lu.get_lc_class_name(f)
+            macho_id = lu.get_lightcurve_id(f)
+
+            partial_calc = partial(parallel.calc_features, t_obs,
+                                feature_list=feature_list,
+                                   exclude_list=exclude_list)
+            error = False
+            chunksize = int(100/n_jobs)
+
+            try:
+                pool = multiprocessing.Pool(processes=n_jobs)
+                feature_values = pool.map(partial_calc, samples[1], chunksize)
+
+                pool.close()
+                pool.join()
+
+            except Exception as e:
+                error = True
+                # raise
+
+            if error:
+                aux = open(LAB_PATH + 'Samples_Features/MACHO/' + percentage + '%/errores.txt', 'a')
+                aux.write(f + '\n')
+                aux.close()
+            else:
+                # Escribo los resultados en un archivo especial para cada curva original
+                file_path = LAB_PATH + 'Samples_Features/MACHO/' + percentage + '%/' + lc_class + '/' + macho_id + '.csv'
+
+                df = pd.DataFrame(feature_values, columns=feat_names)
+                df.to_csv(file_path, index=False)
