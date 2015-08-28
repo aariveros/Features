@@ -64,7 +64,7 @@ if __name__ == '__main__':
     # Depende que sea mas simple
     feature_list = ['Amplitude', 'AndersonDarling', 'Autocor_length', 'Beyond1Std', 'Con',
                     'Eta_e', 'LinearTrend', 'MaxSlope', 'Mean', 'Meanvariance', 'MedianAbsDev',
-                    'MedianBRP', 'PairSlopeTrend', 'PercentAmplitude', 'PercentDifferenceFluxPercentile',
+                    'MedianBRP', 'PairSlopeTrend', 'PercentAmplitude',
                     'Q31', 'Rcs', 'Skew', 'SlottedA_length', 'SmallKurtosis',
                     'Std', 'StetsonK','StetsonK_AC']
 
@@ -101,6 +101,13 @@ if __name__ == '__main__':
                                    exclude_list=exclude_list)
             error = False
             chunksize = int(100/n_jobs)
+            
+            # En algunos casos no calza el largo de las mediciones
+            if len(t_obs) != len(samples[1][0][0]):
+                aux = open(LAB_PATH + 'Samples_Features/MACHO/' + percentage + '%/errores.txt', 'a')
+                aux.write('No calzan largos de: ' + f + '\n' )
+                aux.close()
+                continue
 
             try:
                 pool = multiprocessing.Pool(processes=n_jobs, maxtasksperchild=2)
@@ -111,6 +118,7 @@ if __name__ == '__main__':
 
             except Exception as e:
                 error = True
+                print 'Error: ' + f
                 # raise
 
             if error:
