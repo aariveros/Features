@@ -4,7 +4,7 @@
 # --------------------------------------------------------------------------
 
 import FATS
-
+import pickle
 from config import *
 
 def calc_feature(t_obs, sample, feature_list=None, exclude_list=None):
@@ -21,11 +21,11 @@ def calc_feature(t_obs, sample, feature_list=None, exclude_list=None):
 
 if __name__ == '__main__':
     percentage = '10'
-    sample_path = LAB_PATH + 'GP_Samples/MACHO/' + percentage + '%/non_variables/1.3441.2081 samples.pkl'
+    sample_path = LAB_PATH + 'GP_Samples/MACHO/' + percentage + '%/longperiod_lc/1.3446.9 samples.pkl'
 
     feature_list = ['Amplitude', 'AndersonDarling', 'Autocor_length', 'Beyond1Std', 'Con',
                     'Eta_e', 'LinearTrend', 'MaxSlope', 'Mean', 'Meanvariance', 'MedianAbsDev',
-                    'MedianBRP', 'PairSlopeTrend', 'PercentAmplitude', 'PercentDifferenceFluxPercentile',
+                    'MedianBRP', 'PairSlopeTrend', 'PercentAmplitude',
                     'Q31', 'Rcs', 'Skew', 'SlottedA_length', 'SmallKurtosis',
                     'Std', 'StetsonK','StetsonK_AC']
 
