@@ -46,7 +46,7 @@ f = open(TRAINING_SETS_DIR_PATH + 'GP/' + output_file_name, 'w')
 f.write(linea)
 f.close()
 
-path = LAB_PATH + 'GP_Samples/MACHO/' + percentage + '%'
+path = LAB_PATH + 'Samples_Features/MACHO/' + percentage + '%'
 files = get_paths(path)
 
 lineas = []
