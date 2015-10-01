@@ -47,27 +47,29 @@ if __name__ == '__main__':
 
     # writePathsFile('/Users/npcastro/Desktop/EROS/EROS')
 
-    class_dict = {
-        0: 'BV',
-        1: 'CEPH',
-        2: 'DSCT',
-        3: 'EB',
-        4: 'LPV',
-        5: 'QSO',
-        6: 'RRL',
-        7: 'T2CEPH'
+    class_dict = {0: "Ceph_10",
+                  1: "Ceph_10_20",
+                  2: "Ceph_F",
+                  3: "EB",
+                  4: "LPV",
+                  5: "Mira_AGB_O",
+                  6: "OSARG_RGB_O",
+                  7: "SRV_AGB_C",
+                  8: "SRV_AGB_O",
+                  9: "RRL",
+                  10: "T2CEPH"
     }
 
     lc_files = absoluteFilePaths('/Users/npcastro/Desktop/EROS/EROS')
-    classes_df = pd.read_csv('/Users/npcastro/Desktop/EROS/classes.csv', index_col=0)
+    classes_df = pd.read_csv('/Users/npcastro/Desktop/EROS/karim_classes.csv', index_col=0)
 
     error_count = 0
     for path in lc_files:
         if '.time' in path:
             try:
                 lc_id = get_id(path)
-                clase = class_dict[classes_df.loc[lc_id].type]
-                # shutil.copy(path, '/Users/npcastro/Dropbox/EROS/' + clase + '/' + lc_id + '.time')
+                clase = class_dict[classes_df.loc[lc_id]['class']]
+                shutil.copy(path, '/Users/npcastro/Dropbox/EROS/' + clase + '/' + lc_id + '.time')
             except KeyError:
                 print lc_id
                 error_count += 1
