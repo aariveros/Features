@@ -11,7 +11,7 @@ import re
 
 from config import *
 
-def filter_data( lc, rango = 3, norm = False ):
+def filter_data( lc, rango=3, norm=False ):
     """ Recibe una curva de luz, y la retorna eliminando todos los puntos
      que se encuentran fuera de una cantidad errores promedio
 
@@ -26,11 +26,6 @@ def filter_data( lc, rango = 3, norm = False ):
     [magnitud_media, error_medio] = lc.mean(axis = 0)
 
     lc = lc[(lc['err'] < rango * error_medio) & (np.abs(lc['mag'] - magnitud_media) / lc['mag'].std() < 5 )]
-
-    # lc = lc[lc['err'] < rango * error_medio]
-
-    if norm:
-        pass
 
     return lc
 
