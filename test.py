@@ -36,4 +36,3 @@ for f in files:
         err_file.write(f + ' 2 \n')
 
 err_file.close()
-

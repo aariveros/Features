@@ -3,7 +3,9 @@
 # Métodos para el desarrollo de bootstraping en series de tiempo
 # -----------------------------------------------------------------------------
 
-import lightcurves.lc_utils as lu
+# import lightcurves.lc_utils as lu
+import lightcurves.eros_utils as lu
+
 from config import *
 
 import random
@@ -47,6 +49,7 @@ def GP_bootstrap(lc_path, percentage=1.0, n_samples=100):
     try:
         print lc_path
         lc = lu.open_lightcurve(lc_path)
+        lc = lu.filter_data(lc)
         lc = lc.iloc[0:int(percentage * lc.index.size)]
 
         total_days = lc.index[-1] - lc.index[0]
@@ -77,7 +80,11 @@ def GP_bootstrap(lc_path, percentage=1.0, n_samples=100):
         samples_devs = zip(samples, deviations)
         samples_devs = (t_obs, samples_devs)
 
-        result_dir = (LAB_PATH + 'GP_Samples/MACHO/' + str(int(100 * percentage)) +
+        # result_dir = (LAB_PATH + 'GP_Samples/MACHO/' + str(int(100 * percentage)) +
+        #               '%/' + lu.get_lc_class_name(lc_path) + '/' +
+        #               lu.get_lightcurve_id(lc_path) + ' samples.pkl')
+        
+        result_dir = (LAB_PATH + 'GP_Samples/EROS/' + str(int(100 * percentage)) +
                       '%/' + lu.get_lc_class_name(lc_path) + '/' +
                       lu.get_lightcurve_id(lc_path) + ' samples.pkl')
 
