@@ -45,7 +45,7 @@ def get_id(path):
 
 if __name__ == '__main__':
 
-    # writePathsFile('/Users/npcastro/Desktop/EROS/EROS')
+    writePathsFile('/n/seasfs03/IACS/TSC/ncastro/EROS')
 
     class_dict = {0: "Ceph_10",
                   1: "Ceph_10_20",
@@ -60,18 +60,18 @@ if __name__ == '__main__':
                   10: "T2CEPH"
     }
 
-    lc_files = absoluteFilePaths('/Users/npcastro/Desktop/EROS/EROS')
-    classes_df = pd.read_csv('/Users/npcastro/Desktop/EROS/karim_classes.csv', index_col=0)
+    #lc_files = absoluteFilePaths('/Users/npcastro/Desktop/EROS/EROS')
+    #classes_df = pd.read_csv('/Users/npcastro/Desktop/EROS/karim_classes.csv', index_col=0)
 
-    error_count = 0
-    for path in lc_files:
-        if '.time' in path:
-            try:
-                lc_id = get_id(path)
-                clase = class_dict[classes_df.loc[lc_id]['class']]
-                shutil.copy(path, '/Users/npcastro/Dropbox/EROS/' + clase + '/' + lc_id + '.time')
-            except KeyError:
-                print lc_id
-                error_count += 1
+    #error_count = 0
+    #for path in lc_files:
+    #    if '.time' in path:
+    #        try:
+    #            lc_id = get_id(path)
+    #            clase = class_dict[classes_df.loc[lc_id]['class']]
+    #            shutil.copy(path, '/Users/npcastro/Dropbox/EROS/' + clase + '/' + lc_id + '.time')
+    #        except KeyError:
+    #            print lc_id
+    #            error_count += 1
 
         
