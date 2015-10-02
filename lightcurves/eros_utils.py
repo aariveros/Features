@@ -61,7 +61,7 @@ def open_lightcurve(fp):
     TODO: definir bien como se va a manejar curvas con dos tipos de bandas
     """
     cols = ['mjd', 'mag', 'err', 'magB', 'errB']
-    data = pd.read_csv(fp, skiprows=4, names=cols, index_col=False,
+    data = pd.read_csv(fp, skiprows=4, names=cols, index_col='mjd',
                        sep='\s+', engine='python')
     data = data[['mjd', 'mag', 'err']]
     return data
