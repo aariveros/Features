@@ -7,8 +7,51 @@ import numpy as np
 import pandas as pd
 
 import random
+import re
 
-def get_lightcurve_paths(path=EROS_FILES_PATH):
+from config import *
+
+def filter_data( lc, rango = 3, norm = False ):
+    """ Recibe una curva de luz, y la retorna eliminando todos los puntos
+     que se encuentran fuera de una cantidad errores promedio
+
+     Parameters
+     ----------
+
+     lc: dataframe de la curva de luz
+     rango: rango de filtro, default 3 medias del error
+     norm: si es true la curva se centra en 0, default false
+    """
+
+    [magnitud_media, error_medio] = lc.mean(axis = 0)
+
+    lc = lc[(lc['err'] < rango * error_medio) & (np.abs(lc['mag'] - magnitud_media) / lc['mag'].std() < 5 )]
+
+    # lc = lc[lc['err'] < rango * error_medio]
+
+    if norm:
+        pass
+
+    return lc
+
+def get_lc_class_name(fp):
+    
+    pattern = re.compile('EROS\/.*lm')
+    path = pattern.search(path).group()
+    
+    pattern = re.compile('\/.*\/')
+    path = pattern.search(path).group()
+
+    return path.replace('/', '')
+
+def get_lightcurve_id(path):
+    """Recibe un path absoluto a un archivo de una curva de luz de EROS y 
+    retorna el id de la curva
+    """
+    pattern = re.compile('lm.*[^.time]')
+    return pattern.search(path).group()
+
+def get_lightcurve_paths(path=EROS_FILE_PATH):
     """
     EROS_FILES_PATH: file with the absolutes paths of the lightcurves in each line
 
