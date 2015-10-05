@@ -63,7 +63,7 @@ def open_lightcurve(fp):
     cols = ['mjd', 'mag', 'err', 'magB', 'errB']
     data = pd.read_csv(fp, skiprows=4, names=cols, index_col='mjd',
                        sep='\s+', engine='python')
-    data = data[['mjd', 'mag', 'err']]
+    data = data[['mag', 'err']]
     return data
 
 
