@@ -32,7 +32,7 @@ def filter_data( lc, rango=3, norm=False ):
 def get_lc_class_name(fp):
     
     pattern = re.compile('EROS\/.*lm')
-    path = pattern.search(path).group()
+    path = pattern.search(fp).group()
     
     pattern = re.compile('\/.*\/')
     path = pattern.search(path).group()
