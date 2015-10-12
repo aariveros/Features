@@ -30,20 +30,14 @@ def filter_data( lc, rango=3, norm=False ):
     return lc
 
 def get_lc_class_name(fp):
-    
-    pattern = re.compile('EROS\/.*lm')
-    path = pattern.search(fp).group()
-    
-    pattern = re.compile('\/.*\/')
-    path = pattern.search(path).group()
 
-    return path.replace('/', '')
+    return fp.split('/')[-2]
 
 def get_lightcurve_id(path):
     """Recibe un path absoluto a un archivo de una curva de luz de EROS y 
     retorna el id de la curva
     """
-    pattern = re.compile('lm.*[^.time]')
+    pattern = re.compile('lm[^. ]*')
     return pattern.search(path).group()
 
 def get_lightcurve_paths(path=EROS_FILE_PATH):
