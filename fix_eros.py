@@ -18,17 +18,16 @@ def get_paths(directory):
 
 # for p in [5,10,15,20]:
 for p in [20]:
-	percentage = str(p)
-	samples_path = LAB_PATH + 'GP_Samples/EROS/' + percentage + '%/'
-	files = get_paths(samples_path)
+    percentage = str(p)
+    samples_path = LAB_PATH + 'GP_Samples/EROS/' + percentage + '%/'
+    files = get_paths(samples_path)
 
-
-	for f in files:
-		aux = open(f, 'r')
+    for f in files:
+        aux = open(f, 'r')
         samples = pickle.load(aux)
         aux.close()
 
         errores = samples[1][0][1]
 
         if np.all(errores == np.zeros(len(errores))):
-        	print f
+            print f
