@@ -25,7 +25,16 @@ else:
     print 'No se especifico el porcentaje de las curvas a utilizar'
     percentage = 1
 
+# Elimino features que involucran color y las CAR por temas de tiempo
+fs = FATS.FeatureSpace(Data=['magnitude', 'time', 'error'],
+                       featureList=None, excludeList=['Color',
+                       'Eta_color', 'Q31_color', 'StetsonJ',
+                       'StetsonL', 'CAR_mean', 'CAR_sigma', 'CAR_tau'])
+
+count = 1
 for i in range(len(paths)):
+    print count
+    count += 1
     try:
         path = paths[i]
 
@@ -45,11 +54,8 @@ for i in range(len(paths)):
         curva = curva.iloc[0:int(len(curva) * percentage)]
         total_days = curva.index[-1] - curva.index[0]
 
-        # Preparo la curva para alimentar el GP
-        # t_obs, y_obs, err_obs, min_time, max_time = lu.prepare_lightcurve(azul, normalize=False)
-        # t_obs = np.ravel(t_obs)
-        # y_obs = np.ravel(y_obs)
-        # err_obs = np.ravel(err_obs)
+        if len(curva['err'].unique() == 1):
+            continue
 
         t_obs = curva.index.tolist()
         y_obs = curva['mag'].tolist()
@@ -60,12 +66,6 @@ for i in range(len(paths)):
         sys.stdout.flush()
         sys.stdout.write('\r')
         sys.stdout.flush()
-        
-        # Elimino features que involucran color y las CAR por temas de tiempo
-        fs = FATS.FeatureSpace(Data=['magnitude', 'time', 'error'],
-                               featureList=None, excludeList=['Color',
-                               'Eta_color', 'Q31_color', 'StetsonJ',
-                               'StetsonL', 'CAR_mean', 'CAR_sigma', 'CAR_tau'])
         
         fs = fs.calculateFeature([y_obs, t_obs, err_obs])
 
