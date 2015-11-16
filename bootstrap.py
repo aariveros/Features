@@ -38,6 +38,65 @@ def uniform_bootstrap(lc, percentage, num_samples=100):
 
     return samples
 
+def GP_complete_lc(lc, total_points):
+    """Recibe una curva de luz, le ajusta un modelo de GP y utilizando el valor
+    medio de este, agrega nuevas observaciones separadas homogeneamente
+    a las observaciones reales
+
+    PODRIA AGREGAR EL LENGTH SCALE DEL GAUSSIAN PROCESS (NUMERO DE DIAS)
+
+    lc: curva de luz a completar
+    total_points: Numero total de observaciones que se desea alcanzar
+
+    return: curva con observaciones agregadas
+    """
+    
+    total_days = lc.index[-1] - lc.index[0]
+    n_points = lc.index.size
+
+    if total_points <= n_points:
+        return lc
+
+    # Agrego 2 puntos pq siempre hay que descartar el primero y el ultimo
+    # que topan con los de la curva original
+    missing_points = total_points - n_points + 2
+
+    # Preparo la curva para alimentar el GP
+    t_obs, y_obs, err_obs, min_time, max_time = lu.prepare_lightcurve(lc)
+    t_obs = np.ravel(t_obs)
+    y_obs = np.ravel(y_obs)
+    err_obs = np.ravel(err_obs)
+
+    # Preparo GP, l son 6 dias segun lo observado en otros papers
+    var = np.var(y_obs)
+    l = 6 * (max_time - min_time) / float(total_days)
+    kernel = var ** 2 * kernels.ExpSquaredKernel(l ** 2)
+
+    gp = george.GP(kernel, mean=np.mean(y_obs))
+    gp.compute(t_obs, yerr=err_obs)
+
+    # Sampleo uniformemente la cantidad de observaciones que me faltan
+    x = np.linspace(min_time, max_time, missing_points)
+    mu, cov = gp.predict(y_obs, x)
+
+    new_y = mu * lc['mag'].std() + lc['mag'].mean()
+    new_y = new_y[1:-1]
+
+    # Tengo que desnormalizar las posiciones que entrega el GP
+    observed_days = np.array(lc.index).reshape(len(lc.index),1)
+    new_t = x * np.std(observed_days) + np.mean(observed_days)
+    new_t = new_t[1:-1]
+
+    new_err = np.sqrt(np.diag(cov))[1:-1]
+    # new_err = new_err * lc['mag'].std()
+
+    lc_2 = pd.DataFrame({'mag':new_y, 'err': new_err}, index=new_t)
+
+    return pd.concat([lc, lc_2]).sort_index()
+
+
+
+
 
 def GP_bootstrap(lc_path, percentage=1.0, n_samples=100):
     """Recibe una curva hace un sampleo con un GP sobreajustado
