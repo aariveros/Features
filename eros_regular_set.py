@@ -13,7 +13,7 @@ import FATS
 from config import *
 
 paths = lu.get_lightcurve_paths()
-min_points = 300
+min_points = 420
 feature_values = []
 
 # paths = paths[0:20]
