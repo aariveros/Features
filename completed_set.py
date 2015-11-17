@@ -55,4 +55,4 @@ for i in xrange(len(paths)):
 
     curva = bootstrap.GP_complete_lc(curva, total_points)
 
-    curva.to_csv('/n/seasfs03/IACS/TSC/ncastro/GP_Curves/EROS/' + str(percentage) + '/' + clase + '/' + eros_id + '.csv')
+    curva.to_csv('/n/seasfs03/IACS/TSC/ncastro/GP_Curves/EROS/' + str(percentage) + '%/' + str(total_points) + '/' + clase + '/' + eros_id + '.csv')
