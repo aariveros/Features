@@ -16,7 +16,6 @@ from config import *
 
 
 paths = lu.get_lightcurve_paths()
-paths = paths[0:20]
 
 feature_values = []
 ids = []
@@ -29,7 +28,7 @@ else:
     print 'No se especifico el numero de puntos a utilizar'
     total_points = 700
 
-percentage = 20
+percentage = 0.2
 
 for i in xrange(len(paths)):
     path = paths[i]
@@ -47,7 +46,7 @@ for i in xrange(len(paths)):
         continue
 
     # Tomo el p% de las mediciones
-    curva = curva.iloc[0:int(len(curva) * percentage)]
+    curva = curva.iloc[0:int(len(curva.index) * percentage)]
 
     # Esto no me hace sentido pero lo dejo por consistencia
     if curva['err'].nunique() == 1:
@@ -55,4 +54,4 @@ for i in xrange(len(paths)):
 
     curva = bootstrap.GP_complete_lc(curva, total_points)
 
-    curva.to_csv('/n/seasfs03/IACS/TSC/ncastro/GP_Curves/EROS/' + str(percentage) + '%/' + str(total_points) + '/' + clase + '/' + eros_id + '.csv')
+    curva.to_csv('/n/seasfs03/IACS/TSC/ncastro/GP_Curves/EROS/' + str(int(percentage*100)) + '%/' + str(total_points) + '/' + clase + '/' + eros_id + '.csv')

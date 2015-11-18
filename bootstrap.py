@@ -15,6 +15,7 @@ from george import kernels
 import numpy as np
 import george
 import FATS
+import pandas as pd
 
 def uniform_bootstrap(lc, percentage, num_samples=100):
     """Toma una curva de luz y retorna varias muestras aleatorias tomadas de
@@ -93,10 +94,6 @@ def GP_complete_lc(lc, total_points):
     lc_2 = pd.DataFrame({'mag':new_y, 'err': new_err}, index=new_t)
 
     return pd.concat([lc, lc_2]).sort_index()
-
-
-
-
 
 def GP_bootstrap(lc_path, percentage=1.0, n_samples=100):
     """Recibe una curva hace un sampleo con un GP sobreajustado
