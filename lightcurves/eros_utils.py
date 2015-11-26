@@ -58,6 +58,12 @@ def open_lightcurve(fp):
     data = pd.read_csv(fp, skiprows=4, names=cols, index_col='mjd',
                        sep='\s+', engine='python')
     data = data[['mag', 'err']]
+
+    # Filtros para las observaciones cuya magnitud o error esta equivocada
+    a = lambda x: not np.isclose(x, 99.999)
+    b = lambda x: not np.isclose(x, 9.999)
+
+    data = data[ (data['mag'].apply(a)) | (data['err'].apply(b)) ]
     return data
 
 

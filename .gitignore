@@ -45,3 +45,5 @@ length_errors/
 
 fix.py
 data_errors/
+
+notebooks/*
