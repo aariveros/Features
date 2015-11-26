@@ -89,7 +89,7 @@ def GP_complete_lc(lc, total_points):
     new_t = new_t[1:-1]
 
     new_err = np.sqrt(np.diag(cov))[1:-1]
-    # new_err = new_err * lc['mag'].std()
+    new_err = new_err * lc['mag'].std()
 
     lc_2 = pd.DataFrame({'mag':new_y, 'err': new_err}, index=new_t)
 
@@ -130,7 +130,7 @@ def GP_bootstrap(lc_path, percentage=1.0, n_samples=100):
         x = np.linspace(min_time, max_time, n_points)
 
         samples = gp.sample_conditional(y_obs, t_obs, n_samples)
-        deviations = map(lambda s: np.sqrt(np.diag(gp.predict(s, x)[1])),
+        deviations = map(lambda s: np.sqrt(np.diag(gp.predict(y_obs, x)[1])),
                          samples)
 
         samples_devs = zip(samples, deviations)
