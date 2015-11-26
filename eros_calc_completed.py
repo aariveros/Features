@@ -29,7 +29,7 @@ percentage = 0.2
 feature_values = []
 ids = []
 
-paths = absoluteFilePaths('/n/seasfs03/IACS/TSC/ncastro/GP_Curves/EROS/' + str(percentage*100) + '%/' + str(total_points) + '/')
+paths = absoluteFilePaths('/n/seasfs03/IACS/TSC/ncastro/GP_Curves/EROS/' + str(int(percentage*100)) + '%/' + str(total_points) + '/')
 
 for i in xrange(len(paths)):
     path = paths[i]
@@ -75,5 +75,5 @@ df = pd.DataFrame(feature_values, columns=feature_names, index=ids)
 
 df.sort(axis=1, inplace=True)
 
-df.to_csv('/n/seasfs03/IACS/TSC/ncastro/GP_Sets/EROS/' + str(percentage) + '%/EROS_completed_set_' + str(total_points) + '.csv') 
+df.to_csv('/n/seasfs03/IACS/TSC/ncastro/GP_Sets/EROS/' + str(int(percentage*100)) + '%/EROS_completed_set_' + str(total_points) + '.csv') 
 
