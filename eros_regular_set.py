@@ -1,4 +1,4 @@
-# Calcula un set de features para cada curva de la base de datos macho
+# Calcula un set de features para cada curva de la base de datos EROS
 # Y arma un set de entrenamiento con los valores 
 
 # -----------------------------------------------------------------------------

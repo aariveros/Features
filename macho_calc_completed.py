@@ -1,4 +1,4 @@
-import lightcurves.eros_utils as lu
+import lightcurves.lc_utils as lu
 import pandas as pd
 import bootstrap
 
@@ -20,16 +20,12 @@ def absoluteFilePaths(directory):
 if len(sys.argv) == 2:
     total_points = int(sys.argv[1])
 
-else:
-    print 'No se especifico el numero de puntos a utilizar'
-    total_points = 700
-
-percentage = 0.2
+percentage = 0.1
 
 feature_values = []
 ids = []
 
-paths = absoluteFilePaths('/n/seasfs03/IACS/TSC/ncastro/GP_Curves/EROS/' + str(int(percentage*100)) + '%/' + str(total_points) + '/')
+paths = absoluteFilePaths('/n/seasfs03/IACS/TSC/ncastro/GP_Curves/MACHO/' + str(int(percentage*100)) + '%/' + str(total_points) + '/')
 
 for i in xrange(len(paths)):
     path = paths[i]
@@ -61,19 +57,11 @@ for i in xrange(len(paths)):
 
     feature_values.append(valores)
 
-    #except KeyboardInterrupt:
-    #    raise
-    #except Exception, e:
-    #    f = open('/n/seasfs03/IACS/TSC/ncastro/GP_Sets/EROS/problemas/GP_completo_eros ' + str(percentage) + '.txt', 'a')
-    #    f.write(path + '\n')
-    #    f.close()
-    #    continue
-
 feature_names = fs.result(method='dict').keys()
 feature_names.append('class')
 df = pd.DataFrame(feature_values, columns=feature_names, index=ids)
 
 df.sort(axis=1, inplace=True)
 
-df.to_csv('/n/seasfs03/IACS/TSC/ncastro/GP_Sets/EROS/' + str(int(percentage*100)) + '%/EROS_completed_set_' + str(total_points) + '.csv') 
+df.to_csv('/n/seasfs03/IACS/TSC/ncastro/GP_Sets/MACHO/' + str(int(percentage*100)) + '%/MACHO_completed_set_' + str(total_points) + '.csv') 
 
