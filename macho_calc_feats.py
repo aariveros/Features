@@ -9,6 +9,9 @@ import numpy as np
 import sys
 import os
 
+from functools import partial
+import multiprocessing
+
 import FATS
 
 from config import *
@@ -37,9 +40,10 @@ else:
     print 'No se especifico el porcentaje de las curvas a utilizar'
     percentage = 1
 
-os.remove(TRAINING_SETS_DIR_PATH + 'problemas/pocos_puntos ' + str(int(percentage * 100)) + '.txt')
+if os.path.isfile(TRAINING_SETS_DIR_PATH + 'problemas/pocos_puntos ' + str(int(percentage * 100)) + '.txt'):
+    os.remove(TRAINING_SETS_DIR_PATH + 'problemas/pocos_puntos ' + str(int(percentage * 100)) + '.txt')
 
-for i in range(len(paths)):
+for path in paths:
     try:
         path = paths[i]
 
@@ -49,6 +53,10 @@ for i in range(len(paths)):
 
         macho_id = lu.get_lightcurve_id(path)
         print 'Curva: ' + lu.get_lightcurve_id(path)
+
+        macho_class = lu.get_lc_class_name(path)
+        if macho_class not in ['EB', 'Be_lc']:
+            continue
 
         azul = lu.open_lightcurve(path)
         azul = lu.filter_data(azul)
@@ -67,12 +75,6 @@ for i in range(len(paths)):
         t_obs = azul.index.tolist()
         y_obs = azul['mag'].tolist()
         err_obs = azul['err'].tolist()
-
-        # Calculo algunas features para el grupo de muestras
-        sys.stdout.write('Calculando Features...')
-        sys.stdout.flush()
-        sys.stdout.write('\r')
-        sys.stdout.flush()
         
         # Elimino features que involucran color y las CAR por temas de tiempo
         fs = FATS.FeatureSpace(Data=['magnitude', 'time', 'error'],
@@ -103,4 +105,4 @@ df = pd.DataFrame(feature_values, columns=feature_names, index=macho_ids)
 
 df.sort(axis=1, inplace=True)
 
-#df.to_csv(TRAINING_SETS_DIR_PATH + 'Macho regular set ' + str(sys.argv[1]) + '.csv', index=False) 
+df.to_csv(TRAINING_SETS_DIR_PATH + 'Macho regular set ' + str(sys.argv[1]) + '.csv') 
