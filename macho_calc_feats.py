@@ -7,6 +7,7 @@ import lightcurves.lc_utils as lu
 import pandas as pd
 import numpy as np
 import sys
+import os
 
 import FATS
 
@@ -25,8 +26,9 @@ from config import *
 paths = lu.get_lightcurve_paths()
 min_points = 300
 feature_values = []
+macho_ids = []
 
-# paths = paths[0:20]
+paths = paths[0:20]
 
 if len(sys.argv) == 2:
     percentage = int(sys.argv[1])  / float(100)
@@ -34,6 +36,8 @@ if len(sys.argv) == 2:
 else:
     print 'No se especifico el porcentaje de las curvas a utilizar'
     percentage = 1
+
+os.remove(TRAINING_SETS_DIR_PATH + 'problemas/pocos_puntos ' + str(int(percentage * 100)) + '.txt')
 
 for i in range(len(paths)):
     try:
@@ -43,6 +47,7 @@ for i in range(len(paths)):
         if not 'B.mjd' in path:
             continue
 
+        macho_id = lu.get_lightcurve_id(path)
         print 'Curva: ' + lu.get_lightcurve_id(path)
 
         azul = lu.open_lightcurve(path)
@@ -58,12 +63,6 @@ for i in range(len(paths)):
         # Tomo el p% de las mediciones
         azul = azul.iloc[0:int(len(azul) * percentage)]
         total_days = azul.index[-1] - azul.index[0]
-
-        # Preparo la curva para alimentar el GP
-        # t_obs, y_obs, err_obs, min_time, max_time = lu.prepare_lightcurve(azul, normalize=False)
-        # t_obs = np.ravel(t_obs)
-        # y_obs = np.ravel(y_obs)
-        # err_obs = np.ravel(err_obs)
 
         t_obs = azul.index.tolist()
         y_obs = azul['mag'].tolist()
@@ -88,6 +87,7 @@ for i in range(len(paths)):
         valores.append(clase)
 
         feature_values.append(valores)
+        macho_ids.append(macho_id)
 
     except KeyboardInterrupt:
         raise
@@ -99,8 +99,8 @@ for i in range(len(paths)):
 
 feature_names = fs.result(method='dict').keys()
 feature_names.append('class')
-df = pd.DataFrame(feature_values, columns=feature_names)
+df = pd.DataFrame(feature_values, columns=feature_names, index=macho_ids)
 
 df.sort(axis=1, inplace=True)
 
-df.to_csv(TRAINING_SETS_DIR_PATH + 'Macho regular set ' + str(sys.argv[1]) + '.csv', index=False) 
+#df.to_csv(TRAINING_SETS_DIR_PATH + 'Macho regular set ' + str(sys.argv[1]) + '.csv', index=False) 
