@@ -45,8 +45,6 @@ if os.path.isfile(TRAINING_SETS_DIR_PATH + 'problemas/pocos_puntos ' + str(int(p
 
 for path in paths:
     try:
-        path = paths[i]
-
         # Descarto la banda roja por ahora
         if not 'B.mjd' in path:
             continue
