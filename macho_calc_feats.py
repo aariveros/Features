@@ -31,7 +31,7 @@ min_points = 300
 feature_values = []
 macho_ids = []
 
-paths = paths[0:20]
+# paths = paths[0:20]
 
 if len(sys.argv) == 2:
     percentage = int(sys.argv[1])  / float(100)
@@ -45,6 +45,7 @@ if os.path.isfile(TRAINING_SETS_DIR_PATH + 'problemas/pocos_puntos ' + str(int(p
 
 for path in paths:
     try:
+        
         # Descarto la banda roja por ahora
         if not 'B.mjd' in path:
             continue
@@ -103,4 +104,4 @@ df = pd.DataFrame(feature_values, columns=feature_names, index=macho_ids)
 
 df.sort(axis=1, inplace=True)
 
-df.to_csv(TRAINING_SETS_DIR_PATH + 'Macho regular set ' + str(sys.argv[1]) + '.csv') 
+df.to_csv(TRAINING_SETS_DIR_PATH + '/MACHO_Reduced/Macho reduced set ' + str(sys.argv[1]) + '.csv') 
