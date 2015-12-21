@@ -28,7 +28,7 @@ if __name__ == '__main__':
 
     samples_path = LAB_PATH + 'Samples_Features/MACHO/' + percentage + '%/'
 
-    files = get_paths(path)
+    files = get_paths(samples_path)
     files = [x for x in files]
     ids = [lu.get_lightcurve_id(x) for x in files]
 
@@ -37,8 +37,8 @@ if __name__ == '__main__':
     linea = ','.join(feature_list) + '\n'
 
     for i in xrange(100):
-        f = open('/n/seasfs03/IACS/TSC/ncastro/sets/MACHO_Sampled' + percentage
-                 + '%/' + 'macho_sampled' + str(i) + '.csv', 'w')
+        f = open('/n/seasfs03/IACS/TSC/ncastro/sets/MACHO_Sampled/' + percentage
+                 + '%/' + 'macho_sampled_' + str(i) + '.csv', 'w')
         f.write(linea)
         f.close()
 
