@@ -28,23 +28,38 @@ if __name__ == '__main__':
 
     samples_path = LAB_PATH + 'Samples_Features/MACHO/' + percentage + '%/'
 
-    files = get_paths(samples_path)
-    files = [x for x in files]
-    ids = [lu.get_lightcurve_id(x) for x in files]
+    feature_samples_files = get_paths(samples_path)
+    feature_samples_files = [x for x in feature_samples_files]
+    ids = [lu.get_lightcurve_id(x) for x in feature_samples_files]
 
-    feature_list = pd.read_csv(files[0]).columns.tolist()
+    feature_list = ['']
+    feature_list.extend(pd.read_csv(feature_samples_files[0]).columns.tolist())
     feature_list.append('class')
     linea = ','.join(feature_list) + '\n'
 
+    archivos = []
     for i in xrange(100):
         f = open('/n/seasfs03/IACS/TSC/ncastro/sets/MACHO_Sampled/' + percentage
                  + '%/' + 'macho_sampled_' + str(i) + '.csv', 'w')
         f.write(linea)
+        archivos.append(f)
+    
+    for f in feature_samples_files:
+        macho_id = lu.get_lightcurve_id(f)
+        macho_class = lu.get_lc_class_name(f)
+
+        archivo = open(f, 'r')
+
+        # Boto la prima linea con el nombre de las columnas
+        archivo.readline()
+
+        for index, l in enumerate(archivo):
+            linea = [macho_id]
+            linea.extend(l.strip('\n').split(','))
+            linea.append(macho_class)
+            linea = ','.join(linea) + '\n'
+
+            archivos[index].write(linea)
+    
+    for f in archivos:
         f.close()
-
-    # dfs = [pd.read_csv(f) for f in files]
-
-    # for i in xrange(len(dfs[0].index)):
-    #     rows = [df.iloc[i] for df in dfs]
-    #     pd.concatenate[rows]
-    #     pd.to_csv()
