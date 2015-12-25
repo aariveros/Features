@@ -95,6 +95,56 @@ def GP_complete_lc(lc, total_points):
 
     return pd.concat([lc, lc_2]).sort_index()
 
+def GP_sample_mean(lc_path, result_dir='', percentage=1.0):
+    """Recibe una curva ajusta un GP (sobreajustado) y guarda las medias del
+    modelo
+
+    lc_path: path de la curva de luz
+    percentage: porcentaje de la curva a utilizar
+    """
+    try:
+        print lc_path
+        lc = lu.open_lightcurve(lc_path)
+        lc = lu.filter_data(lc)
+        lc = lc.iloc[0:int(percentage * lc.index.size)]
+
+        total_days = lc.index[-1] - lc.index[0]
+
+        # Preparo la curva para alimentar el GP
+        t_obs, y_obs, err_obs, min_time, max_time = lu.prepare_lightcurve(lc)
+        t_obs = np.ravel(t_obs)
+        y_obs = np.ravel(y_obs)
+        err_obs = np.ravel(err_obs)
+
+        # Preparo GP, l son 6 dias segun lo observado en otros papers
+        var = np.var(y_obs)
+        l = 6 * (max_time - min_time) / float(total_days)
+        kernel = var ** 2 * kernels.ExpSquaredKernel(l ** 2)
+
+        gp = george.GP(kernel, mean=np.mean(y_obs))
+        gp.compute(t_obs, yerr=err_obs)
+
+        mu, cov = gp.predict(y_obs, t_obs)
+        sigma = np.sqrt(np.diag(cov))
+
+        fitted_curve = (t_obs, mu, sigma)
+
+        result_path = (result_dir + lu.get_lc_class_name(lc_path) + '/' +
+                      lu.get_lightcurve_id(lc_path) + '.pkl')
+
+        output = open(result_path, 'wb')
+        cPickle.dump(fitted_curve, output)
+        output.close()
+
+    except Exception as e:
+        print e
+        err_path = result_dir + 'error.txt'
+        f = open(err_path, 'a')
+        f.write(lc_path + '\n')
+        f.close()
+
+
+
 def GP_bootstrap(lc_path, percentage=1.0, n_samples=100):
     """Recibe una curva hace un sampleo con un GP sobreajustado
     y retorna las muestras obtenidas
@@ -130,6 +180,11 @@ def GP_bootstrap(lc_path, percentage=1.0, n_samples=100):
         x = np.linspace(min_time, max_time, n_points)
 
         samples = gp.sample_conditional(y_obs, t_obs, n_samples)
+
+        # ESTO ESTA RARO!!! S NO SE OCUPA, POR LO QUE TODAS LAS DESVIACIONES
+        # SON LAS MISMAS. ESTA ESO BIEN???
+        # ADEMAS NO ESTOY PIDIENDO LAS DESVIACIONES EN EL MISMO LUGAR DDE
+        # SAQUE LAS MUESTRAS. ESO SI O SI ESTA MAL
         deviations = map(lambda s: np.sqrt(np.diag(gp.predict(y_obs, x)[1])),
                          samples)
 
