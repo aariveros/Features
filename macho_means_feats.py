@@ -39,7 +39,7 @@ min_points = 300
 lc_paths = []
 
 paths = [x for x in paths]
-paths = paths[0:4]
+paths = paths[0:20]
 
 if os.path.isfile(sets_dir_path + 'problemas/pocos_puntos ' + str(int(percentage * 100)) + '.txt'):
     os.remove(sets_dir_path + 'problemas/pocos_puntos ' + str(int(percentage * 100)) + '.txt')
