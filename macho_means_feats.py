@@ -84,6 +84,7 @@ fs = FATS.FeatureSpace(Data=['magnitude', 'time', 'error'],
 
 feature_names = ['macho_id'] + fs.featureList + ['class']
 
-df = pd.DataFrame(values, columns=feature_names, index=['macho_id'])
+df = pd.DataFrame(values, columns=feature_names)
+df.set_index('macho_id')
 df.sort(axis=1, inplace=True)
 df.to_csv('/n/home09/ncastro/workspace/Features/sets/MACHO_Means/Macho means set ' + str(sys.argv[1]) + '.csv') 
