@@ -96,8 +96,8 @@ if __name__ == '__main__':
             t_obs = samples[0]
             lc_class = lu.get_lc_class_name(f)
 
-            partial_calc = partial(parallel.calc_features, t_obs,
-                                feature_list=feature_list,
+            partial_calc = partial(parallel.calc_sample_feats, t_obs,
+                                   feature_list=feature_list,
                                    exclude_list=exclude_list)
             error = False
             chunksize = int(100/n_jobs)

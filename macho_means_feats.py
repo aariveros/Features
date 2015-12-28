@@ -6,14 +6,12 @@
 import lightcurves.lc_utils as lu
 import pandas as pd
 import pickle
-import numpy as np
 import sys
 import os
 
 from functools import partial
 import multiprocessing
-
-import FATS
+import parallel
 
 from config import *
 
@@ -36,71 +34,53 @@ sets_dir_path = '/n/seasfs03/IACS/TSC/ncastro/GP_Means/MACHO/'
 
 paths = get_paths(sets_dir_path + str(int(percentage * 100)) + '%/')
 min_points = 300
-feature_values = []
-macho_ids = []
+
+n_jobs = 30
+
+lc_paths = []
 
 paths = paths[0:20]
 
 if os.path.isfile(sets_dir_path + 'problemas/pocos_puntos ' + str(int(percentage * 100)) + '.txt'):
     os.remove(sets_dir_path + 'problemas/pocos_puntos ' + str(int(percentage * 100)) + '.txt')
 
+# Preparo la lista de curvas a clasificar
 for path in paths:
-    try:
+    macho_id = lu.get_lightcurve_id(path)
+    macho_class = lu.get_lc_class_name(path)
 
-        macho_id = lu.get_lightcurve_id(path)
-        print 'Curva: ' + lu.get_lightcurve_id(path)
+    f = open(path, 'rb')
+    lc = pickle.load(f)
+    f.close()
 
-        macho_class = lu.get_lc_class_name(path)
+    aux = {'mag':lc[1], 'err':lc[2]}
+    lc = pd.DataFrame(aux, index=lc[0])
+    lc = lu.filter_data(lc)
 
-        f = open(path, 'rb')
-        lc = pickle.load(f)
-        f.close()
-
-        aux = {'mag':lc[1], 'err':lc[2]}
-        lc = pd.DataFrame(aux, index=lc[0])
-
-        lc = lu.filter_data(lc)
-
-        # Si la curva filtrada no tiene al menos min_points no la ocupo
-        if len(lc.index) < min_points:
-            f = open(sets_dir_path + 'problemas/pocos_puntos ' + str(int(percentage * 100)) + '.txt', 'a')
-            f.write(path + '\n')
-            f.close()
-            continue
-
-        # Tomo el p% de las mediciones
-        lc = lc.iloc[0:int(len(lc) * percentage)]
-
-        t_obs = lc.index.tolist()
-        y_obs = lc['mag'].tolist()
-        err_obs = lc['err'].tolist()
-        
-        # Elimino features que involucran color y las CAR por temas de tiempo
-        fs = FATS.FeatureSpace(Data=['magnitude', 'time', 'error'],
-                               featureList=None, excludeList=['Color',
-                               'Eta_color', 'Q31_color', 'StetsonJ',
-                               'StetsonL', 'CAR_mean', 'CAR_sigma', 'CAR_tau'])
-        
-        fs = fs.calculateFeature([y_obs, t_obs, err_obs])
-
-        valores = map(lambda x: float("{0:.6f}".format(x)),fs.result(method='dict').values())
-        valores.append(macho_class)
-
-        feature_values.append(valores)
-        macho_ids.append(macho_id)
-
-    except KeyboardInterrupt:
-        raise
-    except Exception, e:
-        f = open(sets_dir_path + 'problemas/errores ' + str(int(percentage * 100)) + '.txt', 'a')
+    # Si la curva filtrada no tiene al menos min_points no la ocupo
+    if len(lc.index) < min_points:
+        f = open(sets_dir_path + 'problemas/pocos_puntos ' + str(int(percentage * 100)) + '.txt', 'a')
         f.write(path + '\n')
         f.close()
         continue
+    else:
+        lc_paths.append(path)
 
-feature_names = fs.result(method='dict').keys()
-feature_names.append('class')
-df = pd.DataFrame(feature_values, columns=feature_names, index=macho_ids)
+featureList = None
+# Elimino features que involucran color y las CAR por temas de tiempo
+excludeList=['Color', 'Eta_color', 'Q31_color', 'StetsonJ', 'StetsonL',
+             'CAR_mean', 'CAR_sigma', 'CAR_tau']
 
+partial_calc = partial(parallel.calc_feats, feature_list=feature_list,
+                       exclude_list=exclude_list, percentage=percentage)
+
+pool = multiprocessing.Pool(processes=n_jobs)
+values = pool.map(partial_calc, samples[1], chunksize)
+pool.close()
+pool.join()
+
+feature_names = ['macho_id'] + fs.result(method='dict').keys() + ['class']
+
+df = pd.DataFrame(values, columns=feature_names, index=['macho_id'])
 df.sort(axis=1, inplace=True)
-
 df.to_csv('/n/home09/ncastro/workspace/Features/sets/MACHO_Means/Macho means set ' + str(sys.argv[1]) + '.csv') 
