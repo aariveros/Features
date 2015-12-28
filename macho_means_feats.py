@@ -39,7 +39,7 @@ min_points = 300
 lc_paths = []
 
 paths = [x for x in paths]
-paths = paths[0:20]
+paths = paths[0:300]
 
 if os.path.isfile(sets_dir_path + 'problemas/pocos_puntos ' + str(int(percentage * 100)) + '.txt'):
     os.remove(sets_dir_path + 'problemas/pocos_puntos ' + str(int(percentage * 100)) + '.txt')
@@ -85,6 +85,6 @@ fs = FATS.FeatureSpace(Data=['magnitude', 'time', 'error'],
 feature_names = ['macho_id'] + fs.featureList + ['class']
 
 df = pd.DataFrame(values, columns=feature_names)
-df.set_index('macho_id')
+df = df.set_index('macho_id')
 df.sort(axis=1, inplace=True)
 df.to_csv('/n/home09/ncastro/workspace/Features/sets/MACHO_Means/Macho means set ' + str(sys.argv[1]) + '.csv') 
