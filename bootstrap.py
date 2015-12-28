@@ -3,8 +3,8 @@
 # Métodos para el desarrollo de bootstraping en series de tiempo
 # -----------------------------------------------------------------------------
 
-# import lightcurves.lc_utils as lu
-import lightcurves.eros_utils as lu
+import lightcurves.lc_utils as lu
+# import lightcurves.eros_utils as lu
 
 from config import *
 
