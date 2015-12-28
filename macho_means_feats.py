@@ -35,10 +35,9 @@ sets_dir_path = '/n/seasfs03/IACS/TSC/ncastro/GP_Means/MACHO/'
 paths = get_paths(sets_dir_path + str(int(percentage * 100)) + '%/')
 min_points = 300
 
-n_jobs = 30
-
 lc_paths = []
 
+paths = [x for x in paths]
 paths = paths[0:20]
 
 if os.path.isfile(sets_dir_path + 'problemas/pocos_puntos ' + str(int(percentage * 100)) + '.txt'):
@@ -66,16 +65,16 @@ for path in paths:
     else:
         lc_paths.append(path)
 
-featureList = None
+feature_list = None
 # Elimino features que involucran color y las CAR por temas de tiempo
-excludeList=['Color', 'Eta_color', 'Q31_color', 'StetsonJ', 'StetsonL',
+exclude_list=['Color', 'Eta_color', 'Q31_color', 'StetsonJ', 'StetsonL',
              'CAR_mean', 'CAR_sigma', 'CAR_tau']
 
 partial_calc = partial(parallel.calc_feats, feature_list=feature_list,
                        exclude_list=exclude_list, percentage=percentage)
 
-pool = multiprocessing.Pool(processes=n_jobs)
-values = pool.map(partial_calc, samples[1], chunksize)
+pool = multiprocessing.Pool()
+values = pool.map(partial_calc, lc_paths)
 pool.close()
 pool.join()
 
