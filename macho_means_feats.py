@@ -6,6 +6,7 @@
 import lightcurves.lc_utils as lu
 import pandas as pd
 import pickle
+import FATS
 import sys
 import os
 
@@ -38,7 +39,7 @@ min_points = 300
 lc_paths = []
 
 paths = [x for x in paths]
-paths = paths[0:20]
+paths = paths[0:4]
 
 if os.path.isfile(sets_dir_path + 'problemas/pocos_puntos ' + str(int(percentage * 100)) + '.txt'):
     os.remove(sets_dir_path + 'problemas/pocos_puntos ' + str(int(percentage * 100)) + '.txt')
@@ -78,7 +79,10 @@ values = pool.map(partial_calc, lc_paths)
 pool.close()
 pool.join()
 
-feature_names = ['macho_id'] + fs.result(method='dict').keys() + ['class']
+fs = FATS.FeatureSpace(Data=['magnitude', 'time', 'error'],
+                       featureList=feature_list, excludeList=exclude_list)
+
+feature_names = ['macho_id'] + fs.featureList + ['class']
 
 df = pd.DataFrame(values, columns=feature_names, index=['macho_id'])
 df.sort(axis=1, inplace=True)
