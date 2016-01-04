@@ -39,6 +39,24 @@ lc_paths = [x for x in paths]
 if os.path.isfile(sets_dir_path + 'problemas/pocos_puntos ' + str(int(percentage * 100)) + '.txt'):
     os.remove(sets_dir_path + 'problemas/pocos_puntos ' + str(int(percentage * 100)) + '.txt')
 
+# Filtro las curvas que no tienen suficientes puntos
+aux = []
+for p in lc_paths:
+    f = open(p, 'rb')
+    lc = pickle.load(f)
+    f.close()
+
+    y_obs = lc[1].tolist()
+    
+    if len(y_obs) < 15:
+        f = open(sets_dir_path + 'problemas/pocos_puntos ' + str(int(percentage * 100)) + '.txt', 'a')
+        f.write(p + '\n')
+        f.close()
+        continue
+    else:
+        aux.append(p)
+lc_paths = aux
+
 feature_list = ['Amplitude', 'AndersonDarling', 'Autocor_length', 'Beyond1Std', 'Con',
                 'Eta_e', 'LinearTrend', 'MaxSlope', 'Mean', 'Meanvariance', 'MedianAbsDev',
                 'MedianBRP', 'PairSlopeTrend', 'PercentAmplitude', 'Q31', 'Rcs', 'Skew',
