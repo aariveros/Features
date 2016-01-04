@@ -35,13 +35,9 @@ def calc_feats(lc_path, feature_list=None, exclude_list=None, percentage=1.0):
     lc = pickle.load(f)
     f.close()
 
-    aux = {'mag':lc[1], 'err':lc[2]}
-    lc = pd.DataFrame(aux, index=lc[0])
-    lc = lu.filter_data(lc)
-
-    t_obs = lc.index.tolist()
-    y_obs = lc['mag'].tolist()
-    err_obs = lc['err'].tolist()
+    t_obs = lc[0].tolist()
+    y_obs = lc[1].tolist()
+    err_obs = lc[2].tolist()
 
     fs = FATS.FeatureSpace(Data=['magnitude', 'time', 'error'], 
                            featureList=feature_list, excludeList=exclude_list)
