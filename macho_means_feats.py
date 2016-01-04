@@ -39,6 +39,22 @@ lc_paths = [x for x in paths]
 if os.path.isfile(sets_dir_path + 'problemas/pocos_puntos ' + str(int(percentage * 100)) + '.txt'):
     os.remove(sets_dir_path + 'problemas/pocos_puntos ' + str(int(percentage * 100)) + '.txt')
 
+aux = []
+for p in lc_paths:
+
+    f = open(p, 'rb')
+    lc = pickle.load(f)
+    f.close()
+
+    aux = {'mag':lc[1], 'err':lc[2]}
+    lc = pd.DataFrame(aux, index=lc[0])
+    lc = lu.filter_data(lc)
+
+    if len(lc.index) >= 300:
+        aux.append(p)
+
+lc_paths = aux
+
 feature_list = None
 # Elimino features que involucran color y las CAR por temas de tiempo
 exclude_list=['Color', 'Eta_color', 'Q31_color', 'StetsonJ', 'StetsonL',
