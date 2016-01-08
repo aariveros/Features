@@ -28,17 +28,18 @@ f = open(result_file, 'w')
 f.write(linea)
 
 for path in paths:
-	lineas = []
-	df = pd.read_csv(path)
-	lc_id = lu.get_lightcurve_id(path)
+    lineas = []
+    df = pd.read_csv(path)
+    lc_id = lu.get_lightcurve_id(path)
+    lc_class = lu.get_lc_class_name(path)
 
-	for i in xrange(N):
-		linea = [lc_id]
-		linea.extend(map(str, df.iloc[i].tolist()))
-		linea = ','.join(linea) + '\n'
-		lineas.append(linea)
+    for i in xrange(N):
+        linea = [lc_id]
+        linea.extend(map(str, df.iloc[i].tolist()))
+        linea.append(lc_class)
+        linea = ','.join(linea) + '\n'
+        lineas.append(linea)
 
-	f.writelines(lineas)
-
+    f.writelines(lineas)
 
 f.close()
