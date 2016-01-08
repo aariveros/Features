@@ -7,6 +7,7 @@
 # --------------------------------------------------------------------------
 
 import lightcurves.lc_utils as lu
+import utils
 from config import *
 import parallel
 
@@ -19,14 +20,6 @@ import os
 import pandas as pd
 import FATS
 
-
-def get_paths(directory):
-    """Entrega todos los paths absolutos a objetos serializados de un directorio
-    """
-    for dirpath, _, filenames in os.walk(directory):
-        for f in filenames:
-            if '.pkl' in f:
-                yield(os.path.abspath(os.path.join(dirpath, f)))
 
 def get_ids_in_paths(directory):
     """Busca todos los csv de un directorio, encuentra los ids y los retorna
@@ -55,7 +48,7 @@ if __name__ == '__main__':
     calculated_feats_path = LAB_PATH + 'Samples_Features/MACHO/' + percentage + '%/'
 
     # Obtengo los archivos con las muestras serializadas
-    files = get_paths(samples_path)
+    files = utils.get_paths(samples_path, '.pkl')
 
     # Obtengo los ids de las curvas que ya han sido calculadas en iteraciones anteriores
     ids = get_ids_in_paths(calculated_feats_path)
