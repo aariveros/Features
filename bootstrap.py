@@ -3,8 +3,9 @@
 # Métodos para el desarrollo de bootstraping en series de tiempo
 # -----------------------------------------------------------------------------
 
-import lightcurves.lc_utils as lu
+import lightcurves.macho_utils as lu
 # import lightcurves.eros_utils as lu
+import utils
 
 from config import *
 
@@ -68,7 +69,7 @@ def GP_complete_lc(lc, total_points):
     missing_points = total_points - n_points + 2
 
     # Preparo la curva para alimentar el GP
-    t_obs, y_obs, err_obs, min_time, max_time = lu.prepare_lightcurve(lc)
+    t_obs, y_obs, err_obs, min_time, max_time = utils.prepare_lightcurve(lc)
     t_obs = np.ravel(t_obs)
     y_obs = np.ravel(y_obs)
     err_obs = np.ravel(err_obs)
@@ -116,7 +117,7 @@ def GP_sample_mean(lc_path, result_dir='', percentage=1.0):
         total_days = lc.index[-1] - lc.index[0]
 
         # Preparo la curva para alimentar el GP
-        t_obs, y_obs, err_obs, min_time, max_time = lu.prepare_lightcurve(lc)
+        t_obs, y_obs, err_obs, min_time, max_time = utils.prepare_lightcurve(lc)
         t_obs = np.ravel(t_obs)
         y_obs = np.ravel(y_obs)
         err_obs = np.ravel(err_obs)
@@ -163,7 +164,7 @@ def GP_bootstrap(lc_path, percentage=1.0, n_samples=100):
     total_days = lc.index[-1] - lc.index[0]
 
     # Preparo la curva para alimentar el GP
-    t_obs, y_obs, err_obs, min_time, max_time = lu.prepare_lightcurve(lc)
+    t_obs, y_obs, err_obs, min_time, max_time = utils.prepare_lightcurve(lc)
 
     # Preparo GP, l son 6 dias segun lo observado en otros papers
     var = np.var(y_obs)
@@ -195,7 +196,7 @@ def graf_GP(lc_path, percentage=1.0):
     total_days = lc.index[-1] - lc.index[0]
 
     # Preparo la curva para alimentar el GP
-    t_obs, y_obs, err_obs, min_time, max_time = lu.prepare_lightcurve(lc)
+    t_obs, y_obs, err_obs, min_time, max_time = utils.prepare_lightcurve(lc)
     t_obs = np.ravel(t_obs)
     y_obs = np.ravel(y_obs)
     err_obs = np.ravel(err_obs)
@@ -244,7 +245,7 @@ def parallel_bootstrap(lc_path, percentage=1.0, n_samples=100):
         n_points = lc.index.size
 
         # Preparo la curva para alimentar el GP
-        t_obs, y_obs, err_obs, min_time, max_time = lu.prepare_lightcurve(lc)
+        t_obs, y_obs, err_obs, min_time, max_time = utils.prepare_lightcurve(lc)
         t_obs = np.ravel(t_obs)
         y_obs = np.ravel(y_obs)
         err_obs = np.ravel(err_obs)
@@ -302,7 +303,7 @@ def test(lc_path, percentage=1.0):
     n_points = lc.index.size
 
     # Preparo la curva para alimentar el GP
-    t_obs, y_obs, err_obs, min_time, max_time = lu.prepare_lightcurve(lc)
+    t_obs, y_obs, err_obs, min_time, max_time = utils.prepare_lightcurve(lc)
     t_obs = np.ravel(t_obs)
     y_obs = np.ravel(y_obs)
     err_obs = np.ravel(err_obs)

@@ -6,7 +6,7 @@
 import pandas as pd
 import matplotlib.pyplot as plt
 import matplotlib.mlab as mlab
-import lightcurves.lc_utils as lu
+import lightcurves.macho_utils as lu
 import numpy as np
 
 import bootstrap
