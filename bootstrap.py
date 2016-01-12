@@ -141,12 +141,16 @@ def GP_sample_mean(lc_path, result_dir='', percentage=1.0):
         f.write(lc_path + '\n')
         f.close()
 
-def GP_bootstrap(lc, kernel, n_samples=100):
+def GP_bootstrap(lc, kernel, sampling='equal', n_samples=100):
     """Recibe una curva hace un sampleo con un GP sobreajustado
     y retorna las muestras obtenidas
 
-    lc_path: path de la curva de luz
-    percentage: porcentaje de la curva a utilizar
+    lc: curva de luz a samplear
+    kernel: kernel de george a utilizar
+    sampling:   uniform - las curvas sampleadas se toman a intervalos uniformes
+                equal - las curvas se toman en los mismos instantes que la
+                        curva original
+    n_samples: number of samples taken2
     """
 
     # Preparo la curva para alimentar el GP
@@ -155,7 +159,11 @@ def GP_bootstrap(lc, kernel, n_samples=100):
     gp = george.GP(kernel, mean=np.mean(y_obs))
     gp.compute(t_obs, yerr=err_obs)
 
-    samples = gp.sample_conditional(y_obs, t_obs, n_samples)
+    if sampling == 'uniform':
+        x = np.linspace(min_time, max_time, lc.index.size)
+        samples = gp.sample_conditional(y_obs, x, n_samples)
+    else:
+        samples = gp.sample_conditional(y_obs, t_obs, n_samples)
 
     deviations = map(lambda s: np.sqrt(np.diag(gp.predict(y_obs, t_obs)[1])),
                      samples)

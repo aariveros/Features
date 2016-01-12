@@ -15,8 +15,6 @@ import lightcurves.macho_utils as lu
 import bootstrap
 import utils
 
-
-
 # Ubicacion de las curvas
 # 0-1           Be_lc
 # 255-256       CEPH
@@ -27,7 +25,7 @@ import utils
 # 12527-12528   quasar_lc
 # 12645-12646   RRL
 
-def graf_hist(values, real_value):
+def graf_hist(values, real_value, file_dir):
 	plt.figure()
 
 	mean = np.mean(values)
@@ -37,7 +35,7 @@ def graf_hist(values, real_value):
 
 	n, bins, patches = plt.hist(values, 60, normed=1, histtype='bar', color = 'b', alpha=0.6)
 	plt.axvline(x=real_value, color = 'r', label=u'Real value')
-	plt.show()
+	plt.savefig(file_dir)
 	plt.close()
 
 percentage = 0.8
@@ -76,27 +74,27 @@ kernel = var ** 2 * kernels.ExpSquaredKernel(l ** 2)
 gp = george.GP(kernel, mean=np.mean(y_obs))
 gp.compute(t_obs, yerr=err_obs)
 
-bootstrap.graf_GP(lc, kernel)
+# bootstrap.graf_GP(lc, kernel)
 
-# samples_devs = bootstrap.GP_bootstrap(lc, kernel)
-# t_obs = samples_devs[0]
-# samples = samples_devs[1]
-# bootstrap_values = []
+samples_devs = bootstrap.GP_bootstrap(lc, kernel, sampling='uniform')
+t_obs = samples_devs[0]
+samples = samples_devs[1]
+bootstrap_values = []
 
-# for s in samples:
-#     y_obs = s[0]
-#     err_obs = s[1]
+for s in samples:
+    y_obs = s[0]
+    err_obs = s[1]
 
-#     fs = FATS.FeatureSpace(Data=['magnitude', 'time', 'error'],
-#                        featureList=feature_list, excludeList=None)
+    fs = FATS.FeatureSpace(Data=['magnitude', 'time', 'error'],
+                       featureList=feature_list, excludeList=None)
 
-#     fs = fs.calculateFeature([y_obs, t_obs, err_obs])
-#     bootstrap_values.append(map(lambda x: float("{0:.6f}".format(x)),
-#     							fs.result(method='')))
+    fs = fs.calculateFeature([y_obs, t_obs, err_obs])
+    bootstrap_values.append(map(lambda x: float("{0:.6f}".format(x)),
+    							fs.result(method='')))
 
-# df = pd.DataFrame(bootstrap_values, columns=feature_list)
+df = pd.DataFrame(bootstrap_values, columns=feature_list)
 
-# f_name = 'StetsonK_AC'
-# sampled_values = df[f_name].tolist()
-# real_value = real_values[f_name].tolist()
-# graf_hist(sampled_values, real_value)
+for f_name in feature_list:
+	sampled_values = df[f_name].tolist()
+	real_value = real_values[f_name].tolist()
+	graf_hist(sampled_values, real_value, 'Resultados/Histogramas/uniform/' + f_name + '.png')
