@@ -19,6 +19,9 @@ import pandas as pd
 
 import matplotlib.pyplot as plt
 
+def prepare_GP():
+    pass
+
 def uniform_bootstrap(lc, percentage, num_samples=100):
     """Toma una curva de luz y retorna varias muestras aleatorias tomadas de
     esta. Para esto hace un muestreo uniforme sin reemplazo.
@@ -161,9 +164,6 @@ def GP_bootstrap(lc_path, percentage=1.0, n_samples=100):
 
     # Preparo la curva para alimentar el GP
     t_obs, y_obs, err_obs, min_time, max_time = lu.prepare_lightcurve(lc)
-    t_obs = np.ravel(t_obs)
-    y_obs = np.ravel(y_obs)
-    err_obs = np.ravel(err_obs)
 
     # Preparo GP, l son 6 dias segun lo observado en otros papers
     var = np.var(y_obs)

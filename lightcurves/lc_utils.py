@@ -64,11 +64,6 @@ def prepare_lightcurve(curva, n_sampled_points=None):
         y_obs = y_obs[rand_indices]
         err_obs = err_obs[rand_indices]
 
-    # Transformo a matriz
-    t_obs = np.asmatrix(t_obs)
-    y_obs = np.asmatrix(y_obs)
-    err_obs = np.asmatrix(err_obs)
-
     return t_obs, y_obs, err_obs, min_time, max_time
 
 

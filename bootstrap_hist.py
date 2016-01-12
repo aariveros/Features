@@ -23,7 +23,6 @@ import FATS
 # 12527-12528   quasar_lc
 # 12645-12646   RRL
 
-
 def graf_hist(f_name, sampled_values, real_values):
 	plt.figure()
 
@@ -61,22 +60,22 @@ real_values = fs.result(method='dict')
 
 bootstrap.graf_GP(path, 0.8)
 
-samples_devs = bootstrap.GP_bootstrap(path, 0.8)
-t_obs = samples_devs[0]
-samples = samples_devs[1]
-bootstrap_values = []
+# samples_devs = bootstrap.GP_bootstrap(path, 0.8)
+# t_obs = samples_devs[0]
+# samples = samples_devs[1]
+# bootstrap_values = []
 
-for s in samples:
-    y_obs = s[0]
-    err_obs = s[1]
+# for s in samples:
+#     y_obs = s[0]
+#     err_obs = s[1]
 
-    fs = FATS.FeatureSpace(Data=['magnitude', 'time', 'error'],
-                       featureList=feature_list, excludeList=None)
+#     fs = FATS.FeatureSpace(Data=['magnitude', 'time', 'error'],
+#                        featureList=feature_list, excludeList=None)
 
-    fs = fs.calculateFeature([y_obs, t_obs, err_obs])
-    bootstrap_values.append(map(lambda x: float("{0:.6f}".format(x)),
-    							fs.result(method='')))
+#     fs = fs.calculateFeature([y_obs, t_obs, err_obs])
+#     bootstrap_values.append(map(lambda x: float("{0:.6f}".format(x)),
+#     							fs.result(method='')))
 
-df = pd.DataFrame(bootstrap_values, columns=feature_list)
+# df = pd.DataFrame(bootstrap_values, columns=feature_list)
 
-graf_hist('Mean', df, real_values)
+# graf_hist('Mean', df, real_values)
