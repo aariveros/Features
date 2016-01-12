@@ -1,49 +1,27 @@
+algo.pkl
+
+config.py
+
+Conteo.csv
+
 .DS_Store
 
-.lightcurves_paths/
+feature_names.txt
+
+GP Samples/
+
+lightcurves_paths/
 lightcurves_paths/*
+
+notebooks/*
 
 *.pyc
 
 Resultados/
-.Resultados/
 
-Entrenamiento/
-.Entrenamiento/
-
-Datos
-.Datos/
-
-otro.py
-
-.idea
-
-config.py
-
-Sets de entrenamiento/
-
-Graficos Features/
-.Graficos Features/
-
-GP Samples/
+sets/
 
 temp.py
 
-sets/
-script.py
-
-Conteo.csv
-
-algo.py
-algo.pkl
-
-feature_names.txt
-
-length_errors/
-
 \#*
 
-fix.py
-data_errors/
-
-notebooks/*
