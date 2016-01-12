@@ -5,7 +5,6 @@
 
 import lightcurves.eros_utils as lu
 import pandas as pd
-import numpy as np
 import sys
 
 import FATS
@@ -25,10 +24,7 @@ else:
     print 'No se especifico el porcentaje de las curvas a utilizar'
     percentage = 1
 
-count = 1
 for i in range(len(paths)):
-    print count
-    count += 1
     try:
         path = paths[i]
 

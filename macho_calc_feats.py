@@ -6,7 +6,6 @@
 import lightcurves.lc_utils as lu
 import utils
 import pandas as pd
-import numpy as np
 import sys
 import os
 
@@ -16,16 +15,6 @@ import multiprocessing
 import FATS
 
 from config import *
-
-# Ubicacion de las curvas
-# 0-1           Be_lc
-# 255-256       CEPH
-# 457-458       EB
-# 967-968       longperiod_lc
-# 1697-1698     microlensing_lc
-# 2862-2863     non_variables
-# 12527-12528   quasar_lc
-# 12645-12646   RRL
 
 paths = lu.get_lightcurve_paths()
 min_points = 300

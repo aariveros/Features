@@ -20,10 +20,6 @@ def absoluteFilePaths(directory):
 if len(sys.argv) == 2:
     total_points = int(sys.argv[1])
 
-else:
-    print 'No se especifico el numero de puntos a utilizar'
-    total_points = 700
-
 percentage = 0.2
 
 feature_values = []
@@ -60,14 +56,6 @@ for i in xrange(len(paths)):
     ids.append(lu.get_lightcurve_id(path))
 
     feature_values.append(valores)
-
-    #except KeyboardInterrupt:
-    #    raise
-    #except Exception, e:
-    #    f = open('/n/seasfs03/IACS/TSC/ncastro/GP_Sets/EROS/problemas/GP_completo_eros ' + str(percentage) + '.txt', 'a')
-    #    f.write(path + '\n')
-    #    f.close()
-    #    continue
 
 feature_names = fs.result(method='dict').keys()
 feature_names.append('class')
