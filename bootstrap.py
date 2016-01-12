@@ -17,6 +17,8 @@ import george
 import FATS
 import pandas as pd
 
+import matplotlib.pyplot as plt
+
 def uniform_bootstrap(lc, percentage, num_samples=100):
     """Toma una curva de luz y retorna varias muestras aleatorias tomadas de
     esta. Para esto hace un muestreo uniforme sin reemplazo.
@@ -143,11 +145,91 @@ def GP_sample_mean(lc_path, result_dir='', percentage=1.0):
         f.write(lc_path + '\n')
         f.close()
 
-
-
 def GP_bootstrap(lc_path, percentage=1.0, n_samples=100):
     """Recibe una curva hace un sampleo con un GP sobreajustado
     y retorna las muestras obtenidas
+
+    lc_path: path de la curva de luz
+    percentage: porcentaje de la curva a utilizar
+    """
+    
+    lc = lu.open_lightcurve(lc_path)
+    lc = lu.filter_data(lc)
+    lc = lc.iloc[0:int(percentage * lc.index.size)]
+
+    total_days = lc.index[-1] - lc.index[0]
+
+    # Preparo la curva para alimentar el GP
+    t_obs, y_obs, err_obs, min_time, max_time = lu.prepare_lightcurve(lc)
+    t_obs = np.ravel(t_obs)
+    y_obs = np.ravel(y_obs)
+    err_obs = np.ravel(err_obs)
+
+    # Preparo GP, l son 6 dias segun lo observado en otros papers
+    var = np.var(y_obs)
+    l = 6 * (max_time - min_time) / float(total_days)
+    kernel = var ** 2 * kernels.ExpSquaredKernel(l ** 2)
+
+    gp = george.GP(kernel, mean=np.mean(y_obs))
+    gp.compute(t_obs, yerr=err_obs)
+
+    # Sampleo curvas del GP
+    samples = []
+
+    samples = gp.sample_conditional(y_obs, t_obs, n_samples)
+
+    deviations = map(lambda s: np.sqrt(np.diag(gp.predict(y_obs, t_obs)[1])),
+                     samples)
+
+    samples_devs = zip(samples, deviations)
+    samples_devs = (t_obs, samples_devs)
+
+    return samples_devs
+
+def graf_GP(lc_path, percentage=1.0):
+
+    lc = lu.open_lightcurve(lc_path)
+    lc = lu.filter_data(lc)
+    lc = lc.iloc[0:int(percentage * lc.index.size)]
+
+    total_days = lc.index[-1] - lc.index[0]
+
+    # Preparo la curva para alimentar el GP
+    t_obs, y_obs, err_obs, min_time, max_time = lu.prepare_lightcurve(lc)
+    t_obs = np.ravel(t_obs)
+    y_obs = np.ravel(y_obs)
+    err_obs = np.ravel(err_obs)
+
+    # Preparo GP, l son 6 dias segun lo observado en otros papers
+    var = np.var(y_obs)
+    l = 6 * (max_time - min_time) / float(total_days)
+    kernel = var ** 2 * kernels.ExpSquaredKernel(l ** 2)
+
+    gp = george.GP(kernel, mean=np.mean(y_obs))
+    gp.compute(t_obs, yerr=err_obs)
+
+    x = np.linspace(np.min(t_obs), np.max(t_obs), 500)
+    mu, cov = gp.predict(y_obs, x)
+    std = np.sqrt(np.diag(cov))
+
+    plt.figure()
+
+    plt.plot(x, mu, color="#4682b4", alpha=0.3)
+    plt.errorbar(t_obs, y_obs, yerr=err_obs, fmt=".b", ecolor='r', capsize=0)
+
+    # Agrego el intervalo de confianza
+    plt.fill(np.concatenate([x, x[::-1]]), \
+            np.concatenate([mu - 1.9600 * std,
+                           (mu + 1.9600 * std)[::-1]]), \
+            alpha=.5, fc='#C0C0C0', ec='None', label='95% confidence interval')
+
+    plt.show()
+    plt.close()
+
+
+def parallel_bootstrap(lc_path, percentage=1.0, n_samples=100):
+    """Recibe una curva hace un sampleo con un GP sobreajustado
+    y guarda las muestras obtenidas
 
     lc_path: path de la curva de luz
     percentage: porcentaje de la curva a utilizar

@@ -1,5 +1,5 @@
 # coding=utf-8
-# Toma una curva de luz, hace un bootstrap simple calcula features sobre
+# Toma una curva de luz, hace un bootstrap calcula features sobre
 # las muestras y hace un histograma con ellas
 # -----------------------------------------------------------------------------
 
@@ -8,14 +8,10 @@ import matplotlib.pyplot as plt
 import matplotlib.mlab as mlab
 import lightcurves.lc_utils as lu
 import numpy as np
-import random
+
 import bootstrap
 
-import os, sys
-lib_path = os.path.abspath('../time-series-feats')
-sys.path.append(lib_path)
-from Feature import FeatureSpace
-
+import FATS
 
 # Ubicacion de las curvas
 # 0-1           Be_lc
@@ -27,50 +23,60 @@ from Feature import FeatureSpace
 # 12527-12528   quasar_lc
 # 12645-12646   RRL
 
+
+def graf_hist(f_name, sampled_values, real_values):
+	plt.figure()
+
+	values = sampled_values[f_name].tolist()
+	mean = np.mean(values)
+	std = np.std(values)
+	x = np.linspace(mean - 4 * std, mean + 4 * std, 100)
+	plt.plot(x, mlab.normpdf(x, mean, std), 'k--')
+
+	n, bins, patches = plt.hist(values, 60, normed=1, histtype='bar', color = 'b', alpha=0.6)
+	plt.axvline(x= real_values[f_name], color = 'r', label=u'Real value')
+	plt.show()
+	plt.close()
+
 paths = lu.get_lightcurve_paths()
-a, b = 967, 968
+path = paths[967]
+azul = lu.open_lightcurve(path)
+azul = lu.filter_data(azul)
 
-azul = lu.open_lightcurve(paths[a])
-
-y_obs = azul['mag']
-t_obs = azul.index
-err_obs = azul['err']
+t_obs = azul.index.tolist()
+y_obs = azul['mag'].tolist()
+err_obs = azul['err'].tolist()
 
 # Calculo el valor de las features para la curva completa
-lista = ['Amplitude', 'Beyond1Std', 'Con', 'MaxSlope', 'MedianAbsDev',
-         'MedianBRP', 'PairSlopeTrend', 'Rcs', 'Skew', 'SmallKurtosis', 'Std',
-         'StestonK', 'VariabilityIndex', 'meanvariance']
+feature_list = ['Amplitude', 'AndersonDarling', 'Autocor_length', 'Beyond1Std', 'Con',
+         		'Eta_e', 'LinearTrend', 'MaxSlope', 'Mean', 'Meanvariance', 'MedianAbsDev',
+         		'MedianBRP', 'PairSlopeTrend', 'PercentAmplitude', 'Q31', 'Rcs', 'Skew',
+         		'SlottedA_length', 'SmallKurtosis', 'Std', 'StetsonK', 'StetsonK_AC']
          
-fs = FeatureSpace(featureList=lista, Beyond1Std=err_obs, MaxSlope=t_obs)
+fs = FATS.FeatureSpace(Data=['magnitude', 'time', 'error'],
+                       featureList=feature_list, excludeList=None)
 
-fs = fs.calculateFeature(y_obs)
+fs = fs.calculateFeature([y_obs, t_obs, err_obs])
 real_values = fs.result(method='dict')
 
-samples = bootstrap.uniform_bootstrap(azul, 0.8)
+bootstrap.graf_GP(path, 0.8)
+
+samples_devs = bootstrap.GP_bootstrap(path, 0.8)
+t_obs = samples_devs[0]
+samples = samples_devs[1]
 bootstrap_values = []
 
-for lc in samples:
-    y_obs = lc['mag']
-    t_obs = lc.index
-    err_obs = lc['err']
+for s in samples:
+    y_obs = s[0]
+    err_obs = s[1]
 
-    fs = FeatureSpace(featureList=lista, Beyond1Std=err_obs, MaxSlope=t_obs)
+    fs = FATS.FeatureSpace(Data=['magnitude', 'time', 'error'],
+                       featureList=feature_list, excludeList=None)
 
-    fs = fs.calculateFeature(y_obs)
-    bootstrap_values.append(fs.result(method=''))
+    fs = fs.calculateFeature([y_obs, t_obs, err_obs])
+    bootstrap_values.append(map(lambda x: float("{0:.6f}".format(x)),
+    							fs.result(method='')))
 
-aux = pd.DataFrame(bootstrap_values, columns=lista)
+df = pd.DataFrame(bootstrap_values, columns=feature_list)
 
-plt.figure()
-f_name = 'Skew'
-
-values = aux[f_name].tolist()
-mean = np.mean(values)
-std = np.std(values)
-x = np.linspace(mean - 4*std,mean +4*std,100)
-plt.plot(x,mlab.normpdf(x,mean,std), 'k--')
-
-n, bins, patches = plt.hist(values, 60, normed=1, histtype='bar', color = 'b', alpha=0.6)
-plt.axvline(x= real_values[f_name], color = 'r', label=u'Real value')
-plt.show()
-plt.close()
+graf_hist('Mean', df, real_values)
