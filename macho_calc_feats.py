@@ -4,6 +4,7 @@
 # -----------------------------------------------------------------------------
 
 import lightcurves.lc_utils as lu
+import utils
 import pandas as pd
 import numpy as np
 import sys
@@ -58,7 +59,7 @@ for path in paths:
             continue
 
         azul = lu.open_lightcurve(path)
-        azul = lu.filter_data(azul)
+        azul = utils.filter_data(azul)
 
         # Si la curva filtrada no tiene al menos min_points no la ocupo
         if len(azul.index) < min_points:

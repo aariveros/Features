@@ -15,7 +15,6 @@ import cPickle
 from george import kernels
 import numpy as np
 import george
-import FATS
 import pandas as pd
 
 import matplotlib.pyplot as plt
@@ -35,7 +34,6 @@ def uniform_bootstrap(lc, percentage, num_samples=100):
     samples_size = int(num_points * percentage)
 
     random.seed(1)
-
     samples = []
 
     for i in xrange(num_samples):
@@ -70,9 +68,6 @@ def GP_complete_lc(lc, total_points):
 
     # Preparo la curva para alimentar el GP
     t_obs, y_obs, err_obs, min_time, max_time = utils.prepare_lightcurve(lc)
-    t_obs = np.ravel(t_obs)
-    y_obs = np.ravel(y_obs)
-    err_obs = np.ravel(err_obs)
 
     # Preparo GP, l son 6 dias segun lo observado en otros papers
     var = np.var(y_obs)
@@ -118,9 +113,6 @@ def GP_sample_mean(lc_path, result_dir='', percentage=1.0):
 
         # Preparo la curva para alimentar el GP
         t_obs, y_obs, err_obs, min_time, max_time = utils.prepare_lightcurve(lc)
-        t_obs = np.ravel(t_obs)
-        y_obs = np.ravel(y_obs)
-        err_obs = np.ravel(err_obs)
 
         # Preparo GP, l son 6 dias segun lo observado en otros papers
         var = np.var(y_obs)
@@ -149,69 +141,53 @@ def GP_sample_mean(lc_path, result_dir='', percentage=1.0):
         f.write(lc_path + '\n')
         f.close()
 
-def GP_bootstrap(lc_path, percentage=1.0, n_samples=100):
+def GP_bootstrap(lc, kernel, n_samples=100):
     """Recibe una curva hace un sampleo con un GP sobreajustado
     y retorna las muestras obtenidas
 
     lc_path: path de la curva de luz
     percentage: porcentaje de la curva a utilizar
     """
-    
-    lc = lu.open_lightcurve(lc_path)
-    lc = lu.filter_data(lc)
-    lc = lc.iloc[0:int(percentage * lc.index.size)]
-
-    total_days = lc.index[-1] - lc.index[0]
 
     # Preparo la curva para alimentar el GP
     t_obs, y_obs, err_obs, min_time, max_time = utils.prepare_lightcurve(lc)
 
-    # Preparo GP, l son 6 dias segun lo observado en otros papers
-    var = np.var(y_obs)
-    l = 6 * (max_time - min_time) / float(total_days)
-    kernel = var ** 2 * kernels.ExpSquaredKernel(l ** 2)
-
     gp = george.GP(kernel, mean=np.mean(y_obs))
     gp.compute(t_obs, yerr=err_obs)
-
-    # Sampleo curvas del GP
-    samples = []
 
     samples = gp.sample_conditional(y_obs, t_obs, n_samples)
 
     deviations = map(lambda s: np.sqrt(np.diag(gp.predict(y_obs, t_obs)[1])),
                      samples)
 
+    samples = [s * lc['mag'].std() + lc['mag'].mean() for s in samples]
+    deviations = [d * lc['err'].std() + lc['err'].mean() for d in deviations]
+    t_obs = t_obs * np.std(lc.index) + np.mean(lc.index)
+
     samples_devs = zip(samples, deviations)
     samples_devs = (t_obs, samples_devs)
 
     return samples_devs
 
-def graf_GP(lc_path, percentage=1.0):
-
-    lc = lu.open_lightcurve(lc_path)
-    lc = lu.filter_data(lc)
-    lc = lc.iloc[0:int(percentage * lc.index.size)]
-
-    total_days = lc.index[-1] - lc.index[0]
+def graf_GP(lc, kernel):
 
     # Preparo la curva para alimentar el GP
     t_obs, y_obs, err_obs, min_time, max_time = utils.prepare_lightcurve(lc)
-    t_obs = np.ravel(t_obs)
-    y_obs = np.ravel(y_obs)
-    err_obs = np.ravel(err_obs)
-
-    # Preparo GP, l son 6 dias segun lo observado en otros papers
-    var = np.var(y_obs)
-    l = 6 * (max_time - min_time) / float(total_days)
-    kernel = var ** 2 * kernels.ExpSquaredKernel(l ** 2)
 
     gp = george.GP(kernel, mean=np.mean(y_obs))
     gp.compute(t_obs, yerr=err_obs)
 
     x = np.linspace(np.min(t_obs), np.max(t_obs), 500)
+
     mu, cov = gp.predict(y_obs, x)
     std = np.sqrt(np.diag(cov))
+
+    mu = mu * lc['mag'].std() + lc['mag'].mean() 
+    y_obs = y_obs * lc['mag'].std() + lc['mag'].mean() 
+    std = std * lc['err'].std() + lc['err'].mean()
+    err_obs = err_obs * lc['err'].std() + lc['err'].mean()
+    t_obs = t_obs * np.std(lc.index) + np.mean(lc.index) 
+    x = x * np.std(lc.index) + np.mean(lc.index) 
 
     plt.figure()
 
@@ -246,9 +222,6 @@ def parallel_bootstrap(lc_path, percentage=1.0, n_samples=100):
 
         # Preparo la curva para alimentar el GP
         t_obs, y_obs, err_obs, min_time, max_time = utils.prepare_lightcurve(lc)
-        t_obs = np.ravel(t_obs)
-        y_obs = np.ravel(y_obs)
-        err_obs = np.ravel(err_obs)
 
         # Preparo GP, l son 6 dias segun lo observado en otros papers
         var = np.var(y_obs)
@@ -304,9 +277,6 @@ def test(lc_path, percentage=1.0):
 
     # Preparo la curva para alimentar el GP
     t_obs, y_obs, err_obs, min_time, max_time = utils.prepare_lightcurve(lc)
-    t_obs = np.ravel(t_obs)
-    y_obs = np.ravel(y_obs)
-    err_obs = np.ravel(err_obs)
 
     var = np.var(y_obs)
     l = 6 * (max_time - min_time) / float(total_days)

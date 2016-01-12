@@ -3,15 +3,19 @@
 # las muestras y hace un histograma con ellas
 # -----------------------------------------------------------------------------
 
-import pandas as pd
 import matplotlib.pyplot as plt
 import matplotlib.mlab as mlab
-import lightcurves.macho_utils as lu
+from george import kernels
+import george
 import numpy as np
-
-import bootstrap
-
+import pandas as pd
 import FATS
+
+import lightcurves.macho_utils as lu
+import bootstrap
+import utils
+
+
 
 # Ubicacion de las curvas
 # 0-1           Be_lc
@@ -23,28 +27,31 @@ import FATS
 # 12527-12528   quasar_lc
 # 12645-12646   RRL
 
-def graf_hist(f_name, sampled_values, real_values):
+def graf_hist(values, real_value):
 	plt.figure()
 
-	values = sampled_values[f_name].tolist()
 	mean = np.mean(values)
 	std = np.std(values)
 	x = np.linspace(mean - 4 * std, mean + 4 * std, 100)
 	plt.plot(x, mlab.normpdf(x, mean, std), 'k--')
 
 	n, bins, patches = plt.hist(values, 60, normed=1, histtype='bar', color = 'b', alpha=0.6)
-	plt.axvline(x= real_values[f_name], color = 'r', label=u'Real value')
+	plt.axvline(x=real_value, color = 'r', label=u'Real value')
 	plt.show()
 	plt.close()
 
+percentage = 0.8
+
 paths = lu.get_lightcurve_paths()
 path = paths[967]
-azul = lu.open_lightcurve(path)
-azul = lu.filter_data(azul)
 
-t_obs = azul.index.tolist()
-y_obs = azul['mag'].tolist()
-err_obs = azul['err'].tolist()
+lc = lu.open_lightcurve(path)
+lc = utils.filter_data(lc)
+lc = lc.iloc[0:int(percentage * lc.index.size)]
+
+t_obs = lc.index.tolist()
+y_obs = lc['mag'].tolist()
+err_obs = lc['err'].tolist()
 
 # Calculo el valor de las features para la curva completa
 feature_list = ['Amplitude', 'AndersonDarling', 'Autocor_length', 'Beyond1Std', 'Con',
@@ -58,24 +65,38 @@ fs = FATS.FeatureSpace(Data=['magnitude', 'time', 'error'],
 fs = fs.calculateFeature([y_obs, t_obs, err_obs])
 real_values = fs.result(method='dict')
 
-bootstrap.graf_GP(path, 0.8)
+# Preparo la curva para alimentar el GP
+t_obs, y_obs, err_obs, min_time, max_time = utils.prepare_lightcurve(lc)
 
-# samples_devs = bootstrap.GP_bootstrap(path, 0.8)
-# t_obs = samples_devs[0]
-# samples = samples_devs[1]
-# bootstrap_values = []
+# Preparo GP, l son 6 dias segun lo observado en otros papers
+var = np.var(y_obs)
+l = 6 * (max_time - min_time) / float(lc.index[-1] - lc.index[0])
+kernel = var ** 2 * kernels.ExpSquaredKernel(l ** 2)
 
-# for s in samples:
-#     y_obs = s[0]
-#     err_obs = s[1]
+gp = george.GP(kernel, mean=np.mean(y_obs))
+gp.compute(t_obs, yerr=err_obs)
 
-#     fs = FATS.FeatureSpace(Data=['magnitude', 'time', 'error'],
-#                        featureList=feature_list, excludeList=None)
+# bootstrap.graf_GP(lc, kernel)
 
-#     fs = fs.calculateFeature([y_obs, t_obs, err_obs])
-#     bootstrap_values.append(map(lambda x: float("{0:.6f}".format(x)),
-#     							fs.result(method='')))
+samples_devs = bootstrap.GP_bootstrap(lc, kernel)
+t_obs = samples_devs[0]
+samples = samples_devs[1]
+bootstrap_values = []
 
-# df = pd.DataFrame(bootstrap_values, columns=feature_list)
+for s in samples:
+    y_obs = s[0]
+    err_obs = s[1]
 
-# graf_hist('Mean', df, real_values)
+    fs = FATS.FeatureSpace(Data=['magnitude', 'time', 'error'],
+                       featureList=feature_list, excludeList=None)
+
+    fs = fs.calculateFeature([y_obs, t_obs, err_obs])
+    bootstrap_values.append(map(lambda x: float("{0:.6f}".format(x)),
+    							fs.result(method='')))
+
+df = pd.DataFrame(bootstrap_values, columns=feature_list)
+
+f_name = 'StetsonK_AC'
+sampled_values = df[f_name].tolist()
+real_value = real_values[f_name].tolist()
+graf_hist(sampled_values, real_value)
