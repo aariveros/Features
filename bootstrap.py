@@ -165,6 +165,7 @@ def GP_bootstrap(lc, kernel, sampling='equal', n_samples=100):
     else:
         samples = gp.sample_conditional(y_obs, t_obs, n_samples)
 
+    # Esto no es necesario. Todos los errores son iguales
     deviations = map(lambda s: np.sqrt(np.diag(gp.predict(y_obs, t_obs)[1])),
                      samples)
 
@@ -212,7 +213,7 @@ def graf_GP(lc, kernel):
     plt.close()
 
 
-def parallel_bootstrap(lc_path, percentage=1.0, n_samples=100, catalog='MACHO'):
+def parallel_bootstrap(lc_path, kernel, sampling, percentage=1.0, n_samples=100, catalog='MACHO'):
     """Recibe una curva hace un sampleo con un GP sobreajustado
     y guarda las muestras obtenidas
 
@@ -245,10 +246,6 @@ def parallel_bootstrap(lc_path, percentage=1.0, n_samples=100, catalog='MACHO'):
 
         samples = gp.sample_conditional(y_obs, t_obs, n_samples)
 
-        # ESTO ESTA RARO!!! S NO SE OCUPA, POR LO QUE TODAS LAS DESVIACIONES
-        # SON LAS MISMAS. ESTA ESO BIEN???
-        # ADEMAS NO ESTOY PIDIENDO LAS DESVIACIONES EN EL MISMO LUGAR DDE
-        # SAQUE LAS MUESTRAS. ESO SI O SI ESTA MAL
         deviations = map(lambda s: np.sqrt(np.diag(gp.predict(y_obs, x)[1])),
                          samples)
 
@@ -267,7 +264,7 @@ def parallel_bootstrap(lc_path, percentage=1.0, n_samples=100, catalog='MACHO'):
 
     except Exception as e:
         print e
-        err_path = LAB_PATH + 'GP_Samples/MACHO/' + str(int(100 * percentage)) + '%/error.txt'
+        err_path = LAB_PATH + 'GP_Samples/' + catalog + '/' + str(int(100 * percentage)) + '%/error.txt'
         f = open(err_path, 'a')
         f.write(lc_path + '\n')
         f.close()

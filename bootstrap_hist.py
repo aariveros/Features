@@ -11,9 +11,8 @@ import numpy as np
 import pandas as pd
 import FATS
 
-import lightcurves.macho_utils as lu
+import lightcurves.lc_utils as lu
 import bootstrap
-import utils
 
 # Ubicacion de las curvas
 # 0-1           Be_lc
@@ -56,15 +55,15 @@ def calc_bootstrap(lc, kernel, sampling, feature_list):
     return bootstrap_values
 
 file_dir = 'Resultados/Histogramas/ambos/'
-
+catalog = 'MACHO'
 percentage = 0.8
 
-paths = lu.get_lightcurve_paths()
+paths = lu.get_lightcurve_paths(catalog=catalog)
 # path = paths[12700]
 path = paths[967]
 
-lc = lu.open_lightcurve(path)
-lc = utils.filter_data(lc)
+lc = lu.open_lightcurve(path, catalog=catalog)
+lc = lu.filter_data(lc)
 lc = lc.iloc[0:int(percentage * lc.index.size)]
 
 t_obs = lc.index.tolist()
@@ -84,7 +83,7 @@ fs = fs.calculateFeature([y_obs, t_obs, err_obs])
 real_values = fs.result(method='dict')
 
 # Preparo la curva para alimentar el GP
-t_obs, y_obs, err_obs, min_time, max_time = utils.prepare_lightcurve(lc)
+t_obs, y_obs, err_obs, min_time, max_time = lu.prepare_lightcurve(lc)
 
 # Preparo GP, l son 6 dias segun lo observado en otros papers
 var = np.var(y_obs)
