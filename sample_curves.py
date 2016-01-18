@@ -1,19 +1,21 @@
 # coding=utf-8
 
-# Toma una curva genera 100 muestras y las guarda serializadas como un objeto
+# Toma una curva genera muestras y las guarda serializadas como un objeto
 # -----------------------------------------------------------------------------
 
-import lightcurves.lc_utils as lu
-from config import *
-import bootstrap
+import sys
 import cPickle
+import argparse
+import multiprocessing
+from functools import partial
 
 import numpy as np
 from george import kernels
 
-from functools import partial
-import multiprocessing
-import sys
+import bootstrap
+from config import *
+import lightcurves.lc_utils as lu
+
 
 def sample_curve(lc_path, catalog='MACHO', percentage=1.0, sampling='equal', n_samples=100):
     """Este metodo es un wrapper que abre una curva, la preprocesa,
@@ -43,9 +45,24 @@ def sample_curve(lc_path, catalog='MACHO', percentage=1.0, sampling='equal', n_s
 
 if __name__ == '__main__':
 
-    percentage = int(sys.argv[1]) / float(100)
-    catalog = sys.argv[2]
-    sampling = sys.argv[3]
+    # Recibo parámetros de la linea de comandos
+    print ' '.join(sys.argv)
+    parser = argparse.ArgumentParser(
+        description='Get bootstrap samples from lightcurves')
+    parser.add_argument('--percentage', required=True, type=str)
+    parser.add_argument('--n_samples', required=True, type=int)
+    parser.add_argument('--n_processes', required=True, type=int)
+    parser.add_argument('--sampling', required=True, type=str)
+    parser.add_argument('--catalog', default='MACHO',
+                        choices=['MACHO', 'EROS'])
+
+    args = parser.parse_args(sys.argv[1:])
+
+    percentage = int(args.percentage) / float(100)
+    catalog = args.catalog
+    sampling = args.sampling
+    n_samples = args.n_samples
+    n_processes = args.n_processes
 
     paths = lu.get_lightcurve_paths(catalog=catalog)
     
@@ -54,9 +71,9 @@ if __name__ == '__main__':
 
     partial_sample = partial(sample_curve, catalog=catalog,
                              percentage=percentage, sampling=sampling,
-                             n_samples=100)
+                             n_samples=n_samples)
 
-    pool = multiprocessing.Pool(processes=2)
+    pool = multiprocessing.Pool(processes=n_processes)
     pool.map(partial_sample, paths[0:4])
 
     pool.close()
