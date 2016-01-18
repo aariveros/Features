@@ -28,6 +28,16 @@ def filter_data(lc, rango=3):
 
     return lc
 
+def get_ids_in_path(directory, catalog='MACHO', extension=''):
+    """Busca todos los csv de un directorio, encuentra los ids y los retorna
+    """
+    ids = []
+    for dirpath, _, filenames in os.walk(directory):
+        for f in filenames:
+            if extension in f:
+                ids.append(get_lightcurve_id(os.path.abspath(os.path.join(dirpath, f))))
+    return ids
+
 def get_lightcurve_band(fp):
     """Método solo para las curvas de MACHO
 
