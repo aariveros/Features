@@ -26,10 +26,9 @@ import utils
 # 12645-12646   RRL
 
 def graf_hist(values, real_value, label):
-    mean = np.mean(values)
     std = np.std(values)
-    x = np.linspace(mean - 4 * std, mean + 4 * std, 100)
-    
+    # mean = np.mean(values)
+    # x = np.linspace(mean - 4 * std, mean + 4 * std, 100)
     # plt.plot(x, mlab.normpdf(x, mean, std), 'k--')
 
     n, bins, patches = plt.hist(values, 60, normed=False, histtype='bar', alpha=0.6,
@@ -61,7 +60,8 @@ file_dir = 'Resultados/Histogramas/ambos/'
 percentage = 0.8
 
 paths = lu.get_lightcurve_paths()
-path = paths[12700]
+# path = paths[12700]
+path = paths[967]
 
 lc = lu.open_lightcurve(path)
 lc = utils.filter_data(lc)

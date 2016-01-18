@@ -160,7 +160,7 @@ def GP_bootstrap(lc, kernel, sampling='equal', n_samples=100):
     gp.compute(t_obs, yerr=err_obs)
 
     if sampling == 'uniform':
-        x = np.linspace(min_time, max_time, lc.index.size)
+        x = np.linspace(min_time, max_time, len(t_obs))
         samples = gp.sample_conditional(y_obs, x, n_samples)
     else:
         samples = gp.sample_conditional(y_obs, t_obs, n_samples)

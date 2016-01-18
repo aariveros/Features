@@ -5,28 +5,10 @@
 # -----------------------------------------------------------------------------
 
 from __future__ import division
-import numpy as np
 import pandas as pd
 import re
 
 from config import *
-
-import random
-
-def has_both_bands(lc_path, allpaths=LC_FILE_PATH):
-    """
-    lc_path: path de una curva
-    all_paths: path de el archivo la direccion de las curvas
-    """
-    
-    if not 'B.mjd' in lc_path:
-        return False
-    
-    red = lc_path.replace('B.mjd', 'R.mjd')
-    
-    if not red in all_paths:
-        return False
-    return True
 
 
 def open_lightcurve(fp):
@@ -113,5 +95,3 @@ def get_lc_band(fp):
         return "R"
     elif ".B.mjd" in fp:
         return "B"
-
-
