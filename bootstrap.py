@@ -150,7 +150,7 @@ def GP_bootstrap(lc, kernel, sampling='equal', n_samples=100):
     sampling:   uniform - las curvas sampleadas se toman a intervalos uniformes
                 equal - las curvas se toman en los mismos instantes que la
                         curva original
-    n_samples: number of samples taken2
+    n_samples: number of samples taken
     """
 
     # Preparo la curva para alimentar el GP
