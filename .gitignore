@@ -4,12 +4,17 @@ config.py
 
 Conteo.csv
 
+data_errors/
+
 .DS_Store
 
 feature_names.txt
 
+fix.py
+
 GP Samples/
 
+length_errors/
 lightcurves_paths/
 lightcurves_paths/*
 
@@ -19,6 +24,7 @@ notebooks/*
 
 Resultados/
 
+script.py
 sets/
 
 temp.py
