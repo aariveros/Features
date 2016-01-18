@@ -74,7 +74,7 @@ if __name__ == '__main__':
                              n_samples=n_samples)
 
     pool = multiprocessing.Pool(processes=n_processes)
-    pool.map(partial_sample, paths[0:4])
+    pool.map(partial_sample, paths)
 
     pool.close()
     pool.join()
