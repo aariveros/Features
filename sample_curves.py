@@ -9,6 +9,7 @@ import bootstrap
 import cPickle
 
 import numpy as np
+from george import kernels
 
 from functools import partial
 import multiprocessing
