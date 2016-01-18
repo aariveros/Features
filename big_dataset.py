@@ -9,12 +9,11 @@ import pandas as pd
 import sys
 
 import lightcurves.lc_utils as lu
-import utils
 
 N = 10
 percentage = sys.argv[1]
 directory = '/n/seasfs03/IACS/TSC/ncastro/Samples_Features/MACHO/' + percentage + '%/'
-paths = utils.get_paths(directory, '.csv')
+paths = lu.get_paths(directory, '.csv')
 paths = [x for x in paths]
 
 result_file = '/n/seasfs03/IACS/TSC/ncastro/sets/MACHO_Big/macho big ' + percentage + '.csv'
@@ -30,8 +29,8 @@ f.write(linea)
 for path in paths:
     lineas = []
     df = pd.read_csv(path)
-    lc_id = lu.get_lightcurve_id(path)
-    lc_class = lu.get_lc_class_name(path)
+    lc_id = lu.get_lightcurve_id(path, catalog='MACHO')
+    lc_class = lu.get_lightcurve_class(path, catalog='MACHO')
 
     for i in xrange(N):
         linea = [lc_id]

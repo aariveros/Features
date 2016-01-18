@@ -3,9 +3,7 @@
 # Métodos para el desarrollo de bootstraping en series de tiempo
 # -----------------------------------------------------------------------------
 
-import lightcurves.macho_utils as lu
-# import lightcurves.eros_utils as lu
-import utils
+import lightcurves.lc_utils as lu
 
 from config import *
 
@@ -67,7 +65,7 @@ def GP_complete_lc(lc, total_points):
     missing_points = total_points - n_points + 2
 
     # Preparo la curva para alimentar el GP
-    t_obs, y_obs, err_obs, min_time, max_time = utils.prepare_lightcurve(lc)
+    t_obs, y_obs, err_obs, min_time, max_time = lu.prepare_lightcurve(lc)
 
     # Preparo GP, l son 6 dias segun lo observado en otros papers
     var = np.var(y_obs)
@@ -96,7 +94,7 @@ def GP_complete_lc(lc, total_points):
 
     return pd.concat([lc, lc_2]).sort_index()
 
-def GP_sample_mean(lc_path, result_dir='', percentage=1.0):
+def GP_sample_mean(lc_path, result_dir='', percentage=1.0, catalog='MACHO'):
     """Recibe una curva ajusta un GP (sobreajustado) y guarda las medias del
     modelo
 
@@ -105,14 +103,14 @@ def GP_sample_mean(lc_path, result_dir='', percentage=1.0):
     """
     try:
         print lc_path
-        lc = lu.open_lightcurve(lc_path)
+        lc = lu.open_lightcurve(lc_path, catalog=catalog)
         lc = lu.filter_data(lc)
         lc = lc.iloc[0:int(percentage * lc.index.size)]
 
         total_days = lc.index[-1] - lc.index[0]
 
         # Preparo la curva para alimentar el GP
-        t_obs, y_obs, err_obs, min_time, max_time = utils.prepare_lightcurve(lc)
+        t_obs, y_obs, err_obs, min_time, max_time = lu.prepare_lightcurve(lc)
 
         # Preparo GP, l son 6 dias segun lo observado en otros papers
         var = np.var(y_obs)
@@ -127,8 +125,10 @@ def GP_sample_mean(lc_path, result_dir='', percentage=1.0):
 
         fitted_curve = (t_obs, mu, sigma)
 
-        result_path = (result_dir + lu.get_lc_class_name(lc_path) + '/' +
-                      lu.get_lightcurve_id(lc_path) + '.pkl')
+        result_path = (result_dir +
+                       lu.get_lightcurve_class(lc_path, catalog=catalog) +
+                       '/' + lu.get_lightcurve_id(lc_path, catalog=catalog) +
+                       '.pkl')
 
         output = open(result_path, 'wb')
         cPickle.dump(fitted_curve, output)
@@ -154,7 +154,7 @@ def GP_bootstrap(lc, kernel, sampling='equal', n_samples=100):
     """
 
     # Preparo la curva para alimentar el GP
-    t_obs, y_obs, err_obs, min_time, max_time = utils.prepare_lightcurve(lc)
+    t_obs, y_obs, err_obs, min_time, max_time = lu.prepare_lightcurve(lc)
 
     gp = george.GP(kernel, mean=np.mean(y_obs))
     gp.compute(t_obs, yerr=err_obs)
@@ -180,7 +180,7 @@ def GP_bootstrap(lc, kernel, sampling='equal', n_samples=100):
 def graf_GP(lc, kernel):
 
     # Preparo la curva para alimentar el GP
-    t_obs, y_obs, err_obs, min_time, max_time = utils.prepare_lightcurve(lc)
+    t_obs, y_obs, err_obs, min_time, max_time = lu.prepare_lightcurve(lc)
 
     gp = george.GP(kernel, mean=np.mean(y_obs))
     gp.compute(t_obs, yerr=err_obs)
@@ -212,7 +212,7 @@ def graf_GP(lc, kernel):
     plt.close()
 
 
-def parallel_bootstrap(lc_path, percentage=1.0, n_samples=100):
+def parallel_bootstrap(lc_path, percentage=1.0, n_samples=100, catalog='MACHO'):
     """Recibe una curva hace un sampleo con un GP sobreajustado
     y guarda las muestras obtenidas
 
@@ -221,7 +221,7 @@ def parallel_bootstrap(lc_path, percentage=1.0, n_samples=100):
     """
     try:
         print lc_path
-        lc = lu.open_lightcurve(lc_path)
+        lc = lu.open_lightcurve(lc_path, catalog=catalog)
         lc = lu.filter_data(lc)
         lc = lc.iloc[0:int(percentage * lc.index.size)]
 
@@ -229,7 +229,7 @@ def parallel_bootstrap(lc_path, percentage=1.0, n_samples=100):
         n_points = lc.index.size
 
         # Preparo la curva para alimentar el GP
-        t_obs, y_obs, err_obs, min_time, max_time = utils.prepare_lightcurve(lc)
+        t_obs, y_obs, err_obs, min_time, max_time = lu.prepare_lightcurve(lc)
 
         # Preparo GP, l son 6 dias segun lo observado en otros papers
         var = np.var(y_obs)
@@ -254,14 +254,12 @@ def parallel_bootstrap(lc_path, percentage=1.0, n_samples=100):
 
         samples_devs = zip(samples, deviations)
         samples_devs = (t_obs, samples_devs)
-
-        # result_dir = (LAB_PATH + 'GP_Samples/MACHO/' + str(int(100 * percentage)) +
-        #               '%/' + lu.get_lc_class_name(lc_path) + '/' +
-        #               lu.get_lightcurve_id(lc_path) + ' samples.pkl')
         
-        result_dir = (LAB_PATH + 'GP_Samples/EROS/' + str(int(100 * percentage)) +
-                      '%/' + lu.get_lc_class_name(lc_path) + '/' +
-                      lu.get_lightcurve_id(lc_path) + ' samples.pkl')
+        result_dir = (LAB_PATH + 'GP_Samples/' + catalog + '/' +
+                      str(int(100 * percentage)) + '%/' + 
+                      lu.get_lightcurve_class(lc_path, catalog=catalog) + '/' +
+                      lu.get_lightcurve_id(lc_path, catalog=catalog) +
+                      ' samples.pkl')
 
         output = open(result_dir, 'wb')
         cPickle.dump(samples_devs, output)
@@ -274,9 +272,9 @@ def parallel_bootstrap(lc_path, percentage=1.0, n_samples=100):
         f.write(lc_path + '\n')
         f.close()
 
-def test(lc_path, percentage=1.0):
+def test(lc_path, percentage=1.0, catalog='MACHO'):
     
-    lc = lu.open_lightcurve(lc_path)
+    lc = lu.open_lightcurve(lc_path, catalog=catalog)
     print int(percentage * lc.index.size)
     lc = lc.iloc[0:int(percentage * lc.index.size)]
 
@@ -284,7 +282,7 @@ def test(lc_path, percentage=1.0):
     n_points = lc.index.size
 
     # Preparo la curva para alimentar el GP
-    t_obs, y_obs, err_obs, min_time, max_time = utils.prepare_lightcurve(lc)
+    t_obs, y_obs, err_obs, min_time, max_time = lu.prepare_lightcurve(lc)
 
     var = np.var(y_obs)
     l = 6 * (max_time - min_time) / float(total_days)

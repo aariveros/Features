@@ -38,7 +38,7 @@ def get_lightcurve_band(fp):
     elif ".B.mjd" in fp:
         return "B"
 
-def get_lightcurve_class_name(fp, catalog='MACHO'):
+def get_lightcurve_class(fp, catalog='MACHO'):
     """
     Para eros estoy asumiendo que las curvas están separadas en directorios por
     clase. Y que el path que estoy pasando es el de la curva
