@@ -49,7 +49,7 @@ def sample_curve(lc_path, catalog='MACHO', percentage=1.0, sampling='equal',
 
     except Exception as e:
         print e
-        err_path = (LAB_PATH + 'GP_Samples/' + catalog + '/' +
+        err_path = (LAB_PATH + 'GP_Samples/' + catalog + '/' + sampling + '/' +
                     str(int(100 * percentage)) + '%/error.txt')
 
         f = open(err_path, 'a')
