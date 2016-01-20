@@ -6,12 +6,13 @@
 import matplotlib.pyplot as plt
 import matplotlib.mlab as mlab
 from george import kernels
-import george
-import numpy as np
 import pandas as pd
+import numpy as np
+import george
 import FATS
 
 import lightcurves.lc_utils as lu
+import graf
 import bootstrap
 
 # Ubicacion de las curvas
@@ -23,18 +24,6 @@ import bootstrap
 # 2862-2863     non_variables
 # 12527-12528   quasar_lc
 # 12645-12646   RRL
-
-def graf_hist(values, real_value, label):
-    std = np.std(values)
-    # mean = np.mean(values)
-    # x = np.linspace(mean - 4 * std, mean + 4 * std, 100)
-    # plt.plot(x, mlab.normpdf(x, mean, std), 'k--')
-
-    n, bins, patches = plt.hist(values, 60, normed=False, histtype='bar', alpha=0.6,
-                                label=label + "%0.4f" % std)
-
-    plt.legend()
-
 
 def calc_bootstrap(lc, kernel, sampling, feature_list):
     samples_devs = bootstrap.GP_bootstrap(lc, kernel, sampling=sampling)
@@ -59,8 +48,9 @@ catalog = 'MACHO'
 percentage = 0.8
 
 paths = lu.get_lightcurve_paths(catalog=catalog)
-# path = paths[12700]
-path = paths[967]
+path = paths[12700]
+# path = paths[967]
+# path = paths[0]
 
 lc = lu.open_lightcurve(path, catalog=catalog)
 lc = lu.filter_data(lc)
@@ -89,11 +79,27 @@ t_obs, y_obs, err_obs, min_time, max_time = lu.prepare_lightcurve(lc)
 var = np.var(y_obs)
 l = 6 * (max_time - min_time) / float(lc.index[-1] - lc.index[0])
 kernel = var ** 2 * kernels.ExpSquaredKernel(l ** 2)
-
 gp = george.GP(kernel, mean=np.mean(y_obs))
 gp.compute(t_obs, yerr=err_obs)
 
-# bootstrap.graf_GP(lc, kernel)
+# Ajusto el gaussian process a las observaciones de la curva
+x = np.linspace(np.min(t_obs), np.max(t_obs), 500)
+mu, cov = gp.predict(y_obs, x)
+std = np.sqrt(np.diag(cov))
+
+# Desnormalizo los valores
+mu = mu * lc['mag'].std() + lc['mag'].mean() 
+std = std * lc['err'].std() + lc['err'].mean()
+x = x * np.std(lc.index) + np.mean(lc.index)
+
+plt.figure()
+
+graf.graf_GP(x, mu, std)
+plt.errorbar(lc.index, lc['mag'], yerr=lc['err'], fmt=".b", ecolor='r', capsize=0)
+
+plt.show()
+plt.close()
+
 
 equal_values = calc_bootstrap(lc, kernel, 'equal', feature_list)
 uniform_values = calc_bootstrap(lc, kernel, 'uniform', feature_list)
@@ -109,8 +115,8 @@ for f_name in feature_list:
     fig = plt.figure(f_name)
     ax = fig.add_subplot(111)
     
-    graf_hist(equal_values, real_value, 'equal std=')
-    graf_hist(uniform_values, real_value, 'uniform std=')
+    graf.graf_hist(equal_values, real_value, 'equal std=')
+    graf.graf_hist(uniform_values, real_value, 'uniform std=')
 
     plt.axvline(x=real_value, color = 'r', label=u'Real value', linewidth=2.0)
 

@@ -178,40 +178,6 @@ def GP_bootstrap(lc, kernel, sampling='equal', n_samples=100):
 
     return samples_devs
 
-def graf_GP(lc, kernel):
-
-    # Preparo la curva para alimentar el GP
-    t_obs, y_obs, err_obs, min_time, max_time = lu.prepare_lightcurve(lc)
-
-    gp = george.GP(kernel, mean=np.mean(y_obs))
-    gp.compute(t_obs, yerr=err_obs)
-
-    x = np.linspace(np.min(t_obs), np.max(t_obs), 500)
-
-    mu, cov = gp.predict(y_obs, x)
-    std = np.sqrt(np.diag(cov))
-
-    mu = mu * lc['mag'].std() + lc['mag'].mean() 
-    y_obs = y_obs * lc['mag'].std() + lc['mag'].mean() 
-    std = std * lc['err'].std() + lc['err'].mean()
-    err_obs = err_obs * lc['err'].std() + lc['err'].mean()
-    t_obs = t_obs * np.std(lc.index) + np.mean(lc.index) 
-    x = x * np.std(lc.index) + np.mean(lc.index) 
-
-    plt.figure()
-
-    plt.plot(x, mu, color="#4682b4", alpha=0.3)
-    plt.errorbar(t_obs, y_obs, yerr=err_obs, fmt=".b", ecolor='r', capsize=0)
-
-    # Agrego el intervalo de confianza
-    plt.fill(np.concatenate([x, x[::-1]]), \
-            np.concatenate([mu - 1.9600 * std,
-                           (mu + 1.9600 * std)[::-1]]), \
-            alpha=.5, fc='#C0C0C0', ec='None', label='95% confidence interval')
-
-    plt.show()
-    plt.close()
-
 
 def parallel_bootstrap(lc_path, kernel, sampling, percentage=1.0, n_samples=100, catalog='MACHO'):
     """Recibe una curva hace un sampleo con un GP sobreajustado
