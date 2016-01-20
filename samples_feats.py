@@ -6,62 +6,62 @@
 
 # --------------------------------------------------------------------------
 
-import lightcurves.lc_utils as lu
-import utils
-from config import *
-import parallel
-
 from functools import partial
 import multiprocessing
+import argparse
 import pickle
 import sys
-import os
 
 import pandas as pd
 import FATS
 
-
-def get_ids_in_paths(directory):
-    """Busca todos los csv de un directorio, encuentra los ids y los retorna
-    """
-    ids = []
-    for dirpath, _, filenames in os.walk(directory):
-        for f in filenames:
-            if '.csv' in f:
-                ids.append(lu.get_lightcurve_id(os.path.abspath(os.path.join(dirpath, f))))
-    return ids
+import lightcurves.lc_utils as lu
+from config import *
+import parallel
 
 
 if __name__ == '__main__':
+    
+    # Recibo parámetros de la linea de comandos
+    print ' '.join(sys.argv)
+    parser = argparse.ArgumentParser(
+        description='Get bootstrap samples from lightcurves')
+    parser.add_argument('--percentage', required=True, type=str)
+    parser.add_argument('--n_processes', required=True, type=int)
+    parser.add_argument('--feature_list', required=True, type=list)
+    parser.add_argument('--catalog', default='MACHO',
+                        choices=['MACHO', 'EROS', 'OGLE'])
 
-    if len(sys.argv) == 3:
-        percentage = sys.argv[1]
-        n_jobs = int(sys.argv[2])
-    elif len(sys.argv) == 2:
-        percentage = sys.argv[1]
-        n_jobs = 30
-    else:
-        percentage = '100'
-        n_jobs = 30
 
-    samples_path = LAB_PATH + 'GP_Samples/MACHO/' + percentage + '%/'
-    calculated_feats_path = LAB_PATH + 'Samples_Features/MACHO/' + percentage + '%/'
+    args = parser.parse_args(sys.argv[1:])
+
+    percentage = int(args.percentage) / float(100)
+    catalog = args.catalog
+    n_processes = args.n_processes
+    feature_list = args.feature_list
+
+    print feature_list
+
+    samples_path = LAB_PATH + 'GP_Samples/' + catalog + '/' + percentage + '%/'
+    calculated_feats_path = LAB_PATH + 'Samples_Features/' + catalog + '/' + percentage + '%/'
 
     # Obtengo los archivos con las muestras serializadas
-    files = utils.get_paths(samples_path, '.pkl')
+    files = lu.get_paths(samples_path, '.pkl')
+    files = [x for x in files]
+    files = files[0:5]
 
     # Obtengo los ids de las curvas que ya han sido calculadas en iteraciones anteriores
-    ids = get_ids_in_paths(calculated_feats_path)
+    ids = lu.get_ids_in_path(calculated_feats_path, catalog=catalog, extension='.csv')
 
     # Puedo especificar las featurs a ocupar o las features a excluir.
     # Depende que sea mas simple
-    feature_list = ['Amplitude', 'AndersonDarling', 'Autocor_length', 'Beyond1Std', 'Con',
-                    'Eta_e', 'LinearTrend', 'MaxSlope', 'Mean', 'Meanvariance', 'MedianAbsDev',
-                    'MedianBRP', 'PairSlopeTrend', 'PercentAmplitude',
-                    'Q31', 'Rcs', 'Skew', 'SlottedA_length', 'SmallKurtosis',
-                    'Std', 'StetsonK','StetsonK_AC']
+    # feature_list = ['Amplitude', 'AndersonDarling', 'Autocor_length', 'Beyond1Std', 'Con',
+    #                 'Eta_e', 'LinearTrend', 'MaxSlope', 'Mean', 'Meanvariance', 'MedianAbsDev',
+    #                 'MedianBRP', 'PairSlopeTrend', 'PercentAmplitude',
+    #                 'Q31', 'Rcs', 'Skew', 'SlottedA_length', 'SmallKurtosis',
+    #                 'Std', 'StetsonK','StetsonK_AC']
 
-    exclude_list = None
+    # exclude_list = None
     
     # feature_list = None 
     # exclude_list = ['Color', 'Eta_color', 'Q31_color', 'StetsonJ', 'StetsonL',
@@ -74,10 +74,10 @@ if __name__ == '__main__':
     del fs
 
     for f in files:
-        macho_id = lu.get_lightcurve_id(f) 
+        lc_id = lu.get_lightcurve_id(f, catalog=catalog) 
 
-        if macho_id not in ids: 
-            print 'Calculando curva: ' + macho_id
+        if lc_id not in ids: 
+            print 'Calculando curva: ' + lc_id
             # Las muestras vienen en una tupla, s[0] es una lista con los tiempos de medicion
             # s[1] es una lista de  muestras  donde cada muestra tiene dos
             # arreglos uno para las observaciones y otro para los errores
@@ -87,23 +87,25 @@ if __name__ == '__main__':
 
             # Estas variables son comunes a todas las muestras
             t_obs = samples[0]
-            lc_class = lu.get_lc_class_name(f)
+            lc_class = lu.get_lightcurve_class(f, catalog=catalog)
 
             partial_calc = partial(parallel.calc_sample_feats, t_obs,
                                    feature_list=feature_list,
                                    exclude_list=exclude_list)
             error = False
-            chunksize = int(100/n_jobs)
+            chunksize = int(100/n_processes)
             
             # En algunos casos no calza el largo de las mediciones
             if len(t_obs) != len(samples[1][0][0]):
-                aux = open(LAB_PATH + 'Samples_Features/MACHO/' + percentage + '%/errores.txt', 'a')
+                aux = open(LAB_PATH + 'Samples_Features/' + catalog + '/' +
+                           percentage + '%/errores.txt', 'a')
                 aux.write('No calzan largos de: ' + f + '\n' )
                 aux.close()
                 continue
 
             try:
-                pool = multiprocessing.Pool(processes=n_jobs, maxtasksperchild=2)
+                pool = multiprocessing.Pool(processes=n_processes,
+                                            maxtasksperchild=2)
                 feature_values = pool.map(partial_calc, samples[1], chunksize)
 
                 pool.close()
@@ -115,13 +117,16 @@ if __name__ == '__main__':
                 # raise
 
             if error:
-                aux = open(LAB_PATH + 'Samples_Features/MACHO/' + percentage + '%/errores.txt', 'a')
+                aux = open(LAB_PATH + 'Samples_Features/' + catalog + '/' +
+                           percentage + '%/errores.txt', 'a')
                 aux.write(f + '\n')
                 aux.close()
             else:
                 # Escribo los resultados en un archivo especial para cada curva original
-                file_path = LAB_PATH + 'Samples_Features/MACHO/' + percentage + '%/' + lc_class + '/' + macho_id + '.csv'
+                file_path = (LAB_PATH + 'Samples_Features/' + catalog + '/' +
+                             percentage + '%/' + lc_class + '/' + lc_id +
+                             '.csv')
                 df = pd.DataFrame(feature_values, columns=feat_names)
                 df.to_csv(file_path, index=False)
         else:
-            print 'Curva: ' + macho_id + 'ya calculada'
+            print 'Curva: ' + lc_id + 'ya calculada'

@@ -35,7 +35,7 @@ def get_ids_in_path(directory, catalog='MACHO', extension=''):
     for dirpath, _, filenames in os.walk(directory):
         for f in filenames:
             if extension in f:
-                ids.append(get_lightcurve_id(os.path.abspath(os.path.join(dirpath, f))))
+                ids.append(get_lightcurve_id(os.path.abspath(os.path.join(dirpath, f)), catalog))
     return ids
 
 def get_lightcurve_band(fp):
