@@ -21,6 +21,7 @@ if __name__ == '__main__':
     parser.add_argument('--catalog', default='MACHO',
                         choices=['MACHO', 'EROS', 'OGLE'])
     parser.add_argument('--sampling', required=True, type=str)
+    parser.add_argument('--result_file_path', required=True, type=str)
 
     args = parser.parse_args(sys.argv[1:])
 
