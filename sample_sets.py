@@ -30,7 +30,8 @@ if __name__ == '__main__':
     sampling = args.sampling
     result_file_path = args.result_file_path
 
-    samples_path = LAB_PATH + 'Samples_Features/MACHO/' + percentage + '%/'
+    samples_path = (LAB_PATH + 'Samples_Features/' + catalog + '/' + sampling +
+                    '/' + percentage + '%/')
 
     feature_samples_files = lu.get_paths(samples_path, '.csv')
     feature_samples_files = [x for x in feature_samples_files]
