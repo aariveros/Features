@@ -23,5 +23,3 @@ def graf_hist(values, real_value, label):
 
     n, bins, patches = plt.hist(values, 60, normed=False, histtype='bar', alpha=0.6,
                                 label=label + "%0.4f" % std)
-
-    plt.legend()

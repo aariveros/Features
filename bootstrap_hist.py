@@ -43,84 +43,100 @@ def calc_bootstrap(lc, kernel, sampling, feature_list):
                                     fs.result(method='')))
     return bootstrap_values
 
-file_dir = 'Resultados/Histogramas/ambos/'
+# file_dir = 'Resultados/Histogramas/ambos/'
+# file_dir = '/Users/npcastro/Dropbox/Tesis NC/Graficos/histogramas/'
+file_dir = '/Users/npcastro/Dropbox/Tesis NC/Graficos/GP/'
 catalog = 'MACHO'
-percentage = 0.8
+percentage = 0.5
 
 paths = lu.get_lightcurve_paths(catalog=catalog)
-path = paths[12700]
+# path = paths[12700]
 # path = paths[967]
 # path = paths[0]
 
-lc = lu.open_lightcurve(path, catalog=catalog)
-lc = lu.filter_data(lc)
-lc = lc.iloc[0:int(percentage * lc.index.size)]
+for i in [0, 255, 457, 967, 1697, 2862, 12527, 12700]:
+    path = paths[i]
+    lc_id = lu.get_lightcurve_id(path, catalog=catalog)
+    lc_class = lu.get_lightcurve_class(path, catalog=catalog)
 
-t_obs = lc.index.tolist()
-y_obs = lc['mag'].tolist()
-err_obs = lc['err'].tolist()
+    lc = lu.open_lightcurve(path, catalog=catalog)
+    lc = lu.filter_data(lc)
+    lc = lc.iloc[0:int(percentage * lc.index.size)]
 
-# Calculo el valor de las features para la curva completa
-feature_list = ['Amplitude', 'AndersonDarling', 'Autocor_length', 'Beyond1Std', 'Con',
-                'Eta_e', 'LinearTrend', 'MaxSlope', 'Mean', 'Meanvariance', 'MedianAbsDev',
-                'MedianBRP', 'PairSlopeTrend', 'PercentAmplitude', 'Q31', 'Rcs', 'Skew',
-                'SlottedA_length', 'SmallKurtosis', 'Std', 'StetsonK', 'StetsonK_AC']
-         
-fs = FATS.FeatureSpace(Data=['magnitude', 'time', 'error'],
-                       featureList=feature_list, excludeList=None)
+    t_obs = lc.index.tolist()
+    y_obs = lc['mag'].tolist()
+    err_obs = lc['err'].tolist()
 
-fs = fs.calculateFeature([y_obs, t_obs, err_obs])
-real_values = fs.result(method='dict')
+    # Calculo el valor de las features para la curva completa
+    feature_list = ['Amplitude', 'AndersonDarling', 'Autocor_length', 'Beyond1Std', 'Con',
+                    'Eta_e', 'LinearTrend', 'MaxSlope', 'Mean', 'Meanvariance', 'MedianAbsDev',
+                    'MedianBRP', 'PairSlopeTrend', 'PercentAmplitude', 'Q31', 'Rcs', 'Skew',
+                    'SlottedA_length', 'SmallKurtosis', 'Std', 'StetsonK', 'StetsonK_AC']
+             
+    fs = FATS.FeatureSpace(Data=['magnitude', 'time', 'error'],
+                           featureList=feature_list, excludeList=None)
 
-# Preparo la curva para alimentar el GP
-t_obs, y_obs, err_obs, min_time, max_time = lu.prepare_lightcurve(lc)
+    fs = fs.calculateFeature([y_obs, t_obs, err_obs])
+    real_values = fs.result(method='dict')
 
-# Preparo GP, l son 6 dias segun lo observado en otros papers
-var = np.var(y_obs)
-l = 6 * (max_time - min_time) / float(lc.index[-1] - lc.index[0])
-kernel = var ** 2 * kernels.ExpSquaredKernel(l ** 2)
-gp = george.GP(kernel, mean=np.mean(y_obs))
-gp.compute(t_obs, yerr=err_obs)
+    # Preparo la curva para alimentar el GP
+    t_obs, y_obs, err_obs, min_time, max_time = lu.prepare_lightcurve(lc)
 
-# Ajusto el gaussian process a las observaciones de la curva
-x = np.linspace(np.min(t_obs), np.max(t_obs), 500)
-mu, cov = gp.predict(y_obs, x)
-std = np.sqrt(np.diag(cov))
+    # Preparo GP, l son 6 dias segun lo observado en otros papers
+    var = np.var(y_obs)
+    l = 6 * (max_time - min_time) / float(lc.index[-1] - lc.index[0])
+    kernel = var ** 2 * kernels.ExpSquaredKernel(l ** 2)
+    gp = george.GP(kernel, mean=np.mean(y_obs))
+    gp.compute(t_obs, yerr=err_obs)
 
-# Desnormalizo los valores
-mu = mu * lc['mag'].std() + lc['mag'].mean() 
-std = std * lc['err'].std() + lc['err'].mean()
-x = x * np.std(lc.index) + np.mean(lc.index)
+    # Ajusto el gaussian process a las observaciones de la curva
+    x = np.linspace(np.min(t_obs), np.max(t_obs), 500)
+    mu, cov = gp.predict(y_obs, x)
+    std = np.sqrt(np.diag(cov))
 
-plt.figure()
+    # Desnormalizo los valores
+    mu = mu * lc['mag'].std() + lc['mag'].mean() 
+    std = std * lc['err'].std() + lc['err'].mean()
+    x = x * np.std(lc.index) + np.mean(lc.index)
 
-graf.graf_GP(x, mu, std)
-plt.errorbar(lc.index, lc['mag'], yerr=lc['err'], fmt=".b", ecolor='r', capsize=0)
+    plt.figure()
 
-plt.show()
-plt.close()
+    graf.graf_GP(x, mu, std)
+    plt.errorbar(lc.index, lc['mag'], yerr=lc['err'], fmt=".b", ecolor='r', capsize=0)
 
+    plt.title(lc_class)
+    plt.ylabel('Magnitude')
+    plt.xlabel('MJD')
 
-equal_values = calc_bootstrap(lc, kernel, 'equal', feature_list)
-uniform_values = calc_bootstrap(lc, kernel, 'uniform', feature_list)
-
-equal_df = pd.DataFrame(equal_values, columns=feature_list)
-uniform_df = pd.DataFrame(uniform_values, columns=feature_list)
-
-for f_name in feature_list:
-    real_value = real_values[f_name].tolist()
-    equal_values = equal_df[f_name].tolist()
-    uniform_values = uniform_df[f_name].tolist()
-    
-    fig = plt.figure(f_name)
-    ax = fig.add_subplot(111)
-    
-    graf.graf_hist(equal_values, real_value, 'equal std=')
-    graf.graf_hist(uniform_values, real_value, 'uniform std=')
-
-    plt.axvline(x=real_value, color = 'r', label=u'Real value', linewidth=2.0)
-
-    plt.title(f_name)
-
-    plt.savefig(file_dir + f_name + '.png')
+    # plt.show()
+    plt.savefig(file_dir + lc_id + '.png')
     plt.close()
+
+
+# equal_values = calc_bootstrap(lc, kernel, 'equal', feature_list)
+# equal_df = pd.DataFrame(equal_values, columns=feature_list)
+
+# uniform_values = calc_bootstrap(lc, kernel, 'uniform', feature_list)
+# uniform_df = pd.DataFrame(uniform_values, columns=feature_list)
+
+# for f_name in feature_list:
+#     real_value = real_values[f_name].tolist()
+#     # equal_values = equal_df[f_name].tolist()
+#     uniform_values = uniform_df[f_name].tolist()
+    
+#     fig = plt.figure(f_name)
+#     ax = fig.add_subplot(111)
+    
+#     # graf.graf_hist(equal_values, real_value, 'equal std=')
+#     graf.graf_hist(uniform_values, real_value, 'uniform std=')
+
+#     plt.axvline(x=real_value, color = 'r', label=u'Real value', linewidth=2.0)
+
+#     plt.ylabel('Count')
+#     plt.xlabel('Feature Value')
+    
+#     plt.title(f_name)
+#     plt.legend()
+
+#     plt.savefig(file_dir + f_name + '.png')
+#     plt.close()
