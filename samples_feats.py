@@ -28,14 +28,13 @@ if __name__ == '__main__':
         description='Get bootstrap samples from lightcurves')
     parser.add_argument('--percentage', required=True, type=str)
     parser.add_argument('--n_processes', required=True, type=int)
-    parser.add_argument('--feature_list', required=True, type=list)
     parser.add_argument('--catalog', default='MACHO',
                         choices=['MACHO', 'EROS', 'OGLE'])
-
+    parser.add_argument('--feature_list',  nargs='*', type=str)
 
     args = parser.parse_args(sys.argv[1:])
 
-    percentage = int(args.percentage) / float(100)
+    percentage = args.percentage
     catalog = args.catalog
     n_processes = args.n_processes
     feature_list = args.feature_list
@@ -47,21 +46,11 @@ if __name__ == '__main__':
 
     # Obtengo los archivos con las muestras serializadas
     files = lu.get_paths(samples_path, '.pkl')
-    files = [x for x in files]
-    files = files[0:5]
 
     # Obtengo los ids de las curvas que ya han sido calculadas en iteraciones anteriores
     ids = lu.get_ids_in_path(calculated_feats_path, catalog=catalog, extension='.csv')
 
-    # Puedo especificar las featurs a ocupar o las features a excluir.
-    # Depende que sea mas simple
-    # feature_list = ['Amplitude', 'AndersonDarling', 'Autocor_length', 'Beyond1Std', 'Con',
-    #                 'Eta_e', 'LinearTrend', 'MaxSlope', 'Mean', 'Meanvariance', 'MedianAbsDev',
-    #                 'MedianBRP', 'PairSlopeTrend', 'PercentAmplitude',
-    #                 'Q31', 'Rcs', 'Skew', 'SlottedA_length', 'SmallKurtosis',
-    #                 'Std', 'StetsonK','StetsonK_AC']
-
-    # exclude_list = None
+    exclude_list = None
     
     # feature_list = None 
     # exclude_list = ['Color', 'Eta_color', 'Q31_color', 'StetsonJ', 'StetsonL',
