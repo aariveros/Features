@@ -31,6 +31,7 @@ if __name__ == '__main__':
     parser.add_argument('--catalog', default='MACHO',
                         choices=['MACHO', 'EROS', 'OGLE'])
     parser.add_argument('--feature_list',  nargs='*', type=str)
+    parser.add_argument('--sampling', required=True, type=str)
 
     args = parser.parse_args(sys.argv[1:])
 
@@ -38,11 +39,12 @@ if __name__ == '__main__':
     catalog = args.catalog
     n_processes = args.n_processes
     feature_list = args.feature_list
+    sampling = args.sampling
 
     print feature_list
 
-    samples_path = LAB_PATH + 'GP_Samples/' + catalog + '/' + percentage + '%/'
-    calculated_feats_path = LAB_PATH + 'Samples_Features/' + catalog + '/' + percentage + '%/'
+    samples_path = LAB_PATH + 'GP_Samples/' + catalog + '/' + sampling + '/' + percentage + '%/'
+    calculated_feats_path = LAB_PATH + 'Samples_Features/' + catalog + '/' + sampling + '/' + percentage + '%/'
 
     # Obtengo los archivos con las muestras serializadas
     files = lu.get_paths(samples_path, '.pkl')
@@ -86,7 +88,7 @@ if __name__ == '__main__':
             
             # En algunos casos no calza el largo de las mediciones
             if len(t_obs) != len(samples[1][0][0]):
-                aux = open(LAB_PATH + 'Samples_Features/' + catalog + '/' +
+                aux = open(LAB_PATH + 'Samples_Features/' + catalog + '/' + sampling + '/' +
                            percentage + '%/errores.txt', 'a')
                 aux.write('No calzan largos de: ' + f + '\n' )
                 aux.close()
@@ -106,13 +108,13 @@ if __name__ == '__main__':
                 # raise
 
             if error:
-                aux = open(LAB_PATH + 'Samples_Features/' + catalog + '/' +
+                aux = open(LAB_PATH + 'Samples_Features/' + catalog + '/' + sampling + '/' +
                            percentage + '%/errores.txt', 'a')
                 aux.write(f + '\n')
                 aux.close()
             else:
                 # Escribo los resultados en un archivo especial para cada curva original
-                file_path = (LAB_PATH + 'Samples_Features/' + catalog + '/' +
+                file_path = (LAB_PATH + 'Samples_Features/' + catalog + '/' + sampling + '/' +
                              percentage + '%/' + lc_class + '/' + lc_id +
                              '.csv')
                 df = pd.DataFrame(feature_values, columns=feat_names)
