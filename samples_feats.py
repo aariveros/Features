@@ -11,6 +11,7 @@ import multiprocessing
 import argparse
 import pickle
 import sys
+import os
 
 import pandas as pd
 import FATS
@@ -45,6 +46,11 @@ if __name__ == '__main__':
 
     samples_path = LAB_PATH + 'GP_Samples/' + catalog + '/' + sampling + '/' + percentage + '%/'
     calculated_feats_path = LAB_PATH + 'Samples_Features/' + catalog + '/' + sampling + '/' + percentage + '%/'
+
+    if os.path.isfile(LAB_PATH + 'Samples_Features/' + catalog + '/' +
+                      sampling + '/' + percentage + '%/errores.txt'):
+        os.remove(LAB_PATH + 'Samples_Features/' + catalog + '/' + sampling +
+                  '/' + percentage + '%/errores.txt')
 
     # Obtengo los archivos con las muestras serializadas
     files = lu.get_paths(samples_path, '.pkl')
