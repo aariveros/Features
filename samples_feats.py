@@ -78,7 +78,7 @@ if __name__ == '__main__':
             # Las muestras vienen en una tupla, s[0] es una lista con los tiempos de medicion
             # s[1] es una lista de  muestras  donde cada muestra tiene dos
             # arreglos uno para las observaciones y otro para los errores
-            aux = open(f, 'r')
+            aux = open(f, 'rb')
             samples = pickle.load(aux)
             aux.close()
 
