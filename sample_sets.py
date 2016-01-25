@@ -17,21 +17,16 @@ if __name__ == '__main__':
 
     print ' '.join(sys.argv)
     parser = argparse.ArgumentParser()
-    parser.add_argument('--percentage', required=True, type=str)
     parser.add_argument('--catalog', default='MACHO',
                         choices=['MACHO', 'EROS', 'OGLE'])
-    parser.add_argument('--sampling', required=True, type=str)
     parser.add_argument('--result_file_path', required=True, type=str)
+    parser.add_argument('--samples_path', required=True, type=str)
 
     args = parser.parse_args(sys.argv[1:])
 
-    percentage = args.percentage
     catalog = args.catalog
-    sampling = args.sampling
     result_file_path = args.result_file_path
-
-    samples_path = (LAB_PATH + 'Samples_Features/' + catalog + '/' + sampling +
-                    '/' + percentage + '%/')
+    samples_path = args.samples_path
 
     feature_samples_files = lu.get_paths(samples_path, '.csv')
     feature_samples_files = [x for x in feature_samples_files]
@@ -43,7 +38,7 @@ if __name__ == '__main__':
     linea = ','.join(feature_list) + '\n'
 
     archivos = []
-    for i in xrange(100):       # El 100 esta harcodeao
+    for i in xrange(100):       # El 100 esta harcodeao se puede obtener directamente
         f = open(result_file_path + 'macho_sampled_' + str(i) + '.csv', 'w')
         f.write(linea)
         archivos.append(f)
