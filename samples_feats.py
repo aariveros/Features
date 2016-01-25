@@ -78,9 +78,17 @@ if __name__ == '__main__':
             # Las muestras vienen en una tupla, s[0] es una lista con los tiempos de medicion
             # s[1] es una lista de  muestras  donde cada muestra tiene dos
             # arreglos uno para las observaciones y otro para los errores
-            aux = open(f, 'rb')
-            samples = pickle.load(aux)
-            aux.close()
+            
+            try:
+                aux = open(f, 'rb')
+                samples = pickle.load(aux)
+                aux.close()
+            except EOFError as e:
+                aux = open(LAB_PATH + 'Samples_Features/' + catalog + '/' + sampling + '/' +
+                           percentage + '%/errores.txt', 'a')
+                aux.write(f + '\n')
+                aux.close()
+                continue
 
             # Estas variables son comunes a todas las muestras
             t_obs = samples[0]
