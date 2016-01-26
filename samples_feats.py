@@ -97,6 +97,7 @@ if __name__ == '__main__':
             
             # En algunos casos no calza el largo de las mediciones
             if len(t_obs) != len(samples[1][0][0]):
+                print 'Error de largos - ' + lc_id
                 aux = open(calculated_feats_path + 'errores.txt', 'a')
                 aux.write('No calzan largos de: ' + f + '\n' )
                 aux.close()
