@@ -27,30 +27,25 @@ if __name__ == '__main__':
     print ' '.join(sys.argv)
     parser = argparse.ArgumentParser(
         description='Get bootstrap samples from lightcurves')
-    parser.add_argument('--percentage', required=True, type=str)
     parser.add_argument('--n_processes', required=True, type=int)
     parser.add_argument('--catalog', default='MACHO',
                         choices=['MACHO', 'EROS', 'OGLE'])
     parser.add_argument('--feature_list',  nargs='*', type=str)
-    parser.add_argument('--sampling', required=True, type=str)
+    parser.add_argument('--samples_path', required=True, type=str)
+    parser.add_argument('--calculated_feats_path', required=True, type=str)
 
     args = parser.parse_args(sys.argv[1:])
 
-    percentage = args.percentage
     catalog = args.catalog
     n_processes = args.n_processes
     feature_list = args.feature_list
-    sampling = args.sampling
+    samples_path = args.samples_path
+    calculated_feats_path = args.calculated_feats_path
 
     print feature_list
 
-    samples_path = LAB_PATH + 'GP_Samples/' + catalog + '/' + sampling + '/' + percentage + '%/'
-    calculated_feats_path = LAB_PATH + 'Samples_Features/' + catalog + '/' + sampling + '/' + percentage + '%/'
-
-    if os.path.isfile(LAB_PATH + 'Samples_Features/' + catalog + '/' +
-                      sampling + '/' + percentage + '%/errores.txt'):
-        os.remove(LAB_PATH + 'Samples_Features/' + catalog + '/' + sampling +
-                  '/' + percentage + '%/errores.txt')
+    if os.path.isfile(calculated_feats_path + 'errores.txt'):
+        os.remove(calculated_feats_path + 'errores.txt')
 
     # Obtengo los archivos con las muestras serializadas
     files = lu.get_paths(samples_path, '.pkl')
@@ -84,8 +79,7 @@ if __name__ == '__main__':
                 samples = pickle.load(aux)
                 aux.close()
             except EOFError as e:
-                aux = open(LAB_PATH + 'Samples_Features/' + catalog + '/' + sampling + '/' +
-                           percentage + '%/errores.txt', 'a')
+                aux = open(calculated_feats_path + 'errores.txt', 'a')
                 aux.write(f + '\n')
                 aux.close()
                 continue
@@ -102,8 +96,7 @@ if __name__ == '__main__':
             
             # En algunos casos no calza el largo de las mediciones
             if len(t_obs) != len(samples[1][0][0]):
-                aux = open(LAB_PATH + 'Samples_Features/' + catalog + '/' + sampling + '/' +
-                           percentage + '%/errores.txt', 'a')
+                aux = open(calculated_feats_path + 'errores.txt', 'a')
                 aux.write('No calzan largos de: ' + f + '\n' )
                 aux.close()
                 continue
@@ -122,14 +115,12 @@ if __name__ == '__main__':
                 # raise
 
             if error:
-                aux = open(LAB_PATH + 'Samples_Features/' + catalog + '/' + sampling + '/' +
-                           percentage + '%/errores.txt', 'a')
+                aux = open(calculated_feats_path + 'errores.txt', 'a')
                 aux.write(f + '\n')
                 aux.close()
             else:
                 # Escribo los resultados en un archivo especial para cada curva original
-                file_path = (LAB_PATH + 'Samples_Features/' + catalog + '/' + sampling + '/' +
-                             percentage + '%/' + lc_class + '/' + lc_id +
+                file_path = (calculated_feats_path + lc_class + '/' + lc_id +
                              '.csv')
                 df = pd.DataFrame(feature_values, columns=feat_names)
                 df.to_csv(file_path, index=False)
