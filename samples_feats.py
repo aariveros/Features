@@ -79,6 +79,7 @@ if __name__ == '__main__':
                 samples = pickle.load(aux)
                 aux.close()
             except EOFError as e:
+                print 'EOFError - ' + lc_id
                 aux = open(calculated_feats_path + 'errores.txt', 'a')
                 aux.write(f + '\n')
                 aux.close()
@@ -107,7 +108,7 @@ if __name__ == '__main__':
                 #feature_values = pool.map(partial_calc, samples[1], chunksize)
                 #pool.close()
                 #pool.join()
-                feature_values = map(partial_calc, samples[1], chunksize)
+                feature_values = map(partial_calc, samples[1])
 
             except Exception as e:
                 error = True
