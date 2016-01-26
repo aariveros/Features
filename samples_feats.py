@@ -10,6 +10,7 @@ from functools import partial
 import multiprocessing
 import argparse
 import pickle
+import cPickle
 import sys
 import os
 
@@ -82,6 +83,10 @@ if __name__ == '__main__':
                 aux.close()
             except EOFError as e:
                 print 'EOFError - ' + lc_id
+                error_file.write(f + '\n')
+                continue
+            except KeyError as ke:
+                print 'KeyError - ' + lc_id
                 error_file.write(f + '\n')
                 continue
 
