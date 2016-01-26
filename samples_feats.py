@@ -109,12 +109,12 @@ if __name__ == '__main__':
                 continue
 
             try:
-                pool = multiprocessing.Pool(processes=n_processes,
-                                            maxtasksperchild=2)
-                feature_values = pool.map(partial_calc, samples[1], chunksize)
-
-                pool.close()
-                pool.join()
+                #pool = multiprocessing.Pool(processes=n_processes,
+                #                            maxtasksperchild=2)
+                #feature_values = pool.map(partial_calc, samples[1], chunksize)
+                #pool.close()
+                #pool.join()
+                feature_values = map(partial_calc, samples[1], chunksize)
 
             except Exception as e:
                 error = True
