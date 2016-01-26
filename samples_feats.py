@@ -65,6 +65,8 @@ if __name__ == '__main__':
     feat_names = fs.featureList
     del fs
 
+    error_file = open(calculated_feats_path + 'errores.txt', 'a')
+
     for f in files:
         lc_id = lu.get_lightcurve_id(f, catalog=catalog) 
 
@@ -80,9 +82,7 @@ if __name__ == '__main__':
                 aux.close()
             except EOFError as e:
                 print 'EOFError - ' + lc_id
-                aux = open(calculated_feats_path + 'errores.txt', 'a')
-                aux.write(f + '\n')
-                aux.close()
+                error_file.write(f + '\n')
                 continue
 
             # Estas variables son comunes a todas las muestras
@@ -98,9 +98,7 @@ if __name__ == '__main__':
             # En algunos casos no calza el largo de las mediciones
             if len(t_obs) != len(samples[1][0][0]):
                 print 'Error de largos - ' + lc_id
-                aux = open(calculated_feats_path + 'errores.txt', 'a')
-                aux.write('No calzan largos de: ' + f + '\n' )
-                aux.close()
+                error_file.write('No calzan largos de: ' + f + '\n' )
                 continue
 
             try:
@@ -117,9 +115,7 @@ if __name__ == '__main__':
                 # raise
 
             if error:
-                aux = open(calculated_feats_path + 'errores.txt', 'a')
-                aux.write(f + '\n')
-                aux.close()
+                error_file.write(f + '\n')
             else:
                 # Escribo los resultados en un archivo especial para cada curva original
                 file_path = (calculated_feats_path + lc_class + '/' + lc_id +
@@ -128,3 +124,5 @@ if __name__ == '__main__':
                 df.to_csv(file_path, index=False)
         else:
             print 'Curva: ' + lc_id + 'ya calculada'
+
+    error_file.close()
