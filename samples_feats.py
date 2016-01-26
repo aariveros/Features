@@ -10,6 +10,7 @@ from functools import partial
 import multiprocessing
 import argparse
 import pickle
+import cPickle
 import sys
 import os
 
@@ -84,6 +85,10 @@ if __name__ == '__main__':
                 print 'EOFError - ' + lc_id
                 error_file.write(f + '\n')
                 continue
+            except KeyError as ke:
+                print 'KeyError - ' + lc_id
+                error_file.write(f + '\n')
+                continue
 
             # Estas variables son comunes a todas las muestras
             t_obs = samples[0]
@@ -102,12 +107,12 @@ if __name__ == '__main__':
                 continue
 
             try:
-                #pool = multiprocessing.Pool(processes=n_processes,
-                #                            maxtasksperchild=2)
-                #feature_values = pool.map(partial_calc, samples[1], chunksize)
-                #pool.close()
-                #pool.join()
-                feature_values = map(partial_calc, samples[1])
+                pool = multiprocessing.Pool(processes=n_processes,
+                                           maxtasksperchild=2)
+                feature_values = pool.map(partial_calc, samples[1], chunksize)
+                pool.close()
+                pool.join()
+                #feature_values = map(partial_calc, samples[1])
 
             except Exception as e:
                 error = True
