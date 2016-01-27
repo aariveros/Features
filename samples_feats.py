@@ -89,6 +89,10 @@ if __name__ == '__main__':
                 print 'KeyError - ' + lc_id
                 error_file.write(f + '\n')
                 continue
+            except Exception as e:
+                print 'Unknown error - ' + lc_id
+                error_file.write(f + '\n')
+                continue
 
             # Estas variables son comunes a todas las muestras
             t_obs = samples[0]
@@ -105,6 +109,10 @@ if __name__ == '__main__':
                 print 'Error de largos - ' + lc_id
                 error_file.write('No calzan largos de: ' + f + '\n' )
                 continue
+            elif len(set(samples[1][0][1])) == 1:
+                print 'Errores == 0 - ' + lc_id
+                error_file.write('Todas las observaciones con el mismo error: ' + f + '\n')
+                continue
 
             try:
                 pool = multiprocessing.Pool(processes=n_processes,
@@ -118,7 +126,6 @@ if __name__ == '__main__':
                 error = True
                 print 'Error: ' + f
                 # raise
-
             if error:
                 error_file.write(f + '\n')
             else:
@@ -128,6 +135,7 @@ if __name__ == '__main__':
                 df = pd.DataFrame(feature_values, columns=feat_names)
                 df.to_csv(file_path, index=False)
         else:
-            print 'Curva: ' + lc_id + 'ya calculada'
+            pass
+            # print 'Curva: ' + lc_id + ' - ya calculada'
 
     error_file.close()
