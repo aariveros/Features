@@ -15,6 +15,7 @@ import sys
 import os
 
 import pandas as pd
+import numpy as np
 import FATS
 
 import lightcurves.lc_utils as lu
@@ -104,7 +105,7 @@ if __name__ == '__main__':
             error = False
             chunksize = int(100/n_processes)
             
-            # En algunos casos no calza el largo de las mediciones
+            # Algunos casos de errores raros en las curvas sampleadas
             if len(t_obs) != len(samples[1][0][0]):
                 print 'Error de largos - ' + lc_id
                 error_file.write('No calzan largos de: ' + f + '\n' )
@@ -112,6 +113,10 @@ if __name__ == '__main__':
             elif len(set(samples[1][0][1])) == 1:
                 print 'Errores == 0 - ' + lc_id
                 error_file.write('Todas las observaciones con el mismo error: ' + f + '\n')
+                continue
+            elif np.isnan(samples[1][0][0]).any():
+                print 'Error de Nan en y_obs - ' + lc_id
+                error_file.write('Observaciones Nan: ' + f + '\n' )
                 continue
 
             try:
