@@ -205,7 +205,7 @@ def prepare_lightcurve(curva, n_sampled_points=None):
 
     return t_obs, y_obs, err_obs, min_time, max_time
 
-def stratified_filter(paths, percentage=0.2):
+def stratified_filter(paths, catalog='MACHO', percentage=0.2):
     """Toma una lista de paths con clases de estrellas y hace una selección
     de un porcentaje de ellas manteniendo las proporciones de las clases
     """
@@ -214,7 +214,7 @@ def stratified_filter(paths, percentage=0.2):
 
     # Diccionario con todos los paths separados por clases
     for p in paths:
-        clase = get_lightcurve_class(p, catalog='EROS')
+        clase = get_lightcurve_class(p, catalog=catalog)
         path_dict[clase] = path_dict.get(clase, []) + [p]
 
     count_dict = {key: len(path_dict[key]) for key in path_dict}
