@@ -92,7 +92,7 @@ if __name__ == '__main__':
                              sampling + '/' + str(int(100 * percentage)) + '%/',
                              catalog=catalog, extension='.pkl')
 
-    paths = [x for x in paths if lu.get_lightcurve_id(x) not in ids]
+    paths = [x for x in paths if lu.get_lightcurve_id(x, catalog=catalog) not in ids]
     
     if catalog == 'MACHO':
         paths = [x for x in paths if 'R.mjd' not in x]
