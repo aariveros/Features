@@ -98,7 +98,7 @@ def get_lightcurve_paths(path=LC_FILE_PATH, separate_bands=False, catalog='MACHO
     """
     return val: file object with lightcurve paths in each line
     """
-    f = open(path, 'r')
+    f = open(path + catalog + '.txt', 'r')
     
     if catalog == 'MACHO':
         
@@ -204,3 +204,28 @@ def prepare_lightcurve(curva, n_sampled_points=None):
     err_obs = np.ravel(err_obs)
 
     return t_obs, y_obs, err_obs, min_time, max_time
+
+def stratified_filter(paths, percentage=0.2):
+    """Toma una lista de paths con clases de estrellas y hace una selección
+    de un porcentaje de ellas manteniendo las proporciones de las clases
+    """
+    
+    path_dict = {}
+
+    # Diccionario con todos los paths separados por clases
+    for p in paths:
+        clase = get_lightcurve_class(p, catalog='EROS')
+        path_dict[clase] = path_dict.get(clase, []) + [p]
+
+    count_dict = {key: len(path_dict[key]) for key in path_dict}
+
+    filtered_paths = []
+
+    # Tomo los primeros paths nomas. Podria hacer un random pero no lo veo necesario
+    for key in path_dict:
+        filtered_paths.extend(path_dict[key][0:int(percentage * count_dict[key])])
+
+    return filtered_paths
+
+
+
