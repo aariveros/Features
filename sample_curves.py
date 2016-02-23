@@ -84,6 +84,8 @@ if __name__ == '__main__':
                     str(int(100 * percentage)) + '%/error.txt')
 
     paths = lu.get_lightcurve_paths(catalog=catalog)
+    paths = lu.stratified_filter(paths, percentage=0.3)
+    print 'Analisis sobre ' + str(len(paths)) + ' curvas'
 
     # Filtro ids de curvas ya calculadas
     ids = lu.get_ids_in_path(LAB_PATH + 'GP_Samples/' + catalog + '/' +
