@@ -28,6 +28,7 @@ if __name__ == '__main__':
                         choices=['MACHO', 'EROS'])
     parser.add_argument('--min_points', required=True, default=300, type=int)
     parser.add_argument('--feature_list',  nargs='*', type=str)
+    parser.add_argument('--save_path', required=True, type=str)
     # parser.add_argument('--n_processes', required=True, type=int)
     
     args = parser.parse_args(sys.argv[1:])
@@ -36,6 +37,7 @@ if __name__ == '__main__':
     catalog = args.catalog
     min_points = args.min_points
     feature_list = args.feature_list
+    save_path = args.save_path
     # n_processes = args.n_processes
 
 
@@ -108,4 +110,4 @@ if __name__ == '__main__':
     # Porque sorteo??
     df.sort(axis=1, inplace=True)
 
-    df.to_csv(TRAINING_SETS_DIR_PATH + '/MACHO_temp/Macho regular set ' + str(int(percentage * 100)) + '.csv') 
+    df.to_csv(save_path) 
