@@ -15,8 +15,6 @@ import numpy as np
 import george
 import pandas as pd
 
-import matplotlib.pyplot as plt
-
 def prepare_GP():
     pass
 
@@ -169,6 +167,7 @@ def GP_bootstrap(lc, kernel, sampling='equal', n_samples=100):
     deviations = map(lambda s: np.sqrt(np.diag(gp.predict(y_obs, t_obs)[1])),
                      samples)
 
+    # Mapea los valores de las muestras de vuelta al espacio original
     samples = [s * lc['mag'].std() + lc['mag'].mean() for s in samples]
     deviations = [d * lc['err'].std() + lc['err'].mean() for d in deviations]
     t_obs = t_obs * np.std(lc.index) + np.mean(lc.index)

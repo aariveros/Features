@@ -10,7 +10,6 @@ import pandas as pd
 import numpy as np
 import lightcurves.lc_utils as lu
 import os
-import time
 
 def get_paths(directory):
     for dirpath, _, filenames in os.walk(directory):

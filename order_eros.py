@@ -1,5 +1,10 @@
 # coding=utf-8  
 
+# Separa las curvas de EROS en distintas carpetas según clase. Además
+# me baso en otra denominación de clases que me dio Karim
+
+# -----------------------------------------------------------------------------
+
 import pandas as pd
 import shutil
 
