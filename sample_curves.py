@@ -33,7 +33,7 @@ def sample_curve(lc_path, catalog='MACHO', percentage=1.0, sampling='equal',
 
         var = np.var(y_obs)
         l = 6 * (max_time - min_time) / float(lc.index[-1] - lc.index[0])
-        kernel = var ** 2 * kernels.ExpSquaredKernel(l ** 2)
+        kernel = var * kernels.ExpSquaredKernel(l ** 2)
 
         samples_devs = bootstrap.GP_bootstrap(lc, kernel, sampling, n_samples)
 
