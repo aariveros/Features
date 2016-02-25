@@ -1,3 +1,5 @@
+# coding=utf-8
+
 # Calcula un set de features para cada curva de la base de datos macho
 # Y arma un set de entrenamiento con los valores 
 
@@ -5,6 +7,7 @@
 
 # from functools import partial
 # import multiprocessing
+import argparse
 import sys
 import os
 
@@ -105,4 +108,4 @@ if __name__ == '__main__':
     # Porque sorteo??
     df.sort(axis=1, inplace=True)
 
-    df.to_csv(TRAINING_SETS_DIR_PATH + '/MACHO_temp/Macho regular set ' + str(sys.argv[1]) + '.csv') 
+    df.to_csv(TRAINING_SETS_DIR_PATH + '/MACHO_temp/Macho regular set ' + str(int(percentage * 100)) + '.csv') 
