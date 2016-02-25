@@ -89,7 +89,7 @@ def get_lightcurve_id(fp, catalog='MACHO'):
 
     elif catalog == 'EROS':
         pattern = re.compile('lm[^. ]*')
-        return pattern.search(path).group()
+        return pattern.search(fp).group()
 
     elif catalog == 'OGLE':
         pass
