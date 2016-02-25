@@ -1,19 +1,18 @@
 # coding=utf-8
-# Toma una curva de luz, hace un bootstrap calcula features sobre
-# las muestras y hace un histograma con ellas
+
+# Toma una curva de luz ajusta un GP optimizando los parámetros y gráfica el 
+# ajuste resultante.
 # -----------------------------------------------------------------------------
 
-import scipy.optimize as op
 import matplotlib.pyplot as plt
-import matplotlib.mlab as mlab
+import scipy.optimize as op
 from george import kernels
-import pandas as pd
 import numpy as np
 import george
 import FATS
 
 import lightcurves.lc_utils as lu
-import bootstrap
+import graf
 
 # Ubicacion de las curvas
 # 0-1           Be_lc
@@ -93,4 +92,27 @@ results = op.minimize(nll, p0,  method='Nelder-Mead')
 gp.kernel[:] = results.x
 print(gp.lnlikelihood(y_obs))
 
-bootstrap.graf_GP(lc, gp.kernel)
+
+
+# Grafico el ajuste resultante 
+# -----------------------------------------------------------------------------
+
+x = np.linspace(np.min(t_obs), np.max(t_obs), 500)
+mu, cov = gp.predict(y_obs, x)
+std = np.sqrt(np.diag(cov))
+
+# Mapeo devuelta a los valores originales
+mu = mu * lc['mag'].std() + lc['mag'].mean() 
+y_obs = y_obs * lc['mag'].std() + lc['mag'].mean() 
+std = std * lc['err'].std() + lc['err'].mean()
+err_obs = err_obs * lc['err'].std() + lc['err'].mean()
+t_obs = t_obs * np.std(lc.index) + np.mean(lc.index) 
+x = x * np.std(lc.index) + np.mean(lc.index)
+
+plt.figure()
+
+plt.errorbar(t_obs, y_obs, yerr=err_obs, fmt=".b", ecolor='r', capsize=0)
+graf.graf_GP(x, mu, std)
+
+plt.show()
+plt.close()
