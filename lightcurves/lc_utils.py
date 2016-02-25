@@ -175,16 +175,16 @@ def prepare_lightcurve(curva, n_sampled_points=None):
 
     # Es necesario normalizar las observaciones y los tiempos?
     t_obs = np.array(curva.index).reshape(len(curva.index),1)
-    t_obs = (t_obs - np.mean(t_obs)) / np.std(t_obs)
+    # t_obs = (t_obs - np.mean(t_obs)) / np.std(t_obs)
 
     y_obs = curva['mag'].reshape(len(curva.index), 1)
-    y_obs = (y_obs - np.mean(y_obs)) / np.std(y_obs)
+    # y_obs = (y_obs - np.mean(y_obs)) / np.std(y_obs)
 
     # Array con los errores de las mediciones normalizados segun las observaciones
     # No tiene sentido centrar los errores
     # Pero hay que normalizarlos igual que a la magnitud
     err_obs = curva['err'].reshape(len(curva.index), 1)
-    err_obs = err_obs / curva['mag'].std()
+    # err_obs = err_obs / curva['mag'].std()
 
     min_time = np.min(t_obs)
     max_time = np.max(t_obs)
