@@ -20,6 +20,8 @@ lightcurves_paths/*
 
 notebooks/*
 
+parse_example.py
+
 *.pyc
 
 Resultados/

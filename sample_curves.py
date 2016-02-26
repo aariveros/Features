@@ -68,6 +68,8 @@ if __name__ == '__main__':
     parser.add_argument('--sampling', required=True, type=str)
     parser.add_argument('--catalog', default='MACHO',
                         choices=['MACHO', 'EROS'])
+    parser.add_argument('--lc_filter', required=False, type=float, 
+                        help='Percentage of the total amount of paths to use')
 
     args = parser.parse_args(sys.argv[1:])
 
@@ -76,6 +78,8 @@ if __name__ == '__main__':
     sampling = args.sampling
     n_samples = args.n_samples
     n_processes = args.n_processes
+    lc_filter = args.lc_filter
+
 
     # Creo archivo para guardar errores
     if os.path.isfile(LAB_PATH + 'GP_Samples/' + catalog + '/' +
@@ -84,7 +88,8 @@ if __name__ == '__main__':
                     str(int(100 * percentage)) + '%/error.txt')
 
     paths = lu.get_lightcurve_paths(catalog=catalog)
-    paths = lu.stratified_filter(paths, percentage=0.3)
+    if lc_filter is not None:
+        paths = lu.stratified_filter(paths, percentage=lc_filter)
     print 'Analisis sobre ' + str(len(paths)) + ' curvas'
 
     # Filtro ids de curvas ya calculadas
