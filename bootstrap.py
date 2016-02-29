@@ -168,9 +168,9 @@ def GP_bootstrap(lc, kernel, sampling='equal', n_samples=100):
                      samples)
 
     # Mapea los valores de las muestras de vuelta al espacio original
-    samples = [s * lc['mag'].std() + lc['mag'].mean() for s in samples]
-    deviations = [d * lc['err'].std() + lc['err'].mean() for d in deviations]
-    t_obs = t_obs * np.std(lc.index) + np.mean(lc.index)
+    # samples = [s * lc['mag'].std() + lc['mag'].mean() for s in samples]
+    # deviations = [d * lc['err'].std() + lc['err'].mean() for d in deviations]
+    # t_obs = t_obs * np.std(lc.index) + np.mean(lc.index)
 
     samples_devs = zip(samples, deviations)
     samples_devs = (t_obs, samples_devs)
