@@ -18,16 +18,19 @@ def rms(true_value, sampled_values):
 
 if __name__ == '__main__':
 
+	feat_name = 'StetsonK'
+	percentage = '60'
+
 	lc_ids = []
 	rms_errors = []
+	mean_values = []
 
-	feat_name = 'StetsonK'
-
-	true_values = pd.read_csv('/Users/npcastro/workspace/Features/sets/MACHO_temp/Macho_regular_set_100.csv', index_col=0)
+	true_values = pd.read_csv('/Users/npcastro/workspace/Features/sets/MACHO_temp/Macho_regular_set_' + percentage + '.csv', index_col=0)
 	true_values = true_values.reset_index().drop_duplicates(subset='index', take_last=True).set_index('index')
 	true_values = true_values[feat_name]
 
-	sampled_feats_paths = lu.get_paths('/Users/npcastro/Lab/Samples_Features/MACHO/uniform/100%/', extension='.csv')
+	sampled_feats_paths = lu.get_paths('/Users/npcastro/Lab/Samples_Features/MACHO/uniform/' + percentage + '%/', extension='.csv')
+	sampled_feats_paths = [x for x in sampled_feats_paths]
 
 	for path in sampled_feats_paths:
 
@@ -37,6 +40,7 @@ if __name__ == '__main__':
 
 		try:
 			true_value = true_values.loc[lc_id]
+			mean_values.append(np.mean(sampled_values))
 		except KeyError:
 			print lc_id + ' no esta en los valores reales'
 			continue
