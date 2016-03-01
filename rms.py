@@ -3,21 +3,24 @@ import numpy as np
 
 import lightcurves.lc_utils as lu
 
-def rms(true_value, sampled_values):
+def rms(true_values, sampled_values, lc_id, normalize=''):
 	"""Es el promedio de las diferencias de los valores sampleados con el valor
 	real. Se le saca la raiz para compensar por la potencia al cuadrado y se
 	divide por la desviacion standard para darle mayor significado.
 	"""
 	n = len(sampled_values)
-	std = np.var(sampled_values)
+	true_value =  true_values.loc[lc_id]
 
 	aux = map(lambda x: (x - true_value) ** 2, sampled_values)
-	aux = sum(aux) / n
-
-	if std == 0:
-		return np.sqrt(aux)
-	else:
-		return np.sqrt(aux) / std
+	aux = np.sqrt(sum(aux) / n)
+	
+	if normalize == '':
+		return aux
+	elif normalize == 'Mean':
+		return aux / np.mean(true_values)
+	elif normalize == 'Range':
+		rango = np.max(true_values) - np.min(true_values)
+		return aux / rango
 
 if __name__ == '__main__':
 
@@ -27,6 +30,7 @@ if __name__ == '__main__':
 
 	# feat_name = 'Beyond1Std'
 	percentage = '10'
+	normalize = ''
 
 	for feat_name in ['Mean']:
 		lc_ids = []
@@ -55,6 +59,6 @@ if __name__ == '__main__':
 				continue
 
 			lc_ids.append(lc_id)
-			rms_errors.append(rms(true_value, sampled_values))
+			rms_errors.append(rms(true_values, sampled_values, lc_id, normalize=normalize))
 
 		print np.mean(rms_errors)
