@@ -21,6 +21,8 @@ def rms(true_values, sampled_values, lc_id, normalize=''):
 	elif normalize == 'Range':
 		rango = np.max(true_values) - np.min(true_values)
 		return aux / rango
+	elif normalize == 'Std':
+		return aux / np.std(true_values)
 
 if __name__ == '__main__':
 
@@ -29,8 +31,10 @@ if __name__ == '__main__':
 	'Q31','Rcs','Skew','SlottedA_length','SmallKurtosis','Std','StetsonK','StetsonK_AC']
 
 	# feat_name = 'Beyond1Std'
-	percentage = '10'
-	normalize = ''
+	percentage = '5'
+	normalize = 'Std'
+
+	print normalize + '\n'
 
 	for feat_name in ['Mean']:
 		lc_ids = []
@@ -41,8 +45,7 @@ if __name__ == '__main__':
 		true_values = true_values.reset_index().drop_duplicates(subset='index', take_last=True).set_index('index')
 		true_values = true_values[feat_name]
 
-		# sampled_feats_paths = lu.get_paths('/Users/npcastro/Lab/Samples_Features/MACHO/uniform/' + percentage + '%/', extension='.csv')
-		sampled_feats_paths = lu.get_paths('/Users/npcastro/Lab/Malas/uniform/' + percentage + '%/', extension='.csv')
+		sampled_feats_paths = lu.get_paths('/Users/npcastro/Lab/Samples_Features/uniform/' + percentage + '%/', extension='.csv')
 		sampled_feats_paths = [x for x in sampled_feats_paths]
 
 		for path in sampled_feats_paths:
@@ -61,4 +64,4 @@ if __name__ == '__main__':
 			lc_ids.append(lc_id)
 			rms_errors.append(rms(true_values, sampled_values, lc_id, normalize=normalize))
 
-		print np.mean(rms_errors)
+		print feat_name + ': ' + str(np.mean(rms_errors))

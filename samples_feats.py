@@ -125,7 +125,6 @@ if __name__ == '__main__':
                 feature_values = pool.map(partial_calc, samples[1], chunksize)
                 pool.close()
                 pool.join()
-                #feature_values = map(partial_calc, samples[1])
 
             except Exception as e:
                 error = True

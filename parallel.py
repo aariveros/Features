@@ -19,7 +19,7 @@ def calc_sample_feats(t_obs, sample, feature_list=None, exclude_list=None):
                            featureList=feature_list, excludeList=exclude_list)
         
     fs = fs.calculateFeature([y_obs, t_obs, err_obs])
-    result = map(lambda x: float("{0:.6f}".format(x)), fs.result(method='dict').values())
+    result = map(lambda x: float("{0:.6f}".format(x)), fs.result().tolist())
     del fs
 
     return result
