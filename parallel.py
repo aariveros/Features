@@ -43,8 +43,7 @@ def calc_feats(lc_path, feature_list=None, exclude_list=None, percentage=1.0):
                            featureList=feature_list, excludeList=exclude_list)
         
     fs = fs.calculateFeature([y_obs, t_obs, err_obs])
-    result = map(lambda x: float("{0:.6f}".format(x)),
-                 fs.result(method='dict').values())
+    result = map(lambda x: float("{0:.6f}".format(x)), fs.result().tolist())
     del fs
 
     return [macho_id] + result + [macho_class]
