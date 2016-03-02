@@ -1,3 +1,5 @@
+# coding=utf-8
+
 import pandas as pd
 import numpy as np
 
@@ -5,8 +7,8 @@ import lightcurves.lc_utils as lu
 
 def rms(true_values, sampled_values, lc_id, normalize=''):
 	"""Es el promedio de las diferencias de los valores sampleados con el valor
-	real. Se le saca la raiz para compensar por la potencia al cuadrado y se
-	divide por la desviacion standard para darle mayor significado.
+	real. Se le saca la raiz para compensar por la potencia al cuadrado. 
+	Existen diversas formas de normlización para poder comparar
 	"""
 	n = len(sampled_values)
 	true_value =  true_values.loc[lc_id]
@@ -30,13 +32,10 @@ if __name__ == '__main__':
 	'MaxSlope','Mean','Meanvariance','MedianAbsDev','MedianBRP','PairSlopeTrend','PercentAmplitude',
 	'Q31','Rcs','Skew','SlottedA_length','SmallKurtosis','Std','StetsonK','StetsonK_AC']
 
-	# feat_name = 'Beyond1Std'
 	percentage = '5'
 	normalize = 'Std'
 
-	print normalize + '\n'
-
-	for feat_name in ['Mean']:
+	for feat_name in feats:
 		lc_ids = []
 		rms_errors = []
 		mean_values = []

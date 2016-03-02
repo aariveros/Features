@@ -1,3 +1,5 @@
+# coding=utf-8
+
 import FATS
 import pickle
 import pandas as pd
