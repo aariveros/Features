@@ -12,12 +12,12 @@ import graf
 
 catalog = 'MACHO'
 percentage = 0.5
-lc_id = '101.20650.1216'
+lc_id = '1.3320.174'
 
 paths = lu.get_lightcurve_paths(catalog=catalog)
 
 if catalog == 'MACHO':
-        paths = [x for x in paths if 'R.mjd' not in x]
+    paths = [x for x in paths if 'R.mjd' not in x]
 
 path = [x for x in paths if lc_id in x][0]
 
@@ -45,17 +45,12 @@ x = np.linspace(np.min(t_obs), np.max(t_obs), 500)
 mu, cov = gp.predict(y_obs, x)
 std = np.sqrt(np.diag(cov))
 
-# # Desnormalizo los valores
-# mu = mu * lc['mag'].std() + lc['mag'].mean() 
-# std = std * lc['err'].std() + lc['err'].mean()
-# x = x * np.std(lc.index) + np.mean(lc.index)
-
 plt.figure()
 
 graf.graf_GP(x, mu, std)
 plt.errorbar(lc.index, lc['mag'], yerr=lc['err'], fmt=".b", ecolor='r', capsize=0)
 
-plt.title(lc_class)
+plt.title(lc_id + ' - ' + lc_class)
 plt.ylabel('Magnitude')
 plt.xlabel('MJD')
 

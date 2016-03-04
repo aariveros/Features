@@ -12,7 +12,9 @@ import graf
 catalog = 'MACHO'
 percentage = '50'
 feat = 'Eta_e'
-lc_id = '101.20650.1216'
+lc_id = '2.5025.10'
+
+file_dir = '/Users/npcastro/Desktop/histograms/'
 
 real_df = pd.read_csv('/Users/npcastro/workspace/Features/sets/MACHO_temp/Macho_regular_set_' + percentage + '.csv', index_col=0)
 
@@ -27,21 +29,28 @@ for s in samples_paths:
 
 samples_df = pd.read_csv(path)
 
+feats = ['Amplitude', 'AndersonDarling', 'Autocor_length', 'Beyond1Std', 'Con',
+                'Eta_e', 'LinearTrend', 'MaxSlope', 'Mean', 'Meanvariance', 'MedianAbsDev',
+                'MedianBRP', 'PairSlopeTrend', 'PercentAmplitude', 'Q31', 'Rcs', 'Skew',
+                'SlottedA_length', 'SmallKurtosis', 'Std', 'StetsonK', 'StetsonK_AC']
 
-real_value = real_df.loc[lc_id][feat].tolist()
-sampled_values = samples_df[feat].tolist()
+for feat in feats:
 
-fig = plt.figure()
-ax = fig.add_subplot(111)
+	real_value = real_df.loc[lc_id][feat].tolist()
+	sampled_values = samples_df[feat].tolist()
 
-graf.graf_hist(sampled_values, 'Sampled values')
-plt.axvline(x=real_value, color = 'r', label=u'Real value', linewidth=2.0)
+	fig = plt.figure()
+	ax = fig.add_subplot(111)
 
-plt.ylabel('Count')
-plt.xlabel('Feature Value')
+	graf.graf_hist(sampled_values, 'Sampled values')
+	plt.axvline(x=real_value, color = 'r', label=u'Real value', linewidth=2.0)
 
-plt.title(feat + ' ' + lc_id)
-plt.legend()
+	plt.ylabel('Count')
+	plt.xlabel('Feature Value')
 
-plt.show()
-plt.close()
+	plt.title(feat + ' ' + lc_id)
+	plt.legend()
+
+	# plt.show()
+	plt.savefig(file_dir + feat + '.png')
+	plt.close()
