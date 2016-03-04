@@ -4,7 +4,6 @@
 # -----------------------------------------------------------------------------
 
 import matplotlib.pyplot as plt
-import matplotlib.mlab as mlab
 from george import kernels
 import pandas as pd
 import numpy as np
@@ -43,8 +42,6 @@ def calc_bootstrap(lc, kernel, sampling, feature_list):
                                     fs.result(method='')))
     return bootstrap_values
 
-# file_dir = 'Resultados/Histogramas/ambos/'
-# file_dir = '/Users/npcastro/Dropbox/Tesis NC/Graficos/histogramas/'
 file_dir = '/Users/npcastro/Dropbox/Tesis NC/Graficos/GP/'
 catalog = 'MACHO'
 percentage = 0.5

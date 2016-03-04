@@ -32,35 +32,45 @@ if __name__ == '__main__':
 	'MaxSlope','Mean','Meanvariance','MedianAbsDev','MedianBRP','PairSlopeTrend','PercentAmplitude',
 	'Q31','Rcs','Skew','SlottedA_length','SmallKurtosis','Std','StetsonK','StetsonK_AC']
 
-	percentage = '5'
 	normalize = 'Std'
+	catalog = 'MACHO'
 
-	for feat_name in feats:
-		lc_ids = []
-		rms_errors = []
-		mean_values = []
-
-		true_values = pd.read_csv('/Users/npcastro/workspace/Features/sets/MACHO_temp/Macho_regular_set_' + percentage + '.csv', index_col=0)
+	for percentage in xrange(5, 55, 5):
+		print str(percentage) + '%'
+		true_values = pd.read_csv('/Users/npcastro/workspace/Features/sets/MACHO_temp/Macho_regular_set_' + str(percentage) + '.csv', index_col=0)
 		true_values = true_values.reset_index().drop_duplicates(subset='index', take_last=True).set_index('index')
-		true_values = true_values[feat_name]
 
-		sampled_feats_paths = lu.get_paths('/Users/npcastro/Lab/Samples_Features/uniform/' + percentage + '%/', extension='.csv')
-		sampled_feats_paths = [x for x in sampled_feats_paths]
+		rms_dict = {}
 
-		for path in sampled_feats_paths:
+		for feat_name in feats:
+			lc_ids = []
+			rms_errors = []
+			lc_classes = []
+		
+			true_values_aux = true_values[feat_name]
 
-			sampled_values = pd.read_csv(path)
-			sampled_values = sampled_values[feat_name]
-			lc_id = lu.get_lightcurve_id(path, catalog='MACHO')
+			sampled_feats_paths = lu.get_paths('/Users/npcastro/Lab/Samples_Features/uniform/' + str(percentage) + '%/', extension='.csv')
+			sampled_feats_paths = [x for x in sampled_feats_paths]
 
-			try:
-				true_value = true_values.loc[lc_id]
-				mean_values.append(np.mean(sampled_values))
-			except KeyError:
-				# print lc_id + ' no esta en los valores reales'
-				continue
+			for path in sampled_feats_paths:
 
-			lc_ids.append(lc_id)
-			rms_errors.append(rms(true_values, sampled_values, lc_id, normalize=normalize))
+				sampled_values = pd.read_csv(path)
+				sampled_values = sampled_values[feat_name]
+				lc_id = lu.get_lightcurve_id(path, catalog=catalog)
+				lc_class = lu.get_lightcurve_class(path, catalog=catalog)
 
-		print feat_name + ': ' + str(np.mean(rms_errors))
+				try:
+					true_value = true_values_aux.loc[lc_id]
+				except KeyError:
+					# print lc_id + ' no esta en los valores reales'
+					continue
+
+				lc_ids.append(lc_id)
+				lc_classes.append(lc_class)
+				rms_errors.append(rms(true_values_aux, sampled_values, lc_id, normalize=normalize))
+
+			rms_dict[feat_name] = rms_errors
+
+		rms_dict['class'] = lc_classes
+		df = pd.DataFrame(rms_dict, index=lc_ids)
+		df.to_csv('/Users/npcastro/Dropbox/Resultados/RMSD/' + str(percentage) + '%.csv')
