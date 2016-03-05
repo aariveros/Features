@@ -7,9 +7,11 @@ import numpy as np
 import pandas as pd
 import george
 
+from functools import partial
 import lightcurves.lc_utils as lu
 
 import scipy.optimize as op
+import optimize
 
 def rms(true_values, sampled_values, normalize=''):
     """
@@ -59,7 +61,7 @@ for path in paths:
     # Preparo la curva para alimentar el GP
     t_obs, y_obs, err_obs, min_time, max_time = lu.prepare_lightcurve(lc)
 
-    # Preparo GP, l son 6 dias segun lo observado en otros papers
+    # Inicializo kernel
     var = np.var(y_obs)
     l = 6
     kernel = var * kernels.ExpSquaredKernel(l ** 2)
@@ -67,30 +69,10 @@ for path in paths:
     gp = george.GP(kernel, mean=np.mean(y_obs))
     gp.compute(t_obs, yerr=err_obs)
 
-    # Defino la función objetivo (negative log-likelihood in this case).
-    def nll(p):
-        """
-        gp: objeto de gaussian process
-        y: observaciones sobre las que se ajusta el modelo
-        p: parametros sobre los que se quiere optimizar el modelo
-        """
-        # Update the kernel parameters and compute the likelihood.
-        gp.kernel[:] = p
-        ll = gp.lnlikelihood(y_obs, quiet=True)
-
-        # The scipy optimizer doesn't play well with infinities.
-        return -ll if np.isfinite(ll) else 1e25
-
-    def grad_nll(p):
-        # Update the kernel parameters and compute the likelihood.
-        gp.kernel[:] = p
-        return -gp.grad_lnlikelihood(y_obs, quiet=True)
-
-    gp.compute(t_obs, yerr=err_obs)
+    partial_op = partial(optimize.nll, gp=gp, y_obs=y_obs)
 
     p0 = gp.kernel.vector
-    results = op.minimize(nll, p0,  method='Nelder-Mead')
-
+    results = op.minimize(partial_op, p0,  method='Nelder-Mead')
     gp.kernel[:] = results.x
 
     # Ajusto el gaussian process a las observaciones de la curva
