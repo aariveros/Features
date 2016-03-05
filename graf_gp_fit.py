@@ -21,7 +21,6 @@ if catalog == 'MACHO':
 
 path = [x for x in paths if lc_id in x][0]
 
-lc_id = lu.get_lightcurve_id(path, catalog=catalog)
 lc_class = lu.get_lightcurve_class(path, catalog=catalog)
 
 lc = lu.open_lightcurve(path, catalog=catalog)
