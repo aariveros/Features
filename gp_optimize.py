@@ -102,14 +102,6 @@ for i in [0, 255, 457, 967, 1697, 2862, 12527, 12700]:
     mu, cov = gp.predict(y_obs, x)
     std = np.sqrt(np.diag(cov))
 
-    # Mapeo devuelta a los valores originales
-    # mu = mu * lc['mag'].std() + lc['mag'].mean() 
-    # y_obs = y_obs * lc['mag'].std() + lc['mag'].mean() 
-    # std = std * lc['err'].std() + lc['err'].mean()
-    # err_obs = err_obs * lc['err'].std() + lc['err'].mean()
-    # t_obs = t_obs * np.std(lc.index) + np.mean(lc.index) 
-    # x = x * np.std(lc.index) + np.mean(lc.index)
-
     plt.figure()
 
     plt.errorbar(t_obs, y_obs, yerr=err_obs, fmt=".b", ecolor='r', capsize=0)

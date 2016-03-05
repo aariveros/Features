@@ -56,10 +56,6 @@ if __name__ == '__main__':
     ids = lu.get_ids_in_path(calculated_feats_path, catalog=catalog, extension='.csv')
 
     exclude_list = None
-    
-    # feature_list = None 
-    # exclude_list = ['Color', 'Eta_color', 'Q31_color', 'StetsonJ', 'StetsonL',
-    #                 'CAR_mean', 'CAR_sigma', 'CAR_tau']
 
     fs = FATS.FeatureSpace(Data=['magnitude', 'time', 'error'], 
                            featureList=feature_list, excludeList=exclude_list)

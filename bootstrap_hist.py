@@ -4,7 +4,6 @@
 # -----------------------------------------------------------------------------
 
 import matplotlib.pyplot as plt
-import matplotlib.mlab as mlab
 from george import kernels
 import pandas as pd
 import numpy as np
@@ -14,16 +13,6 @@ import FATS
 import lightcurves.lc_utils as lu
 import graf
 import bootstrap
-
-# Ubicacion de las curvas
-# 0-1           Be_lc
-# 255-256       CEPH
-# 457-458       EB
-# 967-968       longperiod_lc
-# 1697-1698     microlensing_lc
-# 2862-2863     non_variables
-# 12527-12528   quasar_lc
-# 12645-12646   RRL
 
 def calc_bootstrap(lc, kernel, sampling, feature_list):
     samples_devs = bootstrap.GP_bootstrap(lc, kernel, sampling=sampling)
@@ -43,18 +32,20 @@ def calc_bootstrap(lc, kernel, sampling, feature_list):
                                     fs.result(method='')))
     return bootstrap_values
 
-# file_dir = 'Resultados/Histogramas/ambos/'
-# file_dir = '/Users/npcastro/Dropbox/Tesis NC/Graficos/histogramas/'
-file_dir = '/Users/npcastro/Dropbox/Tesis NC/Graficos/GP/'
+
 catalog = 'MACHO'
 percentage = 0.5
+lc_id = '2.5025.10'
+sampling = 'equal'
+param_choice = 'set'
+file_dir = '/Users/npcastro/Desktop/histograms/' + sampling + '/' + param_choice + '/'
 
 paths = lu.get_lightcurve_paths(catalog=catalog)
-# path = paths[12700]
-# path = paths[967]
-path = paths[0]
+if catalog == 'MACHO':
+    paths = [x for x in paths if 'R.mjd' not in x]
 
-lc_id = lu.get_lightcurve_id(path, catalog=catalog)
+path = [x for x in paths if lc_id in x][0]
+
 lc_class = lu.get_lightcurve_class(path, catalog=catalog)
 
 lc = lu.open_lightcurve(path, catalog=catalog)
@@ -82,27 +73,23 @@ t_obs, y_obs, err_obs, min_time, max_time = lu.prepare_lightcurve(lc)
 
 # Preparo GP, l son 6 dias segun lo observado en otros papers
 var = np.var(y_obs)
-l = 6 * (max_time - min_time) / float(lc.index[-1] - lc.index[0])
-kernel = var ** 2 * kernels.ExpSquaredKernel(l ** 2)
+l = 6
+kernel = var * kernels.ExpSquaredKernel(l ** 2)
 gp = george.GP(kernel, mean=np.mean(y_obs))
 gp.compute(t_obs, yerr=err_obs)
 
-equal_values = calc_bootstrap(lc, kernel, 'equal', feature_list)
-equal_df = pd.DataFrame(equal_values, columns=feature_list)
+sampled_values = calc_bootstrap(lc, kernel, sampling, feature_list)
+sampled_df = pd.DataFrame(sampled_values, columns=feature_list)
 
-uniform_values = calc_bootstrap(lc, kernel, 'uniform', feature_list)
-uniform_df = pd.DataFrame(uniform_values, columns=feature_list)
 
 for f_name in feature_list:
     real_value = real_values[f_name].tolist()
-    # equal_values = equal_df[f_name].tolist()
-    uniform_values = uniform_df[f_name].tolist()
+    sampled_values = sampled_df[f_name].tolist()
     
     fig = plt.figure(f_name)
     ax = fig.add_subplot(111)
     
-    # graf.graf_hist(equal_values, real_value, 'equal std=')
-    graf.graf_hist(uniform_values, real_value, 'uniform std=')
+    graf.graf_hist(sampled_values, 'sampled')
 
     plt.axvline(x=real_value, color = 'r', label=u'Real value', linewidth=2.0)
 
