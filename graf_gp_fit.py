@@ -32,7 +32,7 @@ t_obs, y_obs, err_obs, min_time, max_time = lu.prepare_lightcurve(lc)
 
 # Preparo GP, l son 6 dias segun lo observado en otros papers
 var = np.var(y_obs)
-l = 6 * (max_time - min_time) / float(lc.index[-1] - lc.index[0])
+l = 6
 
 kernel = var * kernels.ExpSquaredKernel(l ** 2)
 
