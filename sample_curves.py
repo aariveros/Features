@@ -88,6 +88,10 @@ if __name__ == '__main__':
                     str(int(100 * percentage)) + '%/error.txt')
 
     paths = lu.get_lightcurve_paths(catalog=catalog)
+
+    if catalog == 'MACHO':
+        paths = [x for x in paths if 'R.mjd' not in x]
+
     if lc_filter is not None:
         paths = lu.stratified_filter(paths, percentage=lc_filter)
     print 'Analisis sobre ' + str(len(paths)) + ' curvas'
@@ -97,10 +101,7 @@ if __name__ == '__main__':
                              sampling + '/' + str(int(100 * percentage)) + '%/',
                              catalog=catalog, extension='.pkl')
 
-    paths = [x for x in paths if lu.get_lightcurve_id(x, catalog=catalog) not in ids]
-    
-    if catalog == 'MACHO':
-        paths = [x for x in paths if 'R.mjd' not in x]
+    paths = [x for x in paths if lu.get_lightcurve_id(x, catalog=catalog) not in ids] 
 
     partial_sample = partial(sample_curve, catalog=catalog,
                              percentage=percentage, sampling=sampling,
