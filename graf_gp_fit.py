@@ -15,10 +15,6 @@ percentage = 0.5
 lc_id = '1.3320.174'
 
 paths = lu.get_lightcurve_paths(catalog=catalog)
-
-if catalog == 'MACHO':
-    paths = [x for x in paths if 'R.mjd' not in x]
-
 path = [x for x in paths if lc_id in x][0]
 
 lc_class = lu.get_lightcurve_class(path, catalog=catalog)
@@ -32,7 +28,7 @@ t_obs, y_obs, err_obs, min_time, max_time = lu.prepare_lightcurve(lc)
 
 # Preparo GP, l son 6 dias segun lo observado en otros papers
 var = np.var(y_obs)
-l = 6 * (max_time - min_time) / float(lc.index[-1] - lc.index[0])
+l = 6
 
 kernel = var * kernels.ExpSquaredKernel(l ** 2)
 

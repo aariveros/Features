@@ -21,11 +21,8 @@ real_df = pd.read_csv('/Users/npcastro/workspace/Features/sets/MACHO_temp/Macho_
 samples_paths = lu.get_paths('/Users/npcastro/Lab/Samples_Features/uniform/' + percentage + '%/', '.csv')
 samples_paths = [x for x in samples_paths]
 
-for s in samples_paths:
-    if lc_id in s:
-        lc_class = lu.get_lightcurve_class(s)
-        path = s
-        break
+path = [x for x in samples_paths if lc_id in x][0]
+lc_class = lu.get_lightcurve_class(path)
 
 samples_df = pd.read_csv(path)
 
