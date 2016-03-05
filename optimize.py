@@ -1,5 +1,8 @@
 # coding=utf-8
 
+# Metodos útiles para optimizar GP
+# -----------------------------------------------------------------------------
+
 import numpy as np
 
 # Defino la función objetivo (negative log-likelihood in this case).

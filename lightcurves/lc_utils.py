@@ -94,7 +94,7 @@ def get_lightcurve_id(fp, catalog='MACHO'):
     elif catalog == 'OGLE':
         pass
 
-def get_lightcurve_paths(path=LC_FILE_PATH, separate_bands=False, catalog='MACHO'):
+def get_lightcurve_paths(path=LC_FILE_PATH, both_bands=False, catalog='MACHO'):
     """
     return val: file object with lightcurve paths in each line
     """
@@ -102,13 +102,10 @@ def get_lightcurve_paths(path=LC_FILE_PATH, separate_bands=False, catalog='MACHO
     
     if catalog == 'MACHO':
         
-        if separate_bands:
-            azules = [l[:-1] for l in f if '.B.mjd' in l]
-            f.seek(0)
-            rojas = [l[:-1] for l in f if '.R.mjd' in l]
-            return azules, rojas
-        else:   
+        if both_bands:
             return [l[:-1] for l in f]
+        else:
+            return [l[:-1] for l in f if 'R.mjd' not in l]
     
     elif catalog == 'EROS':
         return [line[:-1] for line in f if '.time' in line]

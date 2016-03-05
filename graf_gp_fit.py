@@ -15,10 +15,6 @@ percentage = 0.5
 lc_id = '1.3320.174'
 
 paths = lu.get_lightcurve_paths(catalog=catalog)
-
-if catalog == 'MACHO':
-    paths = [x for x in paths if 'R.mjd' not in x]
-
 path = [x for x in paths if lc_id in x][0]
 
 lc_class = lu.get_lightcurve_class(path, catalog=catalog)

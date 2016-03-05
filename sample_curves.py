@@ -32,7 +32,7 @@ def sample_curve(lc_path, catalog='MACHO', percentage=1.0, sampling='equal',
         t_obs, y_obs, err_obs, min_time, max_time = lu.prepare_lightcurve(lc)
 
         var = np.var(y_obs)
-        l = 6 * (max_time - min_time) / float(lc.index[-1] - lc.index[0])
+        l = 6
         kernel = var * kernels.ExpSquaredKernel(l ** 2)
 
         samples_devs = bootstrap.GP_bootstrap(lc, kernel, sampling, n_samples)
@@ -98,9 +98,6 @@ if __name__ == '__main__':
                              catalog=catalog, extension='.pkl')
 
     paths = [x for x in paths if lu.get_lightcurve_id(x, catalog=catalog) not in ids]
-    
-    if catalog == 'MACHO':
-        paths = [x for x in paths if 'R.mjd' not in x]
 
     partial_sample = partial(sample_curve, catalog=catalog,
                              percentage=percentage, sampling=sampling,

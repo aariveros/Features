@@ -53,10 +53,6 @@ if __name__ == '__main__':
 
     for path in paths:
         try:
-            
-            # Descarto la banda roja por ahora (solo para MACHO)
-            if catalog == 'MACHO' and not 'B.mjd' in path:
-                continue
 
             lc_id = lu.get_lightcurve_id(path, catalog=catalog)
             print 'Curva: ' + lc_id

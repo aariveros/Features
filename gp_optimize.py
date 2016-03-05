@@ -31,7 +31,7 @@ file_dir = 'Resultados/Histogramas/ambos/'
 catalog = 'MACHO'
 percentage = 0.8
 
-paths = lu.get_lightcurve_paths(catalog=catalog)
+paths = lu.get_lightcurve_paths(catalog=catalog, both_bands=True)
 for i in [0, 255, 457, 967, 1697, 2862, 12527, 12700]:
     path = paths[i]
 
