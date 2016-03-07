@@ -1,5 +1,7 @@
 # coding=utf-8
 
+# Calcula el rmsd de ajustar un gaussian process sobre las curvas de luz
+# de un catalogo
 # -----------------------------------------------------------------------------
 
 from george import kernels
@@ -84,4 +86,4 @@ if __name__ == '__main__':
     rms_dict = {'rmsd': rms_errors, 'class': lc_classes}
     df = pd.DataFrame(rms_dict, index=lc_ids)
     df.to_csv('/Users/npcastro/Dropbox/Resultados/RMSD/' + param_choice +
-              '/50%/l-' + str(l) + '.csv')
+              '/50.csv')
