@@ -70,11 +70,11 @@ if __name__ == '__main__':
         gp = george.GP(kernel, mean=np.mean(y_obs))
         gp.compute(t_obs, yerr=err_obs)
 
-        partial_op = partial(optimize.nll, gp=gp, y_obs=y_obs)
-
-        p0 = gp.kernel.vector
-        results = op.minimize(partial_op, p0,  method='Nelder-Mead')
-        gp.kernel[:] = results.x
+        if param_choice == 'fitted':
+            partial_op = partial(optimize.nll, gp=gp, y_obs=y_obs)
+            p0 = gp.kernel.vector
+            results = op.minimize(partial_op, p0,  method='Nelder-Mead')
+            gp.kernel[:] = results.x
 
         # Ajusto el gaussian process a las observaciones de la curva
         mu, cov = gp.predict(y_obs, t_obs)
