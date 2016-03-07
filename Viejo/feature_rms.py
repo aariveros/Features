@@ -1,5 +1,10 @@
 # coding=utf-8
 
+# Toma un directorio con valores de features sampleadas de curvas de luz y
+# calcula una especie de rmsd entre los valores y el valor de calcular la 
+# feature directamente sobre la corva de luz
+# -----------------------------------------------------------------------------
+
 import pandas as pd
 import numpy as np
 
@@ -62,7 +67,6 @@ if __name__ == '__main__':
 				try:
 					true_value = true_values_aux.loc[lc_id]
 				except KeyError:
-					# print lc_id + ' no esta en los valores reales'
 					continue
 
 				lc_ids.append(lc_id)
