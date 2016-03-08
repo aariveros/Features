@@ -13,6 +13,7 @@ import FATS
 import lightcurves.lc_utils as lu
 import graf
 import bootstrap
+import optimize
 
 def calc_bootstrap(lc, kernel, sampling, feature_list):
     samples_devs = bootstrap.GP_bootstrap(lc, kernel, sampling=sampling)
@@ -35,9 +36,9 @@ def calc_bootstrap(lc, kernel, sampling, feature_list):
 
 catalog = 'MACHO'
 percentage = 0.5
-lc_id = '2.5025.10'
+lc_id = '1.3320.174'
 sampling = 'equal'
-param_choice = 'set'
+param_choice = 'fitted'
 file_dir = '/Users/npcastro/Desktop/histograms/' + sampling + '/' + param_choice + '/'
 
 paths = lu.get_lightcurve_paths(catalog=catalog)
@@ -74,6 +75,10 @@ l = 6
 kernel = var * kernels.ExpSquaredKernel(l ** 2)
 gp = george.GP(kernel, mean=np.mean(y_obs))
 gp.compute(t_obs, yerr=err_obs)
+
+if param_choice == 'fitted':
+    gp.kernel = optimize.find_best_fit(kernel, t_obs, y_obs, err_obs)
+    kernel = gp.kernel + kernels.WhiteKernel(np.var(err_obs))
 
 sampled_values = calc_bootstrap(lc, kernel, sampling, feature_list)
 sampled_df = pd.DataFrame(sampled_values, columns=feature_list)

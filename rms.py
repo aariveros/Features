@@ -71,10 +71,8 @@ if __name__ == '__main__':
         gp.compute(t_obs, yerr=err_obs)
 
         if param_choice == 'fitted':
-            partial_op = partial(optimize.nll, gp=gp, y_obs=y_obs)
-            p0 = gp.kernel.vector
-            results = op.minimize(partial_op, p0,  method='Nelder-Mead')
-            gp.kernel[:] = results.x
+            gp.kernel = optimize.find_best_fit(kernel, t_obs, y_obs, err_obs)
+            gp.kernel = gp.kernel + kernels.WhiteKernel(np.var(err_obs))
 
         # Ajusto el gaussian process a las observaciones de la curva
         mu, cov = gp.predict(y_obs, t_obs)

@@ -39,6 +39,7 @@ gp.compute(t_obs, yerr=err_obs)
 
 if param_choice == 'fitted':
 	gp.kernel = optimize.find_best_fit(kernel, t_obs, y_obs, err_obs)
+	# gp.kernel = gp.kernel + kernels.WhiteKernel(np.var(err_obs))
 
 # Ajusto el gaussian process a las observaciones de la curva
 x = np.linspace(np.min(t_obs), np.max(t_obs), 500)
@@ -60,3 +61,9 @@ plt.xlabel('MJD')
 
 plt.show()
 plt.close()
+
+# Para evaluar rms de la curva
+# -----------------------------------------------------------------------------
+from rms import rms
+mu, cov = gp.predict(y_obs, t_obs)
+print rms(y_obs, mu, 'Std')
