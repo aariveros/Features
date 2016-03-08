@@ -19,7 +19,7 @@ import lightcurves.lc_utils as lu
 
 
 def sample_curve(lc_path, catalog='MACHO', percentage=1.0, sampling='equal',
-                 n_samples=100):
+                 n_samples=100, samples_path=''):
     """Este metodo es un wrapper que abre una curva, la preprocesa,
     saca muestras con un GP y después las guarda en algún lugar.
     """
@@ -37,11 +37,9 @@ def sample_curve(lc_path, catalog='MACHO', percentage=1.0, sampling='equal',
 
         samples_devs = bootstrap.GP_bootstrap(lc, kernel, sampling, n_samples)
 
-        result_dir = (LAB_PATH + 'GP_Samples/' + catalog + '/' + sampling + '/' +
-                          str(int(100 * percentage)) + '%/' + 
-                          lu.get_lightcurve_class(lc_path, catalog=catalog) + '/' +
-                          lu.get_lightcurve_id(lc_path, catalog=catalog) +
-                          ' samples.pkl')
+        result_dir = (samples_path +
+                      lu.get_lightcurve_class(lc_path, catalog=catalog) + '/' +
+                      lu.get_lightcurve_id(lc_path, catalog=catalog) + ' samples.pkl')
 
         output = open(result_dir, 'wb')
         cPickle.dump(samples_devs, output)
@@ -49,8 +47,7 @@ def sample_curve(lc_path, catalog='MACHO', percentage=1.0, sampling='equal',
 
     except Exception as e:
         print e
-        err_path = (LAB_PATH + 'GP_Samples/' + catalog + '/' + sampling + '/' +
-                    str(int(100 * percentage)) + '%/error.txt')
+        err_path = (samples_path + 'error.txt')
 
         f = open(err_path, 'a')
         f.write(lc_path + '\n')
@@ -70,6 +67,7 @@ if __name__ == '__main__':
                         choices=['MACHO', 'EROS'])
     parser.add_argument('--lc_filter', required=False, type=float, 
                         help='Percentage of the total amount of paths to use')
+    parser.add_argument('--samples_path', required=True, type=str)
 
     args = parser.parse_args(sys.argv[1:])
 
@@ -79,13 +77,12 @@ if __name__ == '__main__':
     n_samples = args.n_samples
     n_processes = args.n_processes
     lc_filter = args.lc_filter
+    samples_path = args.samples_path
 
 
     # Creo archivo para guardar errores
-    if os.path.isfile(LAB_PATH + 'GP_Samples/' + catalog + '/' +
-                      str(int(100 * percentage)) + '%/error.txt'):
-        os.remove(LAB_PATH + 'GP_Samples/' + catalog + '/' +
-                    str(int(100 * percentage)) + '%/error.txt')
+    if os.path.isfile(samples_path + 'error.txt'):
+        os.remove(samples_path + 'error.txt')
 
     paths = lu.get_lightcurve_paths(catalog=catalog)
 
@@ -97,15 +94,13 @@ if __name__ == '__main__':
     print 'Analisis sobre ' + str(len(paths)) + ' curvas'
 
     # Filtro ids de curvas ya calculadas
-    ids = lu.get_ids_in_path(LAB_PATH + 'GP_Samples/' + catalog + '/' +
-                             sampling + '/' + str(int(100 * percentage)) + '%/',
-                             catalog=catalog, extension='.pkl')
+    ids = lu.get_ids_in_path(samples_path, catalog=catalog, extension='.pkl')
 
     paths = [x for x in paths if lu.get_lightcurve_id(x, catalog=catalog) not in ids]
 
     partial_sample = partial(sample_curve, catalog=catalog,
                              percentage=percentage, sampling=sampling,
-                             n_samples=n_samples)
+                             n_samples=n_samples, samples_path=samples_path)
 
     pool = multiprocessing.Pool(processes=n_processes)
     pool.map(partial_sample, paths)
