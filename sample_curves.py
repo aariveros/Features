@@ -13,13 +13,14 @@ from functools import partial
 import numpy as np
 from george import kernels
 
+import optimize
 import bootstrap
 from config import *
 import lightcurves.lc_utils as lu
 
 
 def sample_curve(lc_path, catalog='MACHO', percentage=1.0, sampling='equal',
-                 n_samples=100, samples_path=''):
+                 n_samples=100, param_choice='fitted', samples_path=''):
     """Este metodo es un wrapper que abre una curva, la preprocesa,
     saca muestras con un GP y después las guarda en algún lugar.
     """
@@ -35,8 +36,10 @@ def sample_curve(lc_path, catalog='MACHO', percentage=1.0, sampling='equal',
         l = 6
         kernel = var * kernels.ExpSquaredKernel(l ** 2)
 
-        samples_devs = bootstrap.GP_bootstrap(lc, kernel, sampling, n_samples)
+        if param_choice == 'fitted':
+            kernel = optimize.find_best_fit(kernel, t_obs, y_obs, err_obs)
 
+        samples_devs = bootstrap.GP_bootstrap(lc, kernel, sampling, n_samples)
         result_dir = (samples_path +
                       lu.get_lightcurve_class(lc_path, catalog=catalog) + '/' +
                       lu.get_lightcurve_id(lc_path, catalog=catalog) + ' samples.pkl')
@@ -67,6 +70,7 @@ if __name__ == '__main__':
                         choices=['MACHO', 'EROS'])
     parser.add_argument('--lc_filter', required=False, type=float, 
                         help='Percentage of the total amount of paths to use')
+    parser.add_argument('--param_choice', required=True, type=str)
     parser.add_argument('--samples_path', required=True, type=str)
 
     args = parser.parse_args(sys.argv[1:])
@@ -77,6 +81,7 @@ if __name__ == '__main__':
     n_samples = args.n_samples
     n_processes = args.n_processes
     lc_filter = args.lc_filter
+    param_choice = args.param_choice
     samples_path = args.samples_path
 
 
@@ -100,7 +105,8 @@ if __name__ == '__main__':
 
     partial_sample = partial(sample_curve, catalog=catalog,
                              percentage=percentage, sampling=sampling,
-                             n_samples=n_samples, samples_path=samples_path)
+                             n_samples=n_samples, param_choice=param_choice,
+                             samples_path=samples_path)
 
     pool = multiprocessing.Pool(processes=n_processes)
     pool.map(partial_sample, paths)

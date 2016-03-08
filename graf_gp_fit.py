@@ -3,10 +3,7 @@
 # Toma una curva de luz, ajusta un GP y grafica
 # -----------------------------------------------------------------------------
 
-from functools import partial
-
 import matplotlib.pyplot as plt
-import scipy.optimize as op
 from george import kernels
 import numpy as np
 import george
@@ -41,10 +38,7 @@ gp = george.GP(kernel, mean=np.mean(y_obs))
 gp.compute(t_obs, yerr=err_obs)
 
 if param_choice == 'fitted':
-    partial_op = partial(optimize.nll, gp=gp, y_obs=y_obs)
-    p0 = gp.kernel.vector
-    results = op.minimize(partial_op, p0,  method='Nelder-Mead')
-    gp.kernel[:] = results.x
+	gp.kernel = optimize.find_best_fit(kernel, t_obs, y_obs, err_obs)
 
 # Ajusto el gaussian process a las observaciones de la curva
 x = np.linspace(np.min(t_obs), np.max(t_obs), 500)
