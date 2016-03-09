@@ -3,17 +3,18 @@
 # Métodos para el desarrollo de bootstraping en series de tiempo
 # -----------------------------------------------------------------------------
 
-import lightcurves.lc_utils as lu
-
-from config import *
-
 import random
 import cPickle
 
-from george import kernels
-import numpy as np
 import george
+import numpy as np
 import pandas as pd
+from george import kernels
+
+import optimize
+from config import *
+import lightcurves.lc_utils as lu
+
 
 def prepare_GP():
     pass
@@ -92,37 +93,39 @@ def GP_complete_lc(lc, total_points):
 
     return pd.concat([lc, lc_2]).sort_index()
 
-def GP_sample_mean(lc_path, result_dir='', percentage=1.0, catalog='MACHO'):
-    """Recibe una curva ajusta un GP (sobreajustado) y guarda las medias del
+def GP_sample_mean(lc_path, catalog='MACHO', percentage=1.0, sampling='equal',
+                   param_choice='fitted', result_dir=''):
+    """Recibe una curva ajusta un GP y guarda las medias del
     modelo
-
-    lc_path: path de la curva de luz
-    percentage: porcentaje de la curva a utilizar
     """
+
     try:
-        print lc_path
         lc = lu.open_lightcurve(lc_path, catalog=catalog)
         lc = lu.filter_data(lc)
         lc = lc.iloc[0:int(percentage * lc.index.size)]
 
-        total_days = lc.index[-1] - lc.index[0]
-
-        # Preparo la curva para alimentar el GP
         t_obs, y_obs, err_obs, min_time, max_time = lu.prepare_lightcurve(lc)
 
         # Preparo GP, l son 6 dias segun lo observado en otros papers
         var = np.var(y_obs)
-        l = 6 * (max_time - min_time) / float(total_days)
-        kernel = var ** 2 * kernels.ExpSquaredKernel(l ** 2)
+        l = 6
+        kernel = var * kernels.ExpSquaredKernel(l ** 2)
+
+        if param_choice == 'fitted':
+            kernel = optimize.find_best_fit(kernel, t_obs, y_obs, err_obs)
+            kernel = kernel + kernels.WhiteKernel(np.var(err_obs))
 
         gp = george.GP(kernel, mean=np.mean(y_obs))
         gp.compute(t_obs, yerr=err_obs)
 
-        mu, cov = gp.predict(y_obs, t_obs)
+        if sampling == 'uniform':
+            x = np.linspace(min_time, max_time, len(t_obs))
+            mu, cov = gp.predict(y_obs, x)
+        else:
+            mu, cov = gp.predict(y_obs, t_obs)
+        
         sigma = np.sqrt(np.diag(cov))
-
         fitted_curve = (t_obs, mu, sigma)
-
         result_path = (result_dir +
                        lu.get_lightcurve_class(lc_path, catalog=catalog) +
                        '/' + lu.get_lightcurve_id(lc_path, catalog=catalog) +

@@ -38,6 +38,7 @@ def sample_curve(lc_path, catalog='MACHO', percentage=1.0, sampling='equal',
 
         if param_choice == 'fitted':
             kernel = optimize.find_best_fit(kernel, t_obs, y_obs, err_obs)
+            kernel = kernel + kernels.WhiteKernel(np.var(err_obs))
 
         samples_devs = bootstrap.GP_bootstrap(lc, kernel, sampling, n_samples)
         result_dir = (samples_path +
@@ -51,7 +52,6 @@ def sample_curve(lc_path, catalog='MACHO', percentage=1.0, sampling='equal',
     except Exception as e:
         print e
         err_path = (samples_path + 'error.txt')
-
         f = open(err_path, 'a')
         f.write(lc_path + '\n')
         f.close()
@@ -91,16 +91,12 @@ if __name__ == '__main__':
 
     paths = lu.get_lightcurve_paths(catalog=catalog)
 
-    if catalog == 'MACHO':
-        paths = [x for x in paths if 'R.mjd' not in x]
-
     if lc_filter is not None:
         paths = lu.stratified_filter(paths, percentage=lc_filter)
     print 'Analisis sobre ' + str(len(paths)) + ' curvas'
 
     # Filtro ids de curvas ya calculadas
     ids = lu.get_ids_in_path(samples_path, catalog=catalog, extension='.pkl')
-
     paths = [x for x in paths if lu.get_lightcurve_id(x, catalog=catalog) not in ids]
 
     partial_sample = partial(sample_curve, catalog=catalog,
