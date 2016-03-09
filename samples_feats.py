@@ -10,7 +10,6 @@ from functools import partial
 import multiprocessing
 import argparse
 import pickle
-import cPickle
 import sys
 import os
 
