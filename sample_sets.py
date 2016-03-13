@@ -44,7 +44,7 @@ if __name__ == '__main__':
         archivos.append(f)
     
     for f in feature_samples_files:
-        lc_id = lu.get_lightcurve_id(f)
+        lc_id = lu.get_lightcurve_id(f, catalog=catalog)
         lc_class = lu.get_lightcurve_class(f, catalog=catalog)
 
         archivo = open(f, 'r')
