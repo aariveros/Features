@@ -13,9 +13,9 @@ import optimize
 import graf
 
 catalog = 'MACHO'
-percentage = 0.5
+percentage = 0.05
 param_choice = 'fitted'
-lc_id = '1.3320.174'
+lc_id = '123.24378.2299'
 
 paths = lu.get_lightcurve_paths(catalog=catalog)
 path = [x for x in paths if lc_id in x][0]
@@ -39,7 +39,7 @@ gp.compute(t_obs, yerr=err_obs)
 
 if param_choice == 'fitted':
 	gp.kernel = optimize.find_best_fit(kernel, t_obs, y_obs, err_obs)
-	# gp.kernel = gp.kernel + kernels.WhiteKernel(np.var(err_obs))
+	gp.kernel = gp.kernel + kernels.WhiteKernel(np.var(err_obs))
 
 # Ajusto el gaussian process a las observaciones de la curva
 x = np.linspace(np.min(t_obs), np.max(t_obs), 500)

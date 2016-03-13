@@ -39,7 +39,7 @@ if __name__ == '__main__':
 
     archivos = []
     for i in xrange(100):       # El 100 esta harcodeao se puede obtener directamente
-        f = open(result_file_path + 'macho_sampled_' + str(i) + '.csv', 'w')
+        f = open(result_file_path + catalog + '_sampled_' + str(i) + '.csv', 'w')
         f.write(linea)
         archivos.append(f)
     

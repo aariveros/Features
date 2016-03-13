@@ -9,10 +9,8 @@ import numpy as np
 import pandas as pd
 import george
 
-from functools import partial
 import lightcurves.lc_utils as lu
 
-import scipy.optimize as op
 import optimize
 
 def rms(true_values, sampled_values, normalize=''):
@@ -35,13 +33,13 @@ def rms(true_values, sampled_values, normalize=''):
 if __name__ == '__main__':
 
     catalog = 'MACHO'
-    percentage = 0.5
+    percentage = 0.05
     normalize = 'Std'
     param_choice = 'fitted'
     filter_p = 0.2
 
     paths = lu.get_lightcurve_paths(catalog=catalog)
-    paths = lu.stratified_filter(paths, catalog=catalog, percentage=filter_p)
+    # paths = lu.stratified_filter(paths, catalog=catalog, percentage=filter_p)
 
     lc_ids = []
     rms_errors = []
@@ -58,6 +56,9 @@ if __name__ == '__main__':
         lc = lu.open_lightcurve(path, catalog=catalog)
         lc = lu.filter_data(lc)
         lc = lc.iloc[0:int(percentage * lc.index.size)]
+
+        if len(lc) <= 10:
+            continue
 
         # Preparo la curva para alimentar el GP
         t_obs, y_obs, err_obs, min_time, max_time = lu.prepare_lightcurve(lc)
@@ -83,5 +84,6 @@ if __name__ == '__main__':
 
     rms_dict = {'rmsd': rms_errors, 'class': lc_classes}
     df = pd.DataFrame(rms_dict, index=lc_ids)
+    df = df.dropna()
     df.to_csv('/Users/npcastro/Dropbox/Resultados/RMSD/' + param_choice +
-              '/50.csv')
+              '/' + str(int(percentage * 100)) +'.csv')
