@@ -15,7 +15,7 @@ import graf
 catalog = 'MACHO'
 percentage = 0.05
 param_choice = 'fitted'
-lc_id = '123.24378.2299'
+lc_id = '1.3324.122'
 
 paths = lu.get_lightcurve_paths(catalog=catalog)
 path = [x for x in paths if lc_id in x][0]
@@ -33,6 +33,7 @@ t_obs, y_obs, err_obs, min_time, max_time = lu.prepare_lightcurve(lc)
 var = np.var(y_obs)
 l = 6
 kernel = var * kernels.ExpSquaredKernel(l ** 2)
+
 
 gp = george.GP(kernel, mean=np.mean(y_obs))
 gp.compute(t_obs, yerr=err_obs)

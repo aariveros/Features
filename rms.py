@@ -32,7 +32,7 @@ def rms(true_values, sampled_values, normalize=''):
 
 if __name__ == '__main__':
 
-    catalog = 'MACHO'
+    catalog = 'EROS'
     percentage = 0.05
     normalize = 'Std'
     param_choice = 'fitted'
@@ -85,5 +85,5 @@ if __name__ == '__main__':
     rms_dict = {'rmsd': rms_errors, 'class': lc_classes}
     df = pd.DataFrame(rms_dict, index=lc_ids)
     df = df.dropna()
-    df.to_csv('/Users/npcastro/Dropbox/Resultados/RMSD/' + param_choice +
-              '/' + str(int(percentage * 100)) +'.csv')
+    df.to_csv('/Users/npcastro/Dropbox/Resultados/RMSD/' + catalog +
+              '_' + str(int(percentage * 100)) +'.csv')

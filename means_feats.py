@@ -74,9 +74,9 @@ pool.join()
 fs = FATS.FeatureSpace(Data=['magnitude', 'time', 'error'],
                        featureList=feature_list, excludeList=exclude_list)
 
-feature_names = ['macho_id'] + fs.featureList + ['class']
+feature_names = [catalog + '_id'] + fs.featureList + ['class']
 
 df = pd.DataFrame(values, columns=feature_names)
-df = df.set_index('macho_id')
+df = df.set_index(catalog + '_id')
 df.sort(axis=1, inplace=True)
 df.to_csv(result_dir) 
