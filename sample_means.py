@@ -49,7 +49,7 @@ if __name__ == '__main__':
     paths = lu.get_lightcurve_paths(catalog=catalog)
 
     if lc_filter is not None:
-        paths = lu.stratified_filter(paths, percentage=lc_filter)
+        paths = lu.stratified_filter(paths, percentage=lc_filter, catalog=catalog)
     print 'Analisis sobre ' + str(len(paths)) + ' curvas'
 
     # Filtro ids de curvas ya calculadas

@@ -1,6 +1,6 @@
 # coding=utf-8
 
-# Calcula un set de features para cada curva de la base de datos macho
+# Calcula un set de features para cada curva
 # Y arma un set de entrenamiento con los valores 
 
 # -----------------------------------------------------------------------------
