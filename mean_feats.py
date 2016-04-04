@@ -24,6 +24,7 @@ import lightcurves.lc_utils as lu
 print ' '.join(sys.argv)
 parser = argparse.ArgumentParser(
     description='Get bootstrap samples from lightcurves')
+parser.add_argument('--percentage', required=True, type=str)
 parser.add_argument('--n_processes', required=True, type=int)
 parser.add_argument('--catalog', default='MACHO',
                     choices=['MACHO', 'EROS', 'OGLE'])
@@ -33,6 +34,7 @@ parser.add_argument('--result_dir', required=True, type=str)
 
 args = parser.parse_args(sys.argv[1:])
 
+percentage = args.percentage
 catalog = args.catalog
 n_processes = args.n_processes
 feature_list = args.feature_list
