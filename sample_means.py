@@ -43,8 +43,8 @@ if __name__ == '__main__':
 
 
     # Creo archivo para guardar errores
-    if os.path.isfile(samples_path + 'error.txt'):
-        os.remove(samples_path + 'error.txt')
+    if os.path.isfile(result_dir + 'error.txt'):
+        os.remove(result_dir + 'error.txt')
 
     paths = lu.get_lightcurve_paths(catalog=catalog)
 
@@ -60,7 +60,7 @@ if __name__ == '__main__':
     						 percentage=percentage, sampling=sampling,
                              param_choice=param_choice, result_dir=result_dir)
 
-    pool = multiprocessing.Pool(processes=n_jobs)
+    pool = multiprocessing.Pool(processes=n_processes)
     pool.map(partial_sample, paths)
 
     pool.close()
