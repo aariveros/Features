@@ -29,10 +29,22 @@ def grad_nll(p, gp=None, y_obs=None):
     gp.kernel[:] = p
     return -gp.grad_lnlikelihood(y_obs, quiet=True)
 
+def rms_score(p, gp=None, y_obs=None, x=None):
+    n = len(y_obs)
+    gp.kernel[:] = p
+    mu, cov = gp.predict(y_obs, x)
+    aux = (y_obs - mu) ** 2
+    aux = np.sqrt(sum(aux) / n)
+    
+    return aux / np.std(y_obs)
+
+
 def find_best_fit(kernel, t_obs, y_obs, err_obs):
     gp = george.GP(kernel, mean=np.mean(y_obs))
     gp.compute(t_obs, yerr=err_obs)
     partial_op = partial(nll, gp=gp, y_obs=y_obs)
+    # partial_op = partial(rms_score, gp=gp, y_obs=y_obs, x=t_obs)
+
     p0 = gp.kernel.vector
     results = op.minimize(partial_op, p0,  method='Nelder-Mead')
     gp.kernel[:] = results.x
