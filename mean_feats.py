@@ -34,15 +34,17 @@ parser.add_argument('--result_dir', required=True, type=str)
 
 args = parser.parse_args(sys.argv[1:])
 
-percentage = args.percentage
+percentage = int(args.percentage) / float(100)
 catalog = args.catalog
 n_processes = args.n_processes
 feature_list = args.feature_list
 samples_path = args.samples_path
 result_dir = args.result_dir
 
-if os.path.isfile(samples_path + 'pocos_puntos.txt'):
-    os.remove(samples_path + 'pocos_puntos.txt')
+if os.path.isfile(samples_path + 'errores.txt'):
+    os.remove(samples_path + 'errores.txt')
+
+error_file = open(samples_path + 'errores.txt', 'a')
 
 paths = lu.get_paths(samples_path, 'pkl')
 lc_paths = [x for x in paths]
@@ -50,9 +52,23 @@ lc_paths = [x for x in paths]
 # Filtro las curvas que no tienen suficientes puntos
 aux = []
 for p in lc_paths:
-    f = open(p, 'rb')
-    lc = pickle.load(f)
-    f.close()
+
+    try:
+        f = open(p, 'rb')
+        lc = pickle.load(f)
+        f.close()
+    except EOFError as e:
+        print 'EOFError - ' + lc_id
+        error_file.write(f + '\n')
+        continue
+    except KeyError as ke:
+        print 'KeyError - ' + lc_id
+        error_file.write(f + '\n')
+        continue
+    except Exception as e:
+        print 'Unknown error - ' + lc_id
+        error_file.write(f + '\n')
+        continue
 
     y_obs = lc[1].tolist()
     
@@ -82,3 +98,5 @@ df = pd.DataFrame(values, columns=feature_names)
 df = df.set_index(catalog + '_id')
 df.sort(axis=1, inplace=True)
 df.to_csv(result_dir) 
+
+error_file.close()
