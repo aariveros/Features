@@ -43,8 +43,8 @@ if __name__ == '__main__':
 
 
     # Creo archivo para guardar errores
-    if os.path.isfile(samples_path + 'error.txt'):
-        os.remove(samples_path + 'error.txt')
+    if os.path.isfile(result_dir + 'error.txt'):
+        os.remove(result_dir + 'error.txt')
 
     paths = lu.get_lightcurve_paths(catalog=catalog)
 

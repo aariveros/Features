@@ -7,8 +7,10 @@
 
 import pandas as pd
 
-rms = pd.read_csv('/Users/npcastro/Dropbox/Resultados/RMSD/fitted/5.csv', index_col=0)
-result = pd.read_csv('/Users/npcastro/Dropbox/Resultados/MACHO/Sampled/uniform/UF/Predicciones/result_5.csv', index_col=0)
+catalog = 'EROS'
+
+rms = pd.read_csv('/Users/npcastro/Dropbox/Resultados/RMSD/' + catalog + '_5.csv', index_col=0)
+result = pd.read_csv('/Users/npcastro/Dropbox/Resultados/' + catalog + '/Sampled/uniform/UF/Predicciones/result_5.csv', index_col=0)
 
 df = rms.merge(result, how='inner', left_index=True, right_index=True)
 

@@ -15,7 +15,7 @@ import graf
 catalog = 'MACHO'
 percentage = 0.05
 param_choice = 'fitted'
-lc_id = '1.3324.122'
+lc_id = '2.5628.5917'
 
 paths = lu.get_lightcurve_paths(catalog=catalog)
 path = [x for x in paths if lc_id in x][0]
