@@ -26,12 +26,12 @@ def calc_sample_feats(t_obs, sample, feature_list=None, exclude_list=None):
 
     return result
 
-def calc_feats(lc_path, feature_list=None, exclude_list=None, percentage=1.0):
+def calc_feats(lc_path, feature_list=None, exclude_list=None, percentage=1.0, catalog=''):
     """
     """
 
-    macho_id = lu.get_lightcurve_id(lc_path)
-    macho_class = lu.get_lc_class_name(lc_path)
+    macho_id = lu.get_lightcurve_id(lc_path, catalog=catalog)
+    macho_class = lu.get_lightcurve_class(lc_path, catalog=catalog)
 
     f = open(lc_path, 'rb')
     lc = pickle.load(f)
