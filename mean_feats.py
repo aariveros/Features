@@ -90,7 +90,7 @@ pool.close()
 pool.join()
 
 fs = FATS.FeatureSpace(Data=['magnitude', 'time', 'error'],
-                       featureList=feature_list, excludeList=exclude_list)
+                       featureList=feature_list, excludeList=None)
 
 feature_names = [catalog + '_id'] + fs.featureList + ['class']
 
