@@ -12,6 +12,7 @@ import sys
 import os
 
 import pandas as pd
+import numpy as np
 import FATS
 
 import lightcurves.lc_utils as lu
@@ -24,6 +25,7 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(
         description='Calc features to lightcurves and form dataset')
     parser.add_argument('--percentage', required=True, type=str)
+    parser.add_argument('--sampling', required=True, type=str)
     parser.add_argument('--catalog', default='MACHO',
                         choices=['MACHO', 'EROS'])
     parser.add_argument('--min_points', required=True, default=300, type=int)
@@ -34,6 +36,7 @@ if __name__ == '__main__':
     args = parser.parse_args(sys.argv[1:])
 
     percentage = int(args.percentage) / float(100)
+    sampling = args.sampling
     catalog = args.catalog
     min_points = args.min_points
     feature_list = args.feature_list
@@ -74,7 +77,10 @@ if __name__ == '__main__':
                 continue
 
             # Tomo el p% de las mediciones
-            lc = lc.iloc[0:int(len(lc) * percentage)]
+            if sampling == 'normal':
+                lc = lc.iloc[0:int(len(lc) * percentage)]
+            elif sampling == 'new':
+                lc = lc.iloc[np.linspace(0, lc.index.size, num=int(lc.index.size * percentage), dtype=int)]
 
             t_obs = lc.index.tolist()
             y_obs = lc['mag'].tolist()
