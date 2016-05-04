@@ -52,6 +52,7 @@ lc_paths = [x for x in paths]
 # Filtro las curvas que no tienen suficientes puntos
 aux = []
 for p in lc_paths:
+    lc_id = lu.get_lightcurve_id(p, catalog=catalog) 
 
     try:
         f = open(p, 'rb')
@@ -59,15 +60,15 @@ for p in lc_paths:
         f.close()
     except EOFError as e:
         print 'EOFError - ' + lc_id
-        error_file.write(f + '\n')
+        error_file.write(p + '\n')
         continue
     except KeyError as ke:
         print 'KeyError - ' + lc_id
-        error_file.write(f + '\n')
+        error_file.write(p + '\n')
         continue
     except Exception as e:
         print 'Unknown error - ' + lc_id
-        error_file.write(f + '\n')
+        error_file.write(p + '\n')
         continue
 
     y_obs = lc[1].tolist()
@@ -82,10 +83,11 @@ for p in lc_paths:
 lc_paths = aux
 
 partial_calc = partial(parallel.calc_feats, feature_list=feature_list,
-                       exclude_list=None, percentage=percentage)
+                       exclude_list=None, percentage=percentage, catalog=catalog)
 
-pool = multiprocessing.Pool()
-values = pool.map(partial_calc, lc_paths)
+pool = multiprocessing.Pool(processes=n_processes)
+# values = pool.map(partial_calc, lc_paths)
+values = map(partial_calc, lc_paths)
 pool.close()
 pool.join()
 
