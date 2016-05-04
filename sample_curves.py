@@ -20,7 +20,9 @@ import lightcurves.lc_utils as lu
 
 
 def sample_curve(lc_path, catalog='MACHO', percentage=1.0, sampling='equal',
-                 n_samples=100, param_choice='fitted', samples_path=''):
+                 lc_sampling='normal', n_samples=100, param_choice='fitted',
+                 samples_path=''):
+
     """Este metodo es un wrapper que abre una curva, la preprocesa,
     saca muestras con un GP y después las guarda en algún lugar.
     """
@@ -28,7 +30,13 @@ def sample_curve(lc_path, catalog='MACHO', percentage=1.0, sampling='equal',
     try:
         lc = lu.open_lightcurve(lc_path, catalog=catalog)
         lc = lu.filter_data(lc)
-        lc = lc.iloc[0:int(percentage * lc.index.size)]
+
+        if lc_sampling == 'normal':
+            lc = lc.iloc[0:int(percentage * lc.index.size)]
+        elif lc_sampling == 'new':
+            lc = lc.iloc[np.linspace(0, lc.index.size,
+                                     num=int(percentage * lc.index.size),
+                                     dtype=int)]
 
         t_obs, y_obs, err_obs, min_time, max_time = lu.prepare_lightcurve(lc)
 
