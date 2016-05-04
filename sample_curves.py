@@ -74,6 +74,7 @@ if __name__ == '__main__':
     parser.add_argument('--n_samples', required=True, type=int)
     parser.add_argument('--n_processes', required=True, type=int)
     parser.add_argument('--sampling', required=True, type=str)
+    parser.add_argument('--lc_sampling', required=True, type=str)
     parser.add_argument('--catalog', default='MACHO',
                         choices=['MACHO', 'EROS'])
     parser.add_argument('--lc_filter', required=False, type=float, 
@@ -86,6 +87,7 @@ if __name__ == '__main__':
     percentage = int(args.percentage) / float(100)
     catalog = args.catalog
     sampling = args.sampling
+    lc_sampling = args.lc_sampling
     n_samples = args.n_samples
     n_processes = args.n_processes
     lc_filter = args.lc_filter
@@ -109,7 +111,8 @@ if __name__ == '__main__':
 
     partial_sample = partial(sample_curve, catalog=catalog,
                              percentage=percentage, sampling=sampling,
-                             n_samples=n_samples, param_choice=param_choice,
+                             lc_sampling=lc_sampling, n_samples=n_samples,
+                             param_choice=param_choice,
                              samples_path=samples_path)
 
     pool = multiprocessing.Pool(processes=n_processes)
