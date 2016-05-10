@@ -29,7 +29,8 @@ if __name__ == '__main__':
     parser.add_argument('--catalog', default='MACHO',
                         choices=['MACHO', 'EROS'])
     parser.add_argument('--min_points', required=True, default=300, type=int)
-    parser.add_argument('--feature_list',  nargs='*', type=str)
+    parser.add_argument('--feature_list', required=False, nargs='*', type=str)
+    parser.add_argument('--exclude_list', required=False, nargs='*', type=str)
     parser.add_argument('--save_path', required=True, type=str)
     # parser.add_argument('--n_processes', required=True, type=int)
     
@@ -40,9 +41,9 @@ if __name__ == '__main__':
     catalog = args.catalog
     min_points = args.min_points
     feature_list = args.feature_list
+    exclude_list = args.exclude_list
     save_path = args.save_path
     # n_processes = args.n_processes
-
 
     paths = lu.get_lightcurve_paths(catalog=catalog)
     # paths = paths[0:20]
@@ -87,7 +88,7 @@ if __name__ == '__main__':
             err_obs = lc['err'].tolist()
             
             fs = FATS.FeatureSpace(Data=['magnitude', 'time', 'error'], 
-                           featureList=feature_list)
+                           featureList=feature_list, exclude_list=exclude_list)
             fs = fs.calculateFeature([y_obs, t_obs, err_obs])
 
             valores = map(lambda x: float("{0:.6f}".format(x)),fs.result(method='dict').values())
