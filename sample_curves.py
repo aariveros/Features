@@ -34,7 +34,7 @@ def sample_curve(lc_path, catalog='MACHO', percentage=1.0, sampling='equal',
         if lc_sampling == 'normal':
             lc = lc.iloc[0:int(percentage * lc.index.size)]
         elif lc_sampling == 'new':
-            lc = lc.iloc[np.linspace(0, lc.index.size,
+            lc = lc.iloc[np.linspace(0, lc.index.size-1,
                                      num=int(percentage * lc.index.size),
                                      dtype=int)]
 

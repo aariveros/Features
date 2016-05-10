@@ -80,7 +80,7 @@ if __name__ == '__main__':
             if sampling == 'normal':
                 lc = lc.iloc[0:int(len(lc) * percentage)]
             elif sampling == 'new':
-                lc = lc.iloc[np.linspace(0, lc.index.size, num=int(lc.index.size * percentage), dtype=int)]
+                lc = lc.iloc[np.linspace(0, lc.index.size-1, num=int(lc.index.size * percentage), dtype=int)]
 
             t_obs = lc.index.tolist()
             y_obs = lc['mag'].tolist()
