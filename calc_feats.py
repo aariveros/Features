@@ -8,6 +8,7 @@
 # from functools import partial
 # import multiprocessing
 import argparse
+import random
 import sys
 import os
 
@@ -78,10 +79,15 @@ if __name__ == '__main__':
                 continue
 
             # Tomo el p% de las mediciones
+            n_obs = int(lc.index.size * percentage)
             if sampling == 'normal':
-                lc = lc.iloc[0:int(len(lc) * percentage)]
+                lc = lc.iloc[0:n_obs]
             elif sampling == 'new':
-                lc = lc.iloc[np.linspace(0, lc.index.size-1, num=int(lc.index.size * percentage), dtype=int)]
+                lc = lc.iloc[np.linspace(0, lc.index.size-1, num=n_obs, dtype=int)]
+            elif sampling == 'uniform':
+                aux_indices = random.sample(range(len(lc.index)), n_obs)
+                aux_indices.sort()
+                lc = lc.iloc[aux_indices]
 
             t_obs = lc.index.tolist()
             y_obs = lc['mag'].tolist()
