@@ -88,7 +88,7 @@ if __name__ == '__main__':
             if sampling == 'normal':
                 lc = lc.iloc[0:n_obs]
             elif sampling == 'new':
-                lc = lc.iloc[np.linspace(0, lc.index.size, num=n_obs, dtype=int)]
+                lc = lc.iloc[np.linspace(0, lc.index.size-1, num=n_obs, dtype=int)]
             elif sampling == 'uniform':
                 aux_indices = random.sample(range(len(lc.index)), n_obs)
                 aux_indices.sort()
