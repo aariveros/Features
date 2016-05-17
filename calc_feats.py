@@ -46,6 +46,8 @@ if __name__ == '__main__':
     save_path = args.save_path
     # n_processes = args.n_processes
 
+    random.seed(1)
+
     paths = lu.get_lightcurve_paths(catalog=catalog)
     # paths = paths[0:20]
     feature_values = []
