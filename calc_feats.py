@@ -52,7 +52,7 @@ if __name__ == '__main__':
         print 'Feature es none'
 
     paths = lu.get_lightcurve_paths(catalog=catalog)
-    paths = paths[0:20]
+    # paths = paths[0:20]
     feature_values = []
     lc_ids = []    
 
@@ -99,7 +99,7 @@ if __name__ == '__main__':
             err_obs = lc['err'].tolist()
             
             fs = FATS.FeatureSpace(Data=['magnitude', 'time', 'error'], 
-                           featureList=feature_list, exclude_list=exclude_list)
+                           featureList=feature_list, excludeList=exclude_list)
             fs = fs.calculateFeature([y_obs, t_obs, err_obs])
 
             valores = map(lambda x: float("{0:.6f}".format(x)),fs.result(method='dict').values())
@@ -124,4 +124,4 @@ if __name__ == '__main__':
     # Porque sorteo??
     df.sort(axis=1, inplace=True)
 
-    # df.to_csv(save_path) 
+    df.to_csv(save_path) 
