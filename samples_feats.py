@@ -32,6 +32,7 @@ if __name__ == '__main__':
     parser.add_argument('--catalog', default='MACHO',
                         choices=['MACHO', 'EROS', 'OGLE'])
     parser.add_argument('--feature_list',  nargs='*', type=str)
+    parser.add_argument('--exclude_list',  nargs='*', type=str)
     parser.add_argument('--samples_path', required=True, type=str)
     parser.add_argument('--calculated_feats_path', required=True, type=str)
 
@@ -40,6 +41,7 @@ if __name__ == '__main__':
     catalog = args.catalog
     n_processes = args.n_processes
     feature_list = args.feature_list
+    exclude_list = args.exclude_list
     samples_path = args.samples_path
     calculated_feats_path = args.calculated_feats_path
 
@@ -54,7 +56,6 @@ if __name__ == '__main__':
     # Obtengo los ids de las curvas que ya han sido calculadas en iteraciones anteriores
     ids = lu.get_ids_in_path(calculated_feats_path, catalog=catalog, extension='.csv')
 
-    exclude_list = None
 
     fs = FATS.FeatureSpace(Data=['magnitude', 'time', 'error'], 
                            featureList=feature_list, excludeList=exclude_list)
