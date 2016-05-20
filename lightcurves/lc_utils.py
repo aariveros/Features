@@ -214,6 +214,3 @@ def stratified_filter(paths, catalog='MACHO', percentage=0.2):
         filtered_paths.extend(path_dict[key][0:int(percentage * count_dict[key])])
 
     return filtered_paths
-
-
-
