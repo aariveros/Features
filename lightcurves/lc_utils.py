@@ -78,6 +78,9 @@ def get_lightcurve_class(fp, catalog='MACHO'):
     elif catalog == 'EROS':
         return fp.split('/')[-2]
 
+    elif catalog == 'OGLE':
+        return fp.split('/')[-2]
+
 def get_lightcurve_id(fp, catalog='MACHO'):
     """
     return val: string containing de macho_id of the curve
@@ -92,7 +95,8 @@ def get_lightcurve_id(fp, catalog='MACHO'):
         return pattern.search(fp).group()
 
     elif catalog == 'OGLE':
-        pass
+        pattern = re.compile('(LMC|SMC|GD|BLG)-[^. ]*')
+        print pattern.search(fp).group()
 
 def get_lightcurve_paths(path=LC_FILE_PATH, both_bands=False, catalog='MACHO'):
     """
@@ -111,7 +115,7 @@ def get_lightcurve_paths(path=LC_FILE_PATH, both_bands=False, catalog='MACHO'):
         return [line[:-1] for line in f if '.time' in line]
 
     elif catalog == 'OGLE':
-        pass
+        return [line[:-1] for line in f if '.dat' in line]
 
 def get_paths(directory, extension=''):
     """Entrega todos los paths absolutos a objetos de distintos tipos en un
@@ -143,8 +147,8 @@ def open_lightcurve(fp, catalog='MACHO'):
     """
     if catalog == 'MACHO':
         cols = ['mjd', 'mag', 'err']
-        data = pd.read_table(fp, skiprows = [0,1,2], names = cols,
-                index_col = 'mjd', sep = '\s+')
+        data = pd.read_table(fp, skiprows=[0,1,2], names=cols, index_col='mjd',
+                             sep='\s+')
         return data
 
     elif catalog == 'EROS':
@@ -159,6 +163,10 @@ def open_lightcurve(fp, catalog='MACHO'):
 
         data = data[ (data['mag'].apply(a)) | (data['err'].apply(b)) ]
         return data
+    
+    elif catalog == 'OGLE':
+        cols = ['mjd', 'mag', 'err']
+        data = pd.read_table(fp, names=cols, index_col='mjd', sep='\s+')
 
 
 def prepare_lightcurve(curva, n_sampled_points=None):
