@@ -24,4 +24,4 @@ if __name__ == '__main__':
 	directory = "/n/seasfs03/IACS/TSC/ncastro/OGLE/"
 	result_file = '/n/home09/ncastro/workspace/Features/lightcurves_paths/OGLE.txt'
 
-	writePathsFile(directory, result_file)
+    writePathsFile(directory, result_file)
