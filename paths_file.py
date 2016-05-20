@@ -21,7 +21,7 @@ def writePathsFile(directory, result_file):
 
 if __name__ == '__main__':
 
-	directory = "/Users/npcastro/Dropbox/OGLE/"
-	result_file = '/Users/npcastro/workspace/Features/lightcurves_paths/OGLE.txt'
+	directory = "/n/seasfs03/IACS/TSC/ncastro/OGLE/"
+	result_file = '/n/home09/ncastro/workspace/Features/lightcurves_paths/OGLE.txt'
 
 	writePathsFile(directory, result_file)
