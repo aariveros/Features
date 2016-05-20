@@ -96,7 +96,7 @@ def get_lightcurve_id(fp, catalog='MACHO'):
 
     elif catalog == 'OGLE':
         pattern = re.compile('(LMC|SMC|GD|BLG)-[^. ]*')
-        print pattern.search(fp).group()
+        return pattern.search(fp).group()
 
 def get_lightcurve_paths(path=LC_FILE_PATH, both_bands=False, catalog='MACHO'):
     """

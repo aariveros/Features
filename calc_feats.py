@@ -46,11 +46,6 @@ if __name__ == '__main__':
     save_path = args.save_path
     # n_processes = args.n_processes
 
-    if exclude_list is None:
-        print 'Exclude es None'
-    if feature_list is None:
-        print 'Feature es none'
-
     paths = lu.get_lightcurve_paths(catalog=catalog)
     # paths = paths[0:20]
     feature_values = []
