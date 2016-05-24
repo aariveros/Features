@@ -167,6 +167,7 @@ def open_lightcurve(fp, catalog='MACHO'):
     elif catalog == 'OGLE':
         cols = ['mjd', 'mag', 'err']
         data = pd.read_table(fp, names=cols, index_col='mjd', sep='\s+')
+        return data
 
 
 def prepare_lightcurve(curva, n_sampled_points=None):
