@@ -75,28 +75,27 @@ def get_lightcurve_class(fp, catalog='MACHO'):
         else:
             return '0'
 
-    elif catalog == 'EROS':
-        return fp.split('/')[-2]
-
-    elif catalog == 'OGLE':
+    elif catalog in ['EROS', 'OGLE', 'CATALINA']:
         return fp.split('/')[-2]
 
 def get_lightcurve_id(fp, catalog='MACHO'):
     """
-    return val: string containing de macho_id of the curve
+    return val: string containing de id of the curve
     """
 
     if catalog == 'MACHO':
         pattern = re.compile('[0-9]*\.[0-9]*\.[0-9]*')
-        return pattern.search(fp).group()
 
     elif catalog == 'EROS':
         pattern = re.compile('lm[^. ]*')
-        return pattern.search(fp).group()
 
     elif catalog == 'OGLE':
         pattern = re.compile('(LMC|SMC|GD|BLG)-[^. ]*')
-        return pattern.search(fp).group()
+
+    elif catalog == 'CATALINA':
+        pattern = re.compile('CAT_[^. ]*')
+    
+    return pattern.search(fp).group()
 
 def get_lightcurve_paths(path=LC_FILE_PATH, both_bands=False, catalog='MACHO'):
     """
@@ -116,6 +115,9 @@ def get_lightcurve_paths(path=LC_FILE_PATH, both_bands=False, catalog='MACHO'):
 
     elif catalog == 'OGLE':
         return [line[:-1] for line in f if '.dat' in line]
+    
+    elif catalog == 'CATALINA':
+        return [line[:-1] for line in f if '.csv' in line]
 
 def get_paths(directory, extension=''):
     """Entrega todos los paths absolutos a objetos de distintos tipos en un
@@ -149,7 +151,6 @@ def open_lightcurve(fp, catalog='MACHO'):
         cols = ['mjd', 'mag', 'err']
         data = pd.read_table(fp, skiprows=[0,1,2], names=cols, index_col='mjd',
                              sep='\s+')
-        return data
 
     elif catalog == 'EROS':
         cols = ['mjd', 'mag', 'err', 'magB', 'errB']
@@ -162,11 +163,15 @@ def open_lightcurve(fp, catalog='MACHO'):
         b = lambda x: not np.isclose(x, 9.999)
 
         data = data[ (data['mag'].apply(a)) | (data['err'].apply(b)) ]
-        return data
     
     elif catalog == 'OGLE':
         cols = ['mjd', 'mag', 'err']
         data = pd.read_table(fp, names=cols, index_col='mjd', sep='\s+')
+
+    elif catalog == 'CATALINA':
+        data = pd.read_csv(path, header=0, index_col=0)
+
+    return data
 
 
 def prepare_lightcurve(curva, n_sampled_points=None):
