@@ -28,7 +28,7 @@ if __name__ == '__main__':
     parser.add_argument('--percentage', required=True, type=str)
     parser.add_argument('--sampling', required=True, type=str)
     parser.add_argument('--catalog', default='MACHO',
-                        choices=['MACHO', 'EROS'])
+                        choices=['MACHO', 'EROS', 'OGLE', 'CATALINA', 'ASAS'])
     parser.add_argument('--min_points', required=True, default=300, type=int)
     parser.add_argument('--feature_list', required=False, nargs='*', type=str)
     parser.add_argument('--exclude_list', required=False, nargs='*', type=str)
@@ -45,6 +45,8 @@ if __name__ == '__main__':
     exclude_list = args.exclude_list
     save_path = args.save_path
     # n_processes = args.n_processes
+
+    random.seed(1)
 
     paths = lu.get_lightcurve_paths(catalog=catalog)
     # paths = paths[0:20]

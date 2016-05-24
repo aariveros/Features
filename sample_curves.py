@@ -76,7 +76,7 @@ if __name__ == '__main__':
     parser.add_argument('--sampling', required=True, type=str)
     parser.add_argument('--lc_sampling', required=True, type=str)
     parser.add_argument('--catalog', default='MACHO',
-                        choices=['MACHO', 'EROS'])
+                        choices=['MACHO', 'EROS', 'OGLE', 'CATALINA', 'ASAS'])
     parser.add_argument('--lc_filter', required=False, type=float, 
                         help='Percentage of the total amount of paths to use')
     parser.add_argument('--param_choice', required=True, type=str)
