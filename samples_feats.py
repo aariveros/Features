@@ -30,7 +30,7 @@ if __name__ == '__main__':
         description='Get bootstrap samples from lightcurves')
     parser.add_argument('--n_processes', required=True, type=int)
     parser.add_argument('--catalog', default='MACHO',
-                        choices=['MACHO', 'EROS', 'OGLE'])
+                        choices=['MACHO', 'EROS', 'OGLE', 'CATALINA'])
     parser.add_argument('--feature_list',  nargs='*', type=str)
     parser.add_argument('--exclude_list',  nargs='*', type=str)
     parser.add_argument('--samples_path', required=True, type=str)

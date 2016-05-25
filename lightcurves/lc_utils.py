@@ -170,7 +170,7 @@ def open_lightcurve(fp, catalog='MACHO'):
         return data
 
     elif catalog == 'CATALINA':
-        data = pd.read_csv(path, header=0, index_col=0)
+        data = pd.read_csv(fp, header=0, index_col=0)
 
     return data
 

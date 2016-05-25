@@ -21,7 +21,7 @@ def writePathsFile(directory, result_file):
 
 if __name__ == '__main__':
 
-    directory = "/Users/npcastro/Lab/CATALINA/"
-    result_file = '/Users/npcastro/workspace/Features/lightcurves_paths/CATALINA.txt'
+    directory = "/n/seasfs03/IACS/TSC/ncastro/CATALINA/"
+    result_file = '/n/home09/ncastro/workspace/Features/lightcurves_paths/CATALINA.txt'
 
     writePathsFile(directory, result_file)
