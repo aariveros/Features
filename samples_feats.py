@@ -117,8 +117,9 @@ if __name__ == '__main__':
 
             try:
                 pool = multiprocessing.Pool(processes=n_processes,
-                                            maxtasksperchild=None)
+                                            maxtasksperchild=2)
                 feature_values = pool.map(partial_calc, samples[1], chunksize)
+                #feature_values = map(partial_calc, samples[1])
                 pool.close()
                 pool.join()
 

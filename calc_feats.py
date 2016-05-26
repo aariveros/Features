@@ -51,12 +51,21 @@ if __name__ == '__main__':
     paths = lu.get_lightcurve_paths(catalog=catalog)
     # paths = paths[0:20]
     feature_values = []
-    lc_ids = []    
+    lc_ids = []
 
-    if os.path.isfile(TRAINING_SETS_DIR_PATH + 'problemas/pocos_puntos ' +
-                      str(int(percentage * 100)) + '.txt'):
-        os.remove(TRAINING_SETS_DIR_PATH + 'problemas/pocos_puntos ' +
-                  str(int(percentage * 100)) + '.txt')
+    pocos_path = TRAINING_SETS_DIR_PATH + 'problemas/pocos_puntos ' +
+                      str(int(percentage * 100)) + '.txt'
+    errores_path = TRAINING_SETS_DIR_PATH + 'problemas/errores ' +
+                      str(int(percentage * 100)) + '.txt'
+
+    if os.path.isfile(pocos_path):
+        os.remove(pocos_path)
+
+    if os.path.isfile(errores_path):
+        os.remove(errores_path)
+
+    pocos_puntos_file = open(pocos_path, 'a')
+    errores_file = open(errores_path, 'a')
 
     for path in paths:
         try:
@@ -74,10 +83,7 @@ if __name__ == '__main__':
 
             # Si la curva filtrada no tiene al menos min_points no la ocupo
             if len(lc.index) < min_points:
-                f = open(TRAINING_SETS_DIR_PATH + 'problemas/pocos_puntos ' +
-                         str(int(percentage * 100)) + '.txt', 'a')
-                f.write(path + '\n')
-                f.close()
+                pocos_puntos_file.write(path + '\n')
                 continue
 
             # Tomo el p% de las mediciones
@@ -108,11 +114,11 @@ if __name__ == '__main__':
         except KeyboardInterrupt:
             raise
         except Exception, e:
-            f = open(TRAINING_SETS_DIR_PATH + 'problemas/errores ' +
-                     str(int(percentage * 100)) + '.txt', 'a')
-            f.write(path + '\n')
-            f.close()
+            errores_file.write(path + '\n')
             continue
+    
+    errores_file.close()
+    pocos_puntos_file.close()
 
     feature_names = fs.result(method='dict').keys()
     feature_names.append('class')
