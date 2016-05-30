@@ -18,7 +18,7 @@ if __name__ == '__main__':
     print ' '.join(sys.argv)
     parser = argparse.ArgumentParser()
     parser.add_argument('--catalog', default='MACHO',
-                        choices=['MACHO', 'EROS', 'OGLE'])
+                        choices=['MACHO', 'EROS', 'OGLE', 'CATALINA'])
     parser.add_argument('--result_file_path', required=True, type=str)
     parser.add_argument('--samples_path', required=True, type=str)
 
