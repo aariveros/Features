@@ -10,10 +10,9 @@ import numpy as np
 
 def graf_GP(x, mu, std):
     plt.plot(x, mu, color="#4682b4", alpha=0.3)
-    plt.fill(np.concatenate([x, x[::-1]]), \
-            np.concatenate([mu - 1.9600 * std,
-                           (mu + 1.9600 * std)[::-1]]), \
-            alpha=.5, fc='#C0C0C0', ec='None', label='95% confidence interval')
+    plt.fill(np.concatenate([x, x[::-1]]), np.concatenate([mu - 1.9600 * std,
+             (mu + 1.9600 * std)[::-1]]), alpha=.5, fc='#C0C0C0', ec='None',
+             label='95% confidence interval')
 
 def graf_hist(values, label):
     # std = np.std(values)
