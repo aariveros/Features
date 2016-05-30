@@ -40,10 +40,10 @@ def get_new_class(clase):
 if __name__ == '__main__':
 
     catalog = 'CATALINA'
-    lc_path_file = '/Users/npcastro/workspace/Features/lightcurves_paths/'
+    lc_path_file = '/n/home09/ncastro/workspace/Features/lightcurves_paths/'
     lc_files = lu.get_lightcurve_paths(lc_path_file, catalog=catalog)
 
-    result_dir = '/Users/npcastro/Lab/Catalina-II/'
+    result_dir = '/n/seasfs03/IACS/TSC/ncastro/CATALINA/'
 
     error_count = 0
 
@@ -54,5 +54,5 @@ if __name__ == '__main__':
                clase = get_new_class(lu.get_lightcurve_class(path, catalog=catalog))
                shutil.copy(path, result_dir + clase )
            except KeyError:
-               print lc_id
+               print 'error en: ' + str(lc_id)
                error_count += 1
