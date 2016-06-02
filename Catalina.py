@@ -1,3 +1,8 @@
+# coding=utf-8
+
+# Script para separar catalina en multiples archivos, uno por curva de luz
+# -----------------------------------------------------------------------------
+
 import pandas as pd
 
 path = '/Users/npcastro/Lab/Catalina/AllVar.phot'
