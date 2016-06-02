@@ -75,7 +75,7 @@ def get_lightcurve_class(fp, catalog='MACHO'):
         else:
             return '0'
 
-    elif catalog in ['EROS', 'OGLE', 'CATALINA']:
+    elif catalog in ['EROS', 'OGLE', 'CATALINA', 'VISTA']:
         return fp.split('/')[-2]
 
 def get_lightcurve_id(fp, catalog='MACHO'):
@@ -94,6 +94,9 @@ def get_lightcurve_id(fp, catalog='MACHO'):
 
     elif catalog == 'CATALINA':
         pattern = re.compile('CAT_[^. ]*')
+
+    elif catalog == 'VISTA':
+        pattern = re.compile('[0-9A-z]*_j')
     
     return pattern.search(fp).group()
 
@@ -113,11 +116,12 @@ def get_lightcurve_paths(path=LC_FILE_PATH, both_bands=False, catalog='MACHO'):
     elif catalog == 'EROS':
         return [line[:-1] for line in f if '.time' in line]
 
-    elif catalog == 'OGLE':
+    elif catalog in ['OGLE', 'VISTA']:
         return [line[:-1] for line in f if '.dat' in line]
     
     elif catalog == 'CATALINA':
         return [line[:-1] for line in f if '.csv' in line]
+
 
 def get_paths(directory, extension=''):
     """Entrega todos los paths absolutos a objetos de distintos tipos en un
@@ -171,6 +175,11 @@ def open_lightcurve(fp, catalog='MACHO'):
 
     elif catalog == 'CATALINA':
         data = pd.read_csv(fp, header=0, index_col=0)
+
+    elif catalog == 'VISTA':
+        cols = ['mjd', 'mag', 'err']
+        data = pd.read_csv(fp, names=cols, index_col=0, usecols=[0, 1, 2],
+                           sep='\s+', comment='#')
 
     return data
 

@@ -6,12 +6,6 @@
 import os
 import lightcurves.lc_utils as lu
 
-# def get_paths(directory):
-#     for dirpath, dirnames, filenames in os.walk(directory):
-#         for f in filenames:
-#             if '.dat' in f:
-#                 yield os.path.abspath(os.path.join(dirpath, f))
-
 
 def writePathsFile(directory, result_file):
     
