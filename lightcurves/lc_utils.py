@@ -147,6 +147,13 @@ def has_both_bands(lc_path, allpaths=LC_FILE_PATH):
         return False
     return True
 
+def normalize_z(values):
+    media =  np.mean(values)
+    std = np.std(values)
+
+    aux = (np.array(values) - media) / std
+    return aux.tolist()
+
 def open_lightcurve(fp, catalog='MACHO'):
     """
     fp: Absolute file path of the lightcurve file
